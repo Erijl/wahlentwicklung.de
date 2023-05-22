@@ -1,12 +1,10 @@
-<h1 class="text-3xl font-bold">
+
+<body class="bg-sky-500 flex-auto">
+
+    <h1 class="text-3xl font-bold">
     Wahlentwicklung
     <br>
 
-    Detaillierte Stastiken zur Entwicklung der Bundestagswahl in Deutschland seid 1976!
+    Detaillierte Stastiken zur Bundestagswahl in Deutschland seit 1976!
   </h1>
-  
-  <style lang="postcss">
-    :global(html) {
-      background-color: theme(colors.gray.100);
-    }
-  </style>
+</body>

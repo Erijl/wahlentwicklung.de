@@ -1,4 +1,16 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm"
+import { Entity, PrimaryGeneratedColumn, Column, Timestamp, CreateDateColumn, UpdateDateColumn, EntitySchema, DeleteDateColumn } from "typeorm"
+
+export class BaseColumnSchema {
+
+    @PrimaryGeneratedColumn()
+    sqlId: number
+
+    @CreateDateColumn()
+    createdAt: Date
+
+    @UpdateDateColumn()
+    updatedAt: Date
+}
 
 @Entity()
 export class Wahl {
@@ -6,8 +18,17 @@ export class Wahl {
     @PrimaryGeneratedColumn()
     sqlId: number
 
+    @CreateDateColumn()
+    createdAt: Date
+
+    @UpdateDateColumn()
+    updatedAt: Date
+
+    @DeleteDateColumn()
+    deletedAt: Date
+
     @Column()
-    Jahr: string
+    year: number
 }
 
 @Entity()
@@ -16,8 +37,19 @@ export class Partei {
     @PrimaryGeneratedColumn()
     sqlId: number
 
+    @CreateDateColumn()
+    createdAt: Date
+
+    @UpdateDateColumn()
+    updatedAt: Date
+
+    @DeleteDateColumn()
+    deletedAt: Date
+
+
+
     @Column()
-    Name: string
+    name: string
 }
 
 
@@ -27,14 +59,25 @@ export class WahlKreis {
     @PrimaryGeneratedColumn()
     sqlId: number
 
-    @Column()
-    Wahl: number
+    @CreateDateColumn()
+    createdAt: Date
+
+    @UpdateDateColumn()
+    updatedAt: Date
+
+    @DeleteDateColumn()
+    deletedAt: Date
+
+
 
     @Column()
-    Name: string
+    wahlId: number
 
     @Column()
-    Land: string
+    name: string
+
+    @Column()
+    bundesland: string
 }
 
 @Entity()
@@ -43,14 +86,25 @@ export class StimmenPartei {
     @PrimaryGeneratedColumn()
     sqlId: number
 
-    @Column()
-    WahlId: number
+    @CreateDateColumn()
+    createdAt: Date
+
+    @UpdateDateColumn()
+    updatedAt: Date
+
+    @DeleteDateColumn()
+    deletedAt: Date
+
+
 
     @Column()
-    Erststimmen: number
+    wahlId: number
 
     @Column()
-    Zweitstimmen: number
+    erststimmen: number
+
+    @Column()
+    zweitstimmen: number
 }
 
 @Entity()
@@ -59,8 +113,19 @@ export class StimmenAllgemein {
     @PrimaryGeneratedColumn()
     sqlId: number
 
+    @CreateDateColumn()
+    createdAt: Date
+
+    @UpdateDateColumn()
+    updatedAt: Date
+
+    @DeleteDateColumn()
+    deletedAt: Date
+
+
+
     @Column()
-    WahlId: number
+    wahlId: number
 
     @Column()
     anzahlWaehler: number

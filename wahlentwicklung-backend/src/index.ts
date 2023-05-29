@@ -1,13 +1,16 @@
 import { AppDataSource } from "./data-source"
 import { DataSource } from "typeorm"
-import { Wahl } from "./entity/databaseEntities"
 import * as dotenv from 'dotenv'
+import { Wahl } from "./entity/databaseEntities"
 
 dotenv.config()
 
-AppDataSource.initialize().then(async () => {
+console.log("Connecting to Database...")
 
-    console.log("Inserting a new user into the database...")
+AppDataSource.initialize().then(async () => {
+    console.log("DONE");
+
+
     /*
     const user = new User()
     user.firstName = "Timber"

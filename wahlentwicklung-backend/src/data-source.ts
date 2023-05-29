@@ -14,6 +14,7 @@ export const AppDataSource = new DataSource({
     synchronize: true,
     logging: false,
     entities: [Wahl, Partei, WahlKreis, StimmenPartei, StimmenAllgemein],
+    //entities: [Wahl, Partei, WahlKreis, StimmenPartei, StimmenAllgemein],
     migrations: [],
     subscribers: [],
 })

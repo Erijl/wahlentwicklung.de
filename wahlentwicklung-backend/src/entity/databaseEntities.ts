@@ -1,144 +1,115 @@
-import { Entity, PrimaryGeneratedColumn, Column, Timestamp, CreateDateColumn, UpdateDateColumn, EntitySchema, DeleteDateColumn } from "typeorm"
-
-export class BaseColumnSchema {
-
-    @PrimaryGeneratedColumn()
-    sqlId: number
-
-    @CreateDateColumn()
-    createdAt: Date
-
-    @UpdateDateColumn()
-    updatedAt: Date
-}
-
+import {
+    Entity,
+    PrimaryGeneratedColumn,
+    CreateDateColumn,
+    UpdateDateColumn,
+    DeleteDateColumn,
+    Column,
+    ManyToOne,
+    OneToMany,
+} from 'typeorm';
+  
 @Entity()
 export class Wahl {
+  @PrimaryGeneratedColumn()
+  sqlId: number;
 
-    @PrimaryGeneratedColumn()
-    sqlId: number
-
-    @CreateDateColumn()
-    createdAt: Date
-
-    @UpdateDateColumn()
-    updatedAt: Date
-
-    @DeleteDateColumn()
-    deletedAt: Date
-
-    @Column()
-    year: number
+  @Column()
+  year: number;
 }
 
 @Entity()
-export class Partei {
+export class Party {
+  @PrimaryGeneratedColumn()
+  sqlId: number;
 
-    @PrimaryGeneratedColumn()
-    sqlId: number
-
-    @CreateDateColumn()
-    createdAt: Date
-
-    @UpdateDateColumn()
-    updatedAt: Date
-
-    @DeleteDateColumn()
-    deletedAt: Date
-
-
-
-    @Column()
-    name: string
-}
-
-
-@Entity()
-export class WahlKreis {
-
-    @PrimaryGeneratedColumn()
-    sqlId: number
-
-    @CreateDateColumn()
-    createdAt: Date
-
-    @UpdateDateColumn()
-    updatedAt: Date
-
-    @DeleteDateColumn()
-    deletedAt: Date
-
-
-
-    @Column()
-    wahlId: number
-
-    @Column()
-    name: string
-
-    @Column()
-    bundesland: string
+  @Column()
+  name: string;
 }
 
 @Entity()
-export class StimmenPartei {
+export class Bundesland {
+  @PrimaryGeneratedColumn()
+  sqlId: number;
 
-    @PrimaryGeneratedColumn()
-    sqlId: number
-
-    @CreateDateColumn()
-    createdAt: Date
-
-    @UpdateDateColumn()
-    updatedAt: Date
-
-    @DeleteDateColumn()
-    deletedAt: Date
-
-
-
-    @Column()
-    wahlId: number
-
-    @Column()
-    erststimmen: number
-
-    @Column()
-    zweitstimmen: number
+  @Column()
+  name: string;
 }
 
 @Entity()
-export class StimmenAllgemein {
+export class Wahlkreis {
+  @PrimaryGeneratedColumn()
+  sqlId: number;
 
-    @PrimaryGeneratedColumn()
-    sqlId: number
+  @Column()
+  name: string;
 
-    @CreateDateColumn()
-    createdAt: Date
+  @Column()
+  wahlberechtigte_endgueltig: number;
 
-    @UpdateDateColumn()
-    updatedAt: Date
+  @Column()
+  wahlberechtigte_vorperiode: number;
 
-    @DeleteDateColumn()
-    deletedAt: Date
+  @Column()
+  waehler_endgueltig: number;
 
+  @Column()
+  waehler_vorperiode: number;
 
+  @Column()
+  gueltige_erststimmen_endgueltig: number;
 
-    @Column()
-    wahlId: number
+  @Column()
+  gueltige_erststimmen_vorperiode: number;
 
-    @Column()
-    anzahlWaehler: number
+  @Column()
+  gueltige_zweitstimmen_endgueltig: number;
 
-    @Column()
-    anzahlGueltigeErststimmen: number
-    
-    @Column()
-    anzahlGueltigeZweitstimmen: number
-    
-    @Column()
-    anzahlUngueltigeErststimmen: number
-    
-    @Column()
-    anzahlUngueltigeZweitstimmen: number
+  @Column()
+  gueltige_zweitstimmen_vorperiode: number;
+
+  @Column()
+  ungueltige_erststimmen_endgueltig: number;
+
+  @Column()
+  ungueltige_erststimmen_vorperiode: number;
+
+  @Column()
+  ungueltige_zweitstimmen_endgueltig: number;
+
+  @Column()
+  ungueltige_zweitstimmen_vorperiode: number;
+
+  @ManyToOne(() => Bundesland)
+  bundesland: Bundesland;
+
+  @OneToMany(() => VoteCounts, (voteCounts) => voteCounts.wahlkreis)
+  voteCounts: VoteCounts[];
+}
+
+@Entity()
+export class VoteCounts {
+  @PrimaryGeneratedColumn()
+  sqlId: number;
+
+  @ManyToOne(() => Wahl)
+  bundestagswahl: Wahl;
+
+  @ManyToOne(() => Party)
+  party: Party;
+
+  @ManyToOne(() => Wahlkreis)
+  wahlkreis: Wahlkreis;
+
+  @Column()
+  erststimmen_endgueltig: number;
+
+  @Column()
+  erststimmen_vorperiode: number;
+
+  @Column()
+  zweitstimmen_endgueltig: number;
+
+  @Column()
+  zweitstimmen_vorperiode: number;
 }

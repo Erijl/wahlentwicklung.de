@@ -1,6 +1,6 @@
 import "reflect-metadata"
 import { DataSource } from "typeorm"
-import { Partei, StimmenAllgemein, StimmenPartei, Wahl, WahlKreis } from "./entity/databaseEntities"
+import { Bundesland, Party, VoteCounts, Wahl, Wahlkreis } from "./entity/databaseEntities"
 import * as dotenv from 'dotenv'
 dotenv.config()
 
@@ -13,7 +13,7 @@ export const AppDataSource = new DataSource({
     database: process.env.DATABASE_NAME,
     synchronize: true,
     logging: false,
-    entities: [Wahl, Partei, WahlKreis, StimmenPartei, StimmenAllgemein],
+    entities: [Wahl, Party, Bundesland, Wahlkreis, VoteCounts],
     migrations: [],
     subscribers: [],
 })

@@ -51,6 +51,9 @@ export class Wahlkreis {
   name: string;
 
   @Column()
+  identifier: number;
+
+  @Column()
   wahlberechtigte_endgueltig: number;
 
   @Column()

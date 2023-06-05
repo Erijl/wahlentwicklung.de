@@ -7,7 +7,7 @@ function readCSVFile(filePath: string): Promise<string[]> {
     const rows: string[] = [];
 
     fs.createReadStream(filePath)
-      .pipe(csv())
+      .pipe(csv({ headers: false }))
       .on('data', (data) => {
         const row = Object.values(data).join(';');
         rows.push(row);
@@ -17,23 +17,76 @@ function readCSVFile(filePath: string): Promise<string[]> {
   });
 }
 
-export async function parseCSVData(filePath: string): Promise<void> {
+export async function parseCSVData(filePath: string, AppDataSource) {
   try {
     const rows = await readCSVFile(filePath);
     const year = parseInt(filePath.replace(/^.*[\\\/]/, '').replace('btw', '').replace('_kerg.csv', ''));
     //TODO Replace with database search based of year
-    let bundestagswahl = new Wahl()
-    bundestagswahl.year = year;
+    const wahlRepository = AppDataSource.manager.getRepository(Wahl);
+    const bundestagswahl = await wahlRepository.findOne({ where: { year: 2013 } });
 
     let bundesländer: Bundesland[] = [];
+    let wahlkreise: Wahlkreis[] = [];
     //console.log(rows[rows.length-1].split(';'));
+    const headerRow: string[] = rows[0].split(';');
+    
     for(let row of rows) {
       let entries: string[] = row.split(';');
       const identifier = parseInt(entries[0]);
       if(identifier < 900){
         // Wahlkreis
 
-        
+        let wahlkreis = new Wahlkreis();
+
+        wahlkreis.name = entries[1];
+        wahlkreis.identifier = parseInt(entries[2]);
+
+        wahlkreis.wahlberechtigte_endgueltig = parseInt(entries[3]);
+        wahlkreis.wahlberechtigte_vorperiode = parseInt(entries[4]);
+
+        wahlkreis.waehler_endgueltig = parseInt(entries[7]);
+        wahlkreis.waehler_vorperiode = parseInt(entries[8]);
+
+        wahlkreis.ungueltige_erststimmen_endgueltig = parseInt(entries[11]);
+        wahlkreis.ungueltige_erststimmen_vorperiode = parseInt(entries[12]);
+
+        wahlkreis.ungueltige_zweitstimmen_endgueltig = parseInt(entries[13]);
+        wahlkreis.ungueltige_zweitstimmen_vorperiode = parseInt(entries[14]);
+
+        wahlkreis.gueltige_erststimmen_endgueltig = parseInt(entries[15]);
+        wahlkreis.gueltige_erststimmen_vorperiode = parseInt(entries[16]);
+
+        wahlkreis.gueltige_zweitstimmen_endgueltig = parseInt(entries[17]);
+        wahlkreis.gueltige_zweitstimmen_vorperiode = parseInt(entries[18]);
+
+        wahlkreis.bundestagswahl = bundestagswahl;
+
+        const voteCounts: VoteCounts[] = [];
+
+        for(let i: number = 19; i < entries.length; i+=4) {
+          let vote = new VoteCounts();
+
+          vote.bundestagswahl = bundestagswahl;
+          vote.wahlkreis = wahlkreis;
+
+          let party = new Party();
+          party.bundestagswahl = bundestagswahl;
+          party.name = headerRow[i];
+
+          vote.party = party;
+
+          vote.erststimmen_endgueltig = parseInt(entries[i]);
+          vote.erststimmen_vorperiode = parseInt(entries[i+1]);
+
+          vote.zweitstimmen_endgueltig = parseInt(entries[i+2]);
+          vote.zweitstimmen_vorperiode = parseInt(entries[i+3]);
+
+          voteCounts.push(vote);
+        }
+
+        wahlkreis.voteCounts = voteCounts;
+
+        wahlkreise.push(wahlkreis);
       } else if(identifier > 900 && identifier != 999){
         // Bundesland
 
@@ -48,7 +101,12 @@ export async function parseCSVData(filePath: string): Promise<void> {
 
     }
 
-    console.log(bundesländer);
+    //TODO Wahlkreis Idetifier -> Bundesland reference
+    for(const wahlKreis of wahlkreise) {
+      wahlKreis.bundesland = bundesländer.find(bundesland => bundesland.identifier == wahlKreis.identifier);
+    }
+
+    return [ bundesländer, wahlkreise];
   } catch (error) {
     console.error('Error reading CSV file:', error);
     throw error;

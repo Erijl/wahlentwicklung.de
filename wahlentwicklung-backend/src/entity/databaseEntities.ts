@@ -25,6 +25,9 @@ export class Party {
 
   @Column()
   name: string;
+
+  @ManyToOne(() => Wahl)
+  bundestagswahl: Wahl;
 }
 
 @Entity()
@@ -34,6 +37,9 @@ export class Bundesland {
 
   @Column()
   name: string;
+
+  @ManyToOne(() => Wahl)
+  bundestagswahl: Wahl;
 }
 
 @Entity()
@@ -79,6 +85,9 @@ export class Wahlkreis {
 
   @Column()
   ungueltige_zweitstimmen_vorperiode: number;
+
+  @ManyToOne(() => Wahl)
+  bundestagswahl: Wahl;
 
   @ManyToOne(() => Bundesland)
   bundesland: Bundesland;

@@ -1,9 +1,6 @@
 import {
     Entity,
     PrimaryGeneratedColumn,
-    CreateDateColumn,
-    UpdateDateColumn,
-    DeleteDateColumn,
     Column,
     ManyToOne,
     OneToMany,
@@ -37,6 +34,9 @@ export class Bundesland {
 
   @Column()
   name: string;
+
+  @Column()
+  identifier: number;
 
   @ManyToOne(() => Wahl)
   bundestagswahl: Wahl;

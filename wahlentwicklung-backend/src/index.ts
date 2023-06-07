@@ -1,8 +1,11 @@
+// @ts-nocheck
+
 import { AppDataSource } from "./data-source"
 import { DataSource, Equal, getRepository } from "typeorm"
 import * as dotenv from 'dotenv'
-import { Bundesland, Wahl, Wahlkreis } from "./entity/databaseEntities"
+import { Bundesland, Party, VoteCounts, Wahl, Wahlkreis } from "./entity/databaseEntities"
 import { parseCSVData } from "./data-reader/data-parser"
+
 
 dotenv.config()
 
@@ -11,43 +14,66 @@ console.log("Connecting to Database...")
 AppDataSource.initialize().then(async () => {
     console.log("DONE");
 
+    //dropData();
+
     const repo = AppDataSource.manager.getRepository(Wahl);
 
+    console.log('Reading File...')
     const filePath = './data-files/btw2013_kerg.csv'
     const returnValue = await parseCSVData(filePath, AppDataSource);
 
     const bundesländer = returnValue[0];
-    const wahlkreis = returnValue[1];
+    const wahlkreise = returnValue[1];
+    console.log("DONE");
 
-    console.log(bundesländer);
-    //for(const bundesland of bundesländer) {
-    //    await AppDataSource.manager.save(bundesland);
-    //}
+    //console.log(bundesländer);
+
     await AppDataSource.manager.save(bundesländer);
-    await AppDataSource.manager.save(wahlkreis);
 
-/*
+    // Adding referencial integretiy between Bundesland <-> Wahlkreis
+    for(const wahlkreis of wahlkreise) {
+        const bundeslandRepository = AppDataSource.manager.getRepository(Bundesland);
+        const bundesland = await bundeslandRepository.findOne({ 
+            where: { 
+                identifier: wahlkreis.bundesland.identifier,
+                bundestagswahl: wahlkreis.bundestagswahl
+         } });
+         wahlkreis.bundesland = bundesland;
+    }
+    await AppDataSource.manager.save(wahlkreise);
 
-    //const temp = await processCSVFile(testFile);
-    //console.log(temp);
-    //await addYears();
-    
-    const user = new User()
-    user.firstName = "Timber"
-    user.lastName = "Saw"
-    user.age = 25
-    await AppDataSource.manager.save(user)
-    console.log("Saved a new user with id: " + user.id)
+    for(const vote: VoteCounts[] of wahlkreise[0].voteCounts) {
+        await AppDataSource.manager.save(vote.party);
+    }    
 
-    console.log("Loading users from the database...")
-    const users = await AppDataSource.manager.find(User)
-    console.log("Loaded users: ", users)
+    // adding referecial inegrity to voteCounts
+    for(const vote: VoteCounts[] of wahlkreise[0].voteCounts) {
+        const wahlkreisRepository = AppDataSource.manager.getRepository(Wahlkreis);
+        const wahlkreis = await wahlkreisRepository.findOne({ 
+            where: { 
+                identifier: vote.wahlkreis.identifier,
+                bundestagswahl: vote.bundestagswahl                
+         } });
+         vote.wahlkreis = wahlkreis;
 
-    console.log("Here you can setup and run express / fastify / any other framework.")
-*/
-    
+
+        const partyRepository = AppDataSource.manager.getRepository(Party);
+        const party = await partyRepository.findOne({ 
+            where: { 
+                name: vote.party.name,
+                bundestagswahl: vote.bundestagswahl                
+         } });
+         vote.party = party;
+    }
+
+    for(const wahlkreis of wahlkreise) {
+        await AppDataSource.manager.save(wahlkreis.voteCounts);
+    }
+
+
 
 }).catch(error => console.log(error))
+
 
 async function addYears() {
     const years = ["1949", "1953", "1953", "1957", "1961", "1965", "1969", "1972", "1976", "1980", "1983", "1987", "1990", "1994", "1998", "2002", "2005", "2009", "2013", "2017", "2021", "2025"]
@@ -58,4 +84,18 @@ async function addYears() {
         election.year = parseInt(years[i]);
         await AppDataSource.manager.save(election);
     }
+}
+
+async function dropData() {
+    const partyRepository = AppDataSource.manager.getRepository(Party);
+await partyRepository.createQueryBuilder().delete().execute();
+
+const voteCountsRepository = AppDataSource.manager.getRepository(VoteCounts);
+await voteCountsRepository.createQueryBuilder().delete().execute();
+
+const wahlkreisRepository = AppDataSource.manager.getRepository(Wahlkreis);
+await wahlkreisRepository.createQueryBuilder().delete().execute();
+
+const bundeslandRepository = AppDataSource.manager.getRepository(Bundesland);
+await bundeslandRepository.createQueryBuilder().delete().execute();
 }

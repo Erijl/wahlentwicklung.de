@@ -41,23 +41,23 @@ export async function parseCSVData(filePath: string, AppDataSource) {
         wahlkreis.name = entries[1];
         wahlkreis.identifier = parseInt(entries[2]);
 
-        wahlkreis.wahlberechtigte_endgueltig = parseInt(entries[3]);
-        wahlkreis.wahlberechtigte_vorperiode = parseInt(entries[4]);
+        wahlkreis.wahlberechtigte_endgueltig = parseNumber(entries[3]);
+        wahlkreis.wahlberechtigte_vorperiode = parseNumber(entries[4]);
 
-        wahlkreis.waehler_endgueltig = parseInt(entries[7]);
-        wahlkreis.waehler_vorperiode = parseInt(entries[8]);
+        wahlkreis.waehler_endgueltig = parseNumber(entries[7]);
+        wahlkreis.waehler_vorperiode = parseNumber(entries[8]);
 
-        wahlkreis.ungueltige_erststimmen_endgueltig = parseInt(entries[11]);
-        wahlkreis.ungueltige_erststimmen_vorperiode = parseInt(entries[12]);
+        wahlkreis.ungueltige_erststimmen_endgueltig = parseNumber(entries[11]);
+        wahlkreis.ungueltige_erststimmen_vorperiode = parseNumber(entries[12]);
 
-        wahlkreis.ungueltige_zweitstimmen_endgueltig = parseInt(entries[13]);
-        wahlkreis.ungueltige_zweitstimmen_vorperiode = parseInt(entries[14]);
+        wahlkreis.ungueltige_zweitstimmen_endgueltig = parseNumber(entries[13]);
+        wahlkreis.ungueltige_zweitstimmen_vorperiode = parseNumber(entries[14]);
 
-        wahlkreis.gueltige_erststimmen_endgueltig = parseInt(entries[15]);
-        wahlkreis.gueltige_erststimmen_vorperiode = parseInt(entries[16]);
+        wahlkreis.gueltige_erststimmen_endgueltig = parseNumber(entries[15]);
+        wahlkreis.gueltige_erststimmen_vorperiode = parseNumber(entries[16]);
 
-        wahlkreis.gueltige_zweitstimmen_endgueltig = parseInt(entries[17]);
-        wahlkreis.gueltige_zweitstimmen_vorperiode = parseInt(entries[18]);
+        wahlkreis.gueltige_zweitstimmen_endgueltig = parseNumber(entries[17]);
+        wahlkreis.gueltige_zweitstimmen_vorperiode = parseNumber(entries[18]);
 
         wahlkreis.bundestagswahl = bundestagswahl;
 
@@ -75,13 +75,18 @@ export async function parseCSVData(filePath: string, AppDataSource) {
 
           vote.party = party;
 
-          vote.erststimmen_endgueltig = parseInt(entries[i]);
-          vote.erststimmen_vorperiode = parseInt(entries[i+1]);
+          vote.erststimmen_endgueltig = parseNumber(entries[i]);
+          vote.erststimmen_vorperiode = parseNumber(entries[i+1]);
 
-          vote.zweitstimmen_endgueltig = parseInt(entries[i+2]);
-          vote.zweitstimmen_vorperiode = parseInt(entries[i+3]);
+          vote.zweitstimmen_endgueltig = parseNumber(entries[i+2]);
+          vote.zweitstimmen_vorperiode = parseNumber(entries[i+3]);
 
-          voteCounts.push(vote);
+          if(party.name && party.name !== '' && party.name !== ' '){
+            voteCounts.push(vote);
+          } else {
+            console.log('MISSING ENTRY')
+            console.log(party);
+          }
         }
 
         wahlkreis.voteCounts = voteCounts;
@@ -111,4 +116,9 @@ export async function parseCSVData(filePath: string, AppDataSource) {
     console.error('Error reading CSV file:', error);
     throw error;
   }
+}
+
+function parseNumber(value) {
+  if(!value || value === undefined || value === null || value === "") return 0;
+  return parseInt(value);
 }

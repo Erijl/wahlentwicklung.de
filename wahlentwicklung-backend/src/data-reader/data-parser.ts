@@ -83,9 +83,6 @@ export async function parseCSVData(filePath: string, AppDataSource) {
 
           if(party.name && party.name !== '' && party.name !== ' '){
             voteCounts.push(vote);
-          } else {
-            console.log('MISSING ENTRY')
-            console.log(party);
           }
         }
 

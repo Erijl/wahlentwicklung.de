@@ -47,25 +47,39 @@ AppDataSource.initialize().then(async () => {
     }    
 
     // adding referecial inegrity to voteCounts
+    let cached: bool = false;
+    let cachedParties: Party[] = [];
+    const wahlkreisRepository = AppDataSource.manager.getRepository(Wahlkreis)
+
     for(let i: number = 0; i < wahlkreise.length; i++) {
-        for(const vote: VoteCounts[] of wahlkreise[i].voteCounts) {
-        const wahlkreisRepository = AppDataSource.manager.getRepository(Wahlkreis);
         const wahlkreis = await wahlkreisRepository.findOne({ 
             where: { 
-                identifier: vote.wahlkreis.identifier,
+                identifier: wahlkreise[i].identifier,
                 bundestagswahl: vote.bundestagswahl                
          } });
-         vote.wahlkreis = wahlkreis;
 
+        for(const vote: VoteCounts[] of wahlkreise[i].voteCounts) {
+            
+            vote.wahlkreis = wahlkreis;
 
-        const partyRepository = AppDataSource.manager.getRepository(Party);
-        const party = await partyRepository.findOne({ 
-            where: { 
-                name: vote.party.name,
-                bundestagswahl: vote.bundestagswahl                
-         } });
-         vote.party = party;
-    }}
+            if(!cached) {
+                const partyRepository = AppDataSource.manager.getRepository(Party);
+                const party = await partyRepository.findOne({ 
+                    where: { 
+                        name: vote.party.name,
+                        bundestagswahl: vote.bundestagswahl                
+                 } });
+                 cachedParties.push(party);
+                 vote.party = party;
+            } else {
+                vote.party = cachedParties.find(party => party.name == vote.party.name) ?? '';
+            }
+            
+
+        }
+        cached = true;
+        console.log(`${i}/${wahlkreise.length}`)
+    }
 
     
     for(const wahlkreis of wahlkreise) {

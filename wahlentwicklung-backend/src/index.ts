@@ -47,7 +47,8 @@ AppDataSource.initialize().then(async () => {
     }    
 
     // adding referecial inegrity to voteCounts
-    for(const vote: VoteCounts[] of wahlkreise[0].voteCounts) {
+    for(let i: number = 0; i < wahlkreise.length; i++) {
+        for(const vote: VoteCounts[] of wahlkreise[i].voteCounts) {
         const wahlkreisRepository = AppDataSource.manager.getRepository(Wahlkreis);
         const wahlkreis = await wahlkreisRepository.findOne({ 
             where: { 
@@ -64,8 +65,9 @@ AppDataSource.initialize().then(async () => {
                 bundestagswahl: vote.bundestagswahl                
          } });
          vote.party = party;
-    }
+    }}
 
+    
     for(const wahlkreis of wahlkreise) {
         await AppDataSource.manager.save(wahlkreis.voteCounts);
     }

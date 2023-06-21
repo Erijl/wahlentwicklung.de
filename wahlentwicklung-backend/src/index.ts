@@ -19,7 +19,7 @@ AppDataSource.initialize().then(async () => {
     const repo = AppDataSource.manager.getRepository(Wahl);
 
     console.log('Reading File...')
-    const filePath = './data-files/btw2013_kerg.csv'
+    const filePath = './data-files/btw2017_kerg.csv'
     const returnValue = await parseCSVData(filePath, AppDataSource);
 
     const bundesländer = returnValue[0];
@@ -86,7 +86,7 @@ AppDataSource.initialize().then(async () => {
         await AppDataSource.manager.save(wahlkreis.voteCounts);
     }
 
-
+    console.log('DONE')
 
 }).catch(error => console.log(error))
 

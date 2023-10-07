@@ -1,1 +1,3 @@
-wahlentwicklung-backend/.env
+.idea/
+.idea/*
+**/.env

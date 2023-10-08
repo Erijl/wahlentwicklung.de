@@ -18,7 +18,14 @@ def parse_to_int(value):
 
 load_dotenv()
 
-year: int = 2021
+# CHANGE PARAMETERS ACCORDINGLY
+skip_entries = 5
+party_beginning = 19  # column where the first party name os
+party_distance = 4  # distance between party names
+year: int = 2005
+# CHANGE PARAMETERS ACCORDINGLY
+
+
 url: str = os.getenv("_SUPABASE_URL")
 key: str = os.getenv("_SUPABASE_SERVICE_KEY")
 supabase: Client = create_client(url, key)
@@ -32,14 +39,12 @@ wahl = next(filter(lambda obj: obj.year == year, wahl_list), None)
 bundesland_raw = supabase.table("bundesland").select("*").execute()
 bundesland_list = [Bundesland(**data) for data in bundesland_raw.data]
 
-with open('data/btw2021_kerg.csv', newline='', encoding='utf8') as csvfile:
+with open('data/btw2005_kerg.csv', newline='', encoding='windows-1252') as csvfile:
+    print(csvfile)
     reader = csv.reader(csvfile, delimiter='|')
 
     csv_data = list(reader)
 
-skip_entries = 2
-party_beginning = 19  # column where the first party name os
-party_distance = 4  # distance between party names
 csv_data = csv_data[skip_entries:]
 
 bundesland_stimmen_dicts = []
@@ -145,5 +150,3 @@ for p_stimme in partei_stimmen:
     partei_stimmen_dicts.append(p_stimme.to_dict())
 
 partei_stimmen_response = supabase.table("partei_stimmen").insert(partei_stimmen_dicts).execute()
-
-# TODO add function to get stimmen ('' -> 0 etc.)

@@ -1,7 +1,7 @@
 import {supabase} from "../index.js";
 
-export const getBundeslaender = async (req, res, next) => {
-    const { data, error } = await supabase.from('bundesland').select('*');
+export const getWahlen = async (req, res, next) => {
+    const { data, error } = await supabase.from('wahl').select('*').eq('active', 'true');
 
     if (error) {
         res.status(500).send({ message: error.message });

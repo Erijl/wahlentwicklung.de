@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {Bundesland} from "./core/types/bundesland-type";
+import {Bundesland, Partei, Wahl} from "./core/types/common-types";
 import {catchError, Observable, of, tap} from "rxjs";
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
-  private dataUrl = 'http://localhost:8080/bundeslaender';  // URL to web api
+  private dataUrl = 'http://localhost:8080/';  // URL to web api
 
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': 'origin' })
@@ -16,11 +16,27 @@ export class DataService {
   constructor(private http: HttpClient) { }
 
   getBundeslaender() {
-    return this.http.get<Bundesland[]>(this.dataUrl)
+    return this.http.get<Bundesland[]>(this.dataUrl + 'bundeslaender')
       .pipe(
         tap(_ => this.log('fetched Bundeslaender')),
         catchError(this.handleError<Bundesland[]>('getBundeslaender', []))
       );
+  }
+
+  getWahlen() {
+    return this.http.get<Wahl[]>(this.dataUrl + 'wahlen')
+        .pipe(
+            tap(_ => this.log('fetched Wahlen')),
+            catchError(this.handleError<Wahl[]>('getWahlen', []))
+        );
+  }
+
+  getParteien() {
+    return this.http.get<Partei[]>(this.dataUrl + 'parteien')
+        .pipe(
+            tap(_ => this.log('fetched Parteien')),
+            catchError(this.handleError<Partei[]>('getParteien', []))
+        );
   }
 
   /**

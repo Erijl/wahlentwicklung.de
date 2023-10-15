@@ -1,0 +1,12 @@
+<h1 class="text-2xl font-semibold">Your Angular Dashboard</h1>
+<div class="mt-4">
+    <label for="wahlenDropdown" class="font-semibold">Wahlen:</label>
+    <select
+            id="wahlenDropdown"
+            class="p-2 border rounded"
+            [(ngModel)]="selectedWahl"
+            (change)="onWahlChange(selectedWahl)"
+    >
+        <option [value]="option" *ngFor="let option of wahlen">{{ option }}</option>
+    </select>
+</div>

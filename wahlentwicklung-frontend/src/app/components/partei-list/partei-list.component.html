@@ -1,0 +1,23 @@
+<div class="bg-white p-4">
+    <h2 class="text-xl font-semibold">Parteien</h2>
+    <ul class="mt-4">
+        <li
+                *ngFor="let partei of parteien"
+                class="flex justify-between items-center py-2"
+        >
+            <div>
+                {{ partei.name }}
+            </div>
+            <button
+                    class="text-blue-600"
+                    (click)="starPartei(partei)"
+            >
+                Star
+            </button>
+        </li>
+    </ul>
+    <div *ngIf="starredPartei" class="mt-4">
+        <p class="font-semibold">Starred Partei:</p>
+        <p>{{ starredPartei.name }}</p>
+    </div>
+</div>

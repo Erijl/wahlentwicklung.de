@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {DataService} from "../../data.service";
+import {DataService} from "../../core/services/data/data.service";
 import {Partei} from "../../core/types/common-types";
 
 @Component({
@@ -15,14 +15,14 @@ export class ParteiListComponent implements OnInit {
 
   ngOnInit() {
     this.getParteien();
-    }
+  }
 
-    getParteien(): void {
-        this.dataService.getParteien().subscribe(parteien => {
+  getParteien(): void {
+      this.dataService.getParteien().subscribe(parteien => {
             this.parteien = parteien;
             console.log(parteien);
         });
-    }
+  }
   starPartei(partei: Partei) {
     // Handle starring and local storage here
     this.starredPartei = partei;

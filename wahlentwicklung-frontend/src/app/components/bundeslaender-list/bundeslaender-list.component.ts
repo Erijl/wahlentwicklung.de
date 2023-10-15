@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {DataService} from "../../data.service";
+import {DataService} from "../../core/services/data/data.service";
 import {Bundesland} from "../../core/types/common-types";
 
 @Component({

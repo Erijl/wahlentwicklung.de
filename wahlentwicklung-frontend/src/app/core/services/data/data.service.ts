@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {Bundesland, Partei, Wahl} from "./core/types/common-types";
+import {Bundesland, Partei, Wahl} from "../../types/common-types";
 import {catchError, Observable, of, tap} from "rxjs";
 
 @Injectable({

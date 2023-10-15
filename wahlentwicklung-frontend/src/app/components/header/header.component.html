@@ -1,12 +1,42 @@
-<h1 class="text-2xl font-semibold">Your Angular Dashboard</h1>
-<div class="mt-4">
-    <label for="wahlenDropdown" class="font-semibold">Wahlen:</label>
-    <select
-            id="wahlenDropdown"
-            class="p-2 border rounded"
-            [(ngModel)]="selectedWahl"
-            (change)="onWahlChange(selectedWahl)"
-    >
-        <option [value]="wahl" *ngFor="let wahl of wahlen">{{ wahl.year }}</option>
-    </select>
+<div class="bg-gray-100 p-4">
+    <h1 class="text-2xl font-semibold">Your Angular Dashboard</h1>
+    <div class="mt-4">
+        <label for="modeDropdown" class="font-semibold">Mode:</label>
+        <select
+                id="modeDropdown"
+                class="p-2 border rounded"
+                [(ngModel)]="selectedMode"
+                (change)="onModeChange(selectedMode)"
+        >
+            <option value="detail">Detail Mode</option>
+            <option value="compare">Compare Mode</option>
+            <option value="range">Range Mode</option>
+        </select>
+    </div>
+
+    <div class="mt-4">
+        <label for="firstWahlDropdown" class="font-semibold">Wahl:</label>
+        <select
+                id="firstWahlDropdown"
+                class="p-2 border rounded"
+                [(ngModel)]="firstSelectedWahl"
+        >
+            <option [value]="wahl" *ngFor="let wahl of wahlen">{{ wahl.year }}</option>
+        </select>
+    </div>
+    <div *ngIf="selectedMode === 'compare' || selectedMode === 'range'" class="mt-4">
+        <label for="secondWahlDropdown" class="font-semibold">Year 2:</label>
+        <select
+                id="secondWahlDropdown"
+                class="p-2 border rounded"
+                [(ngModel)]="secondSelectedWahl"
+        >
+            <option [value]="wahl" *ngFor="let wahl of wahlen">{{ wahl.year }}</option>
+        </select>
+    </div>
+
+    <app-bundesland-multi-select class="mt-4"/>
+
+    <app-partei-multi-select class="mt-4"/>
+
 </div>

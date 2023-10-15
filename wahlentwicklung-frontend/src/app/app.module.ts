@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
-import { AppRoutingModule } from './app-routing.module';
+import { AppRoutingModule } from './routing/app-routing.module';
 import { AppComponent } from './app.component';
 import { TestSiteComponent } from './test-site/test-site.component';
 import {HttpClientModule} from "@angular/common/http";
@@ -10,6 +10,9 @@ import { BundeslaenderListComponent } from './components/bundeslaender-list/bund
 import { ParteiListComponent } from './components/partei-list/partei-list.component';
 import {FormsModule} from "@angular/forms";
 import { LandingpageComponent } from './sites/landingpage/landingpage.component';
+import {NgMultiSelectDropDownModule} from "ng-multiselect-dropdown";
+import { BundeslandMultiSelectComponent } from './components/bundesland-multi-select/bundesland-multi-select.component';
+import { ParteiMultiSelectComponent } from './components/partei-multi-select/partei-multi-select.component';
 
 @NgModule({
   declarations: [
@@ -18,13 +21,16 @@ import { LandingpageComponent } from './sites/landingpage/landingpage.component'
     HeaderComponent,
     BundeslaenderListComponent,
     ParteiListComponent,
-    LandingpageComponent
+    LandingpageComponent,
+    BundeslandMultiSelectComponent,
+    ParteiMultiSelectComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    NgMultiSelectDropDownModule.forRoot()
   ],
   providers: [],
   bootstrap: [AppComponent]

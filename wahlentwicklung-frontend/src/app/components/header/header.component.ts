@@ -1,6 +1,7 @@
 import {Component, OnInit} from '@angular/core';
-import {DataService} from "../../data.service";
-import {Wahl} from "../../core/types/common-types";
+import {DataService} from "../../core/services/data/data.service";
+import {Bundesland, Wahl} from "../../core/types/common-types";
+import {IDropdownSettings} from "ng-multiselect-dropdown";
 
 @Component({
   selector: 'app-header',
@@ -9,9 +10,16 @@ import {Wahl} from "../../core/types/common-types";
 })
 export class HeaderComponent implements OnInit {
   wahlen: Wahl[] = [];
-  selectedWahl: Wahl | null = null;
+
+  selectedMode: string = 'detail'; // Default to 'detail' mode
+  firstSelectedWahl: Wahl | null = null;
+  secondSelectedWahl: Wahl | null = null;
 
   constructor(private dataService: DataService) {  }
+
+  onModeChange(value: string) {
+    this.selectedMode = value;
+  }
 
   ngOnInit() {
     this.getWahlen();
@@ -22,8 +30,5 @@ export class HeaderComponent implements OnInit {
       this.wahlen = wahlen;
       console.log(wahlen);
     });
-  }
-  onWahlChange(value: Wahl | null) {
-    this.selectedWahl = value;
   }
 }

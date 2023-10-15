@@ -1,14 +1,22 @@
 import * as dotenv from 'dotenv'
 import express from 'express'
 import { createClient } from '@supabase/supabase-js'
+import {getBundeslaender} from "./functions/bundesland.js";
 
 
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT;
-const supabase = createClient(process.env._SUPABASE_URL, process.env._SUPABASE_SERVICE_KEY)
+export const supabase = createClient(process.env._SUPABASE_URL, process.env._SUPABASE_SERVICE_KEY);
+
 
 app.use(express.json());
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    next();
+});
 
 app.get('/wahl', (req, res) => {
     console.log('REQ: /wahl');
@@ -18,6 +26,8 @@ app.get('/wahl', (req, res) => {
         id: 16
     })
 });
+
+app.get('/bundeslaender', getBundeslaender);
 
 app.post('/wahl/:id', (req, res) => {
     const { id } = req.params;

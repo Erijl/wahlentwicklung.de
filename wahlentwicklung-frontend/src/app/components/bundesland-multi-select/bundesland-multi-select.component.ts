@@ -6,7 +6,7 @@ import {DataService} from "../../core/services/data/data.service";
 @Component({
   selector: 'app-bundesland-multi-select',
   templateUrl: './bundesland-multi-select.component.html',
-  styleUrls: ['./bundesland-multi-select.component.css']
+  styleUrls: []
 })
 export class BundeslandMultiSelectComponent implements OnInit {
 

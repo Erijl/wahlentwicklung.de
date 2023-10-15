@@ -5,7 +5,7 @@ import {Partei} from "../../core/types/common-types";
 @Component({
   selector: 'app-partei-list',
   templateUrl: './partei-list.component.html',
-  styleUrls: ['./partei-list.component.css']
+  styleUrls: []
 })
 export class ParteiListComponent implements OnInit {
   parteien: Partei[] = []; // Replace with your data

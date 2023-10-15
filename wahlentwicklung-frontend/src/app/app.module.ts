@@ -3,7 +3,6 @@ import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './routing/app-routing.module';
 import { AppComponent } from './app.component';
-import { TestSiteComponent } from './test-site/test-site.component';
 import {HttpClientModule} from "@angular/common/http";
 import { HeaderComponent } from './components/header/header.component';
 import { BundeslaenderListComponent } from './components/bundeslaender-list/bundeslaender-list.component';
@@ -17,7 +16,6 @@ import { ParteiMultiSelectComponent } from './components/partei-multi-select/par
 @NgModule({
   declarations: [
     AppComponent,
-    TestSiteComponent,
     HeaderComponent,
     BundeslaenderListComponent,
     ParteiListComponent,

@@ -1,12 +1,11 @@
 import {Component, OnInit} from '@angular/core';
 import {DataService} from "../../core/services/data/data.service";
 import {Bundesland, Wahl} from "../../core/types/common-types";
-import {IDropdownSettings} from "ng-multiselect-dropdown";
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css']
+  styleUrls: []
 })
 export class HeaderComponent implements OnInit {
   wahlen: Wahl[] = [];

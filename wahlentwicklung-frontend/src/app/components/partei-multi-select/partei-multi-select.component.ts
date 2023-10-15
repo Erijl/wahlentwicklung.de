@@ -6,7 +6,7 @@ import {IDropdownSettings} from "ng-multiselect-dropdown";
 @Component({
   selector: 'app-partei-multi-select',
   templateUrl: './partei-multi-select.component.html',
-  styleUrls: ['./partei-multi-select.component.css']
+  styleUrls: []
 })
 export class ParteiMultiSelectComponent implements OnInit {
   parteien: Partei[] = [];

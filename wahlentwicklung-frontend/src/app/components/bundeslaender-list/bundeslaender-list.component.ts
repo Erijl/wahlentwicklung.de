@@ -5,7 +5,7 @@ import {Bundesland} from "../../core/types/common-types";
 @Component({
   selector: 'app-bundeslaender-list',
   templateUrl: './bundeslaender-list.component.html',
-  styleUrls: ['./bundeslaender-list.component.css']
+  styleUrls: []
 })
 export class BundeslaenderListComponent implements OnInit {
   bundeslaender: Bundesland[] = [];

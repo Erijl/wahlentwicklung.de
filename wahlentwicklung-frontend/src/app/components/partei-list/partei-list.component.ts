@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {DataService} from "../../data.service";
+import {Partei} from "../../core/types/common-types";
 
 @Component({
   selector: 'app-partei-list',
@@ -7,8 +8,8 @@ import {DataService} from "../../data.service";
   styleUrls: ['./partei-list.component.css']
 })
 export class ParteiListComponent implements OnInit {
-  parteien: any[] = []; // Replace with your data
-  starredPartei: any = null;
+  parteien: Partei[] = []; // Replace with your data
+  starredPartei: Partei | null = null;
 
   constructor(private dataService: DataService) {  }
 
@@ -22,7 +23,7 @@ export class ParteiListComponent implements OnInit {
             console.log(parteien);
         });
     }
-  starPartei(partei: any) {
+  starPartei(partei: Partei) {
     // Handle starring and local storage here
     this.starredPartei = partei;
   }

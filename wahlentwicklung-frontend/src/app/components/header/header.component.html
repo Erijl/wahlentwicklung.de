@@ -7,6 +7,6 @@
             [(ngModel)]="selectedWahl"
             (change)="onWahlChange(selectedWahl)"
     >
-        <option [value]="option" *ngFor="let option of wahlen">{{ option }}</option>
+        <option [value]="wahl" *ngFor="let wahl of wahlen">{{ wahl.year }}</option>
     </select>
 </div>

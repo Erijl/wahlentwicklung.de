@@ -1,5 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {DataService} from "../../data.service";
+import {Bundesland} from "../../core/types/common-types";
 
 @Component({
   selector: 'app-bundeslaender-list',
@@ -7,8 +8,8 @@ import {DataService} from "../../data.service";
   styleUrls: ['./bundeslaender-list.component.css']
 })
 export class BundeslaenderListComponent implements OnInit {
-  bundeslaender: any[] = []; // Replace with your data
-  starredBundesland: any = null;
+  bundeslaender: Bundesland[] = [];
+  starredBundesland: Bundesland | null = null;
 
   constructor(private dataService: DataService) {  }
 
@@ -23,7 +24,7 @@ export class BundeslaenderListComponent implements OnInit {
         });
     }
 
-  starBundesland(bundesland: any) {
+  starBundesland(bundesland: Bundesland) {
     // Handle starring and local storage here
     this.starredBundesland = bundesland;
   }

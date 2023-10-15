@@ -9,7 +9,7 @@ import {Wahl} from "../../core/types/common-types";
 })
 export class HeaderComponent implements OnInit {
   wahlen: Wahl[] = [];
-  selectedWahl: string = '';
+  selectedWahl: Wahl | null = null;
 
   constructor(private dataService: DataService) {  }
 
@@ -23,8 +23,7 @@ export class HeaderComponent implements OnInit {
       console.log(wahlen);
     });
   }
-  onWahlChange(value: string) {
-    // Handle the selected option change here
+  onWahlChange(value: Wahl | null) {
     this.selectedWahl = value;
   }
 }

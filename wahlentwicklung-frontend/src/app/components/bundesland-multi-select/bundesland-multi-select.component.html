@@ -1,0 +1,9 @@
+<ng-multiselect-dropdown
+        [placeholder]="'Bundesländer auswählen...'"
+        [settings]="dropdownSettings"
+        [data]="bundeslaender"
+        [(ngModel)]="selectedBundeslaender"
+        (onSelect)="onItemSelect($event)"
+        (onSelectAll)="onSelectAll($event)"
+>
+</ng-multiselect-dropdown>

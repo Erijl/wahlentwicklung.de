@@ -1,0 +1,9 @@
+<ng-multiselect-dropdown
+        [placeholder]="'Parteien auswählen...'"
+        [settings]="dropdownSettings"
+        [data]="parteien"
+        [(ngModel)]="selectedParteien"
+        (onSelect)="onItemSelect($event)"
+        (onSelectAll)="onSelectAll($event)"
+>
+</ng-multiselect-dropdown>

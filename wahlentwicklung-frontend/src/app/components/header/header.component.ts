@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {DataService} from "../../core/services/data/data.service";
-import {Bundesland, Wahl} from "../../core/types/common-types";
+import {Wahl} from "../../core/types/common-types";
 
 @Component({
   selector: 'app-header',
@@ -27,7 +27,9 @@ export class HeaderComponent implements OnInit {
   getWahlen(): void {
     this.dataService.getWahlen().subscribe(wahlen => {
       this.wahlen = wahlen;
-      console.log(wahlen);
+
+      this.firstSelectedWahl = this.wahlen[0];
+      this.secondSelectedWahl = this.wahlen[0];
     });
   }
 }

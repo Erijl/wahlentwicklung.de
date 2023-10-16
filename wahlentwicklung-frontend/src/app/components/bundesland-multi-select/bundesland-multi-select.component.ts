@@ -38,6 +38,9 @@ export class BundeslandMultiSelectComponent implements OnInit {
   }
 
   getBundeslaender(): void {
-    this.dataService.getBundeslaender().subscribe(bundeslaender => this.bundeslaender = bundeslaender);
+    this.dataService.getBundeslaender().subscribe(bundeslaender => {
+      this.bundeslaender = bundeslaender
+      this.selectedBundeslaender = this.bundeslaender.splice(0, 6);
+    });
   }
 }

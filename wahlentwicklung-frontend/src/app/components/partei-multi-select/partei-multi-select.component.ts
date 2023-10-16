@@ -10,7 +10,7 @@ import {IDropdownSettings} from "ng-multiselect-dropdown";
 })
 export class ParteiMultiSelectComponent implements OnInit {
   parteien: Partei[] = [];
-  selectedParteien: Bundesland[] = [];
+  selectedParteien: Partei[] = [];
   dropdownSettings: IDropdownSettings = {};
 
   constructor(private dataService: DataService) {  }
@@ -26,7 +26,7 @@ export class ParteiMultiSelectComponent implements OnInit {
 
     this.dropdownSettings = {
       singleSelection: false,
-      idField: 'bundesland_id',
+      idField: 'partei_id',
       textField: 'name',
       selectAllText: 'Alle auswählen',
       unSelectAllText: 'Alle abwählen',
@@ -37,7 +37,10 @@ export class ParteiMultiSelectComponent implements OnInit {
   }
 
   getParteien(): void {
-    this.dataService.getParteien().subscribe(parteien => this.parteien = parteien.splice(0, 7));
+    this.dataService.getParteien().subscribe(parteien => {
+      this.parteien = parteien.splice(0, 7);
+      this.selectedParteien = this.parteien;
+    });
   }
 
 }

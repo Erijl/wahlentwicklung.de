@@ -3,7 +3,6 @@ import {DataService} from "../../core/services/data/data.service";
 import {WahlResult} from "../../core/types/function-types";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatTableDataSource} from "@angular/material/table";
-import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {MatSort} from "@angular/material/sort";
 
 @Component({
@@ -14,10 +13,27 @@ import {MatSort} from "@angular/material/sort";
 export class WahlResultComponent implements OnInit {
   wahlResultData: WahlResult[] = [];
   displayedColumns: string[];
+  chartModes: string[] = ['zweitstimmen', 'erststimmen', 'grouped'];
+  currentChartModeIndex: number = 0;
+  chartMode: string = this.chartModes[this.currentChartModeIndex];
 
+  chartConfig: any = {
+    view: [700, 400],
+    scheme: 'vivid',
+    secondScheme: 'forest',
+    showXAxis: true,
+    showYAxis: true,
+    gradient: false,
+    showLegend: true,
+    showXAxisLabel: true,
+    xAxisLabel: 'Partei',
+    showYAxisLabel: true,
+    yAxisLabel: 'Zweitstimmen %',
+    legendTitle: 'Legende',
+  };
+  chartData: any[] = [];
 
   dataSource!: MatTableDataSource<any>;
-
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
@@ -30,6 +46,44 @@ export class WahlResultComponent implements OnInit {
         'percentage_of_votes_zweitstimmen',
       ];
     }
+
+  cycleChartMode() {
+    // Cycle through the chart modes
+    this.currentChartModeIndex = (this.currentChartModeIndex + 1) % this.chartModes.length;
+    this.chartMode = this.chartModes[this.currentChartModeIndex];
+    this.updateChartData();
+  }
+
+  updateChartData() {
+    if (this.chartMode === 'zweitstimmen') {
+      // Map the fields for Zweitstimmen mode
+      this.chartData = this.wahlResultData.slice(0, 6).map((item) => ({
+        name: item.partei_name,
+        value: item.percentage_of_votes_zweitstimmen,
+      }));
+    } else if (this.chartMode === 'erststimmen') {
+      // Map the fields for Erststimmen mode
+      this.chartData = this.wahlResultData.slice(0, 6).map((item) => ({
+        name: item.partei_name,
+        value: item.percentage_of_votes_erststimmen,
+      }));
+    } else if (this.chartMode === 'grouped') {
+      // Create a grouped dataset by mapping both fields
+      this.chartData = this.wahlResultData.slice(0, 6).map((item) => ({
+        name: item.partei_name,
+        series: [
+          {
+            name: 'Zweitstimmen',
+            value: item.percentage_of_votes_zweitstimmen,
+          },
+          {
+            name: 'Erststimmen',
+            value: item.percentage_of_votes_erststimmen,
+          }],
+      }));
+    }
+  }
+
 
   onSortChange(event: any) {
     const data = this.wahlResultData.slice(); // Create a shallow copy of the data array
@@ -69,6 +123,10 @@ export class WahlResultComponent implements OnInit {
 
     ngOnInit(): void {
       this.getResultData();
+      this.chartData = this.wahlResultData.slice(0, 6).map((item) => ({
+        name: item.partei_name,
+        value: item.percentage_of_votes_zweitstimmen,
+      }));
       this.dataSource.paginator = this.paginator;
       this.dataSource = new MatTableDataSource(this.wahlResultData);
       this.dataSource.sort = this.sort;
@@ -79,6 +137,12 @@ export class WahlResultComponent implements OnInit {
           console.log('result: ', result);
           this.wahlResultData = result
           this.dataSource = new MatTableDataSource(this.wahlResultData);
+
+          this.chartData = this.wahlResultData.slice(0, 6).map((item) => ({
+            name: item.partei_name,
+            value: item.percentage_of_votes_zweitstimmen,
+          }));
+
           this.dataSource.paginator = this.paginator;
           this.dataSource.sort = this.sort;
         });

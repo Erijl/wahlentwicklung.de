@@ -18,6 +18,9 @@ import {MatPaginatorModule} from "@angular/material/paginator";
 import {MatTableModule} from "@angular/material/table";
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {MatSortModule} from "@angular/material/sort";
+import {BarChartModule} from "@swimlane/ngx-charts";
+import {MatButtonToggleModule} from "@angular/material/button-toggle";
+import {MatButtonModule} from "@angular/material/button";
 
 @NgModule({
   declarations: [
@@ -40,7 +43,10 @@ import {MatSortModule} from "@angular/material/sort";
     MatPaginatorModule,
     MatTableModule,
     MatProgressSpinnerModule,
-    MatSortModule
+    MatSortModule,
+    BarChartModule,
+    MatButtonToggleModule,
+    MatButtonModule
   ],
   providers: [],
   bootstrap: [AppComponent]

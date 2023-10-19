@@ -1,6 +1,56 @@
-<div>
+<div class="w-2/3 h-96 mx-auto">
   <h2>Wahl Results</h2>
-  <mat-spinner *ngIf="wahlResultData.length === 0" color="primary"></mat-spinner>
+
+  <ng-container *ngIf="chartMode === 'zweitstimmen' || chartMode === 'erststimmen'">
+  <ngx-charts-bar-vertical class="w-full h-96 mx-auto"
+    [view]="chartConfig.view"
+    [scheme]="chartConfig.scheme"
+    [results]="chartData"
+    [xAxis]="chartConfig.showXAxis"
+    [yAxis]="chartConfig.showYAxis"
+    [gradient]="chartConfig.gradient"
+    [showXAxisLabel]="chartConfig.showXAxisLabel"
+    [xAxisLabel]="chartConfig.xAxisLabel"
+    [showYAxisLabel]="chartConfig.showYAxisLabel"
+    [yAxisLabel]="chartConfig.yAxisLabel"
+    [legend]="chartConfig.showLegend"
+    [legendTitle]="chartConfig.legendTitle"
+  >
+    <!-- Define a custom tooltip template within ngx-charts-bar-vertical -->
+    <ng-template #tooltipTemplate let-model="model">
+      <div class="custom-tooltip text-xl">
+        <span>{{ model.name }}:</span> <br>
+        <span>{{ model.value | number: '1.2-2' }}%</span>
+      </div>
+    </ng-template>
+  </ngx-charts-bar-vertical>
+  </ng-container>
+
+  <ng-container *ngIf="chartMode === 'grouped'">
+    <ngx-charts-bar-vertical-2d class="w-full h-96 mx-auto"
+      [view]="chartConfig.view"
+      [scheme]="chartConfig.secondScheme"
+      [results]="chartData"
+      [xAxis]="chartConfig.showXAxis"
+      [yAxis]="chartConfig.showYAxis"
+      [gradient]="chartConfig.gradient"
+      [showXAxisLabel]="chartConfig.showXAxisLabel"
+      [xAxisLabel]="chartConfig.xAxisLabel"
+      [showYAxisLabel]="chartConfig.showYAxisLabel"
+      [yAxisLabel]="chartConfig.yAxisLabel"
+      [legend]="chartConfig.showLegend"
+      [legendTitle]="chartConfig.legendTitle"
+    >
+    </ngx-charts-bar-vertical-2d>
+  </ng-container>
+
+  <button mat-button (click)="cycleChartMode()">Toggle Chart Mode</button>
+
+
+
+
+
+  <mat-spinner *ngIf="wahlResultData.length === 0" color="primary" class="pt-10"></mat-spinner>
 
   <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" *ngIf="wahlResultData.length > 0" matSort (matSortChange)="onSortChange($event)">
     <ng-container *ngFor="let col of displayedColumns; let i = index" [matColumnDef]="col">

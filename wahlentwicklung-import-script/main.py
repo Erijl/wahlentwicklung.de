@@ -20,9 +20,9 @@ load_dotenv()
 
 # CHANGE PARAMETERS ACCORDINGLY
 skip_entries = 5
-party_beginning = 19  # column where the first party name os
-party_distance = 4  # distance between party names
-year: int = 2005
+party_beginning = 19  # column where the first party name is
+party_distance = 4  # distance between party(s) (names)
+year: int = 2017
 # CHANGE PARAMETERS ACCORDINGLY
 
 
@@ -39,9 +39,9 @@ wahl = next(filter(lambda obj: obj.year == year, wahl_list), None)
 bundesland_raw = supabase.table("bundesland").select("*").execute()
 bundesland_list = [Bundesland(**data) for data in bundesland_raw.data]
 
-with open('data/btw2005_kerg.csv', newline='', encoding='windows-1252') as csvfile:
+with open('data/btw2017_kerg.csv', newline='', encoding='utf-8') as csvfile: # Files newer than 2013 are commonly saved in the format UTF-8, older files may be saved in windows-1252; Check before importing!
     print(csvfile)
-    reader = csv.reader(csvfile, delimiter='|')
+    reader = csv.reader(csvfile, delimiter='|') #Usage of not relevant delimiter to allow access using array syntax
 
     csv_data = list(reader)
 

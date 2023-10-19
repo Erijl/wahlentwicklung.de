@@ -40,9 +40,10 @@ class ParteiStimmenNID:
 
 
 class Wahl:
-    def __init__(self, wahl_id, year):
+    def __init__(self, wahl_id, year, active):
         self.wahl_id = wahl_id
         self.year = year
+        self.active = active
 
 
 class WahlkreisNID:

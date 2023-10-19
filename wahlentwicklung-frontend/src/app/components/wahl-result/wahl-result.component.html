@@ -1,0 +1,40 @@
+<div>
+  <h2>Wahl Results</h2>
+  <mat-spinner *ngIf="wahlResultData.length === 0" color="primary"></mat-spinner>
+
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" *ngIf="wahlResultData.length > 0" matSort (matSortChange)="onSortChange($event)">
+    <ng-container *ngFor="let col of displayedColumns; let i = index" [matColumnDef]="col">
+      <th mat-header-cell *matHeaderCellDef>
+        <!-- Specify a custom header name here -->
+        <span *ngIf="col === 'partei_name'">Partei</span>
+        <span *ngIf="col === 'total_votes_erststimmen'">Eststimmen</span>
+        <span *ngIf="col === 'percentage_of_votes_erststimmen'">Erststimmen %</span>
+        <span *ngIf="col === 'total_votes_zweitstimmen'">Zweitstimmen</span>
+        <span *ngIf="col === 'percentage_of_votes_zweitstimmen'">Zweitstimmen %</span>
+      </th>
+
+      <td mat-cell *matCellDef="let element">
+        <ng-container *ngIf="col === 'partei_name'">
+          {{ element[col] }}
+        </ng-container>
+        <ng-container *ngIf="col === 'total_votes_erststimmen'">
+          {{ element[col] | number: '1.0-0' }}
+        </ng-container>
+        <ng-container *ngIf="col === 'percentage_of_votes_erststimmen'">
+          {{ element[col] | number: '1.2-2' }}%
+        </ng-container>
+        <ng-container *ngIf="col === 'total_votes_zweitstimmen'">
+          {{ element[col] | number: '1.0-0' }}
+        </ng-container>
+        <ng-container *ngIf="col === 'percentage_of_votes_zweitstimmen'">
+          {{ element[col] | number: '1.2-2' }}%
+        </ng-container>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+  </table>
+
+  <mat-paginator [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons></mat-paginator>
+</div>

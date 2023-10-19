@@ -12,6 +12,12 @@ import { LandingpageComponent } from './sites/landingpage/landingpage.component'
 import {NgMultiSelectDropDownModule} from "ng-multiselect-dropdown";
 import { BundeslandMultiSelectComponent } from './components/bundesland-multi-select/bundesland-multi-select.component';
 import { ParteiMultiSelectComponent } from './components/partei-multi-select/partei-multi-select.component';
+import { WahlResultComponent } from './components/wahl-result/wahl-result.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {MatPaginatorModule} from "@angular/material/paginator";
+import {MatTableModule} from "@angular/material/table";
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import {MatSortModule} from "@angular/material/sort";
 
 @NgModule({
   declarations: [
@@ -21,14 +27,20 @@ import { ParteiMultiSelectComponent } from './components/partei-multi-select/par
     ParteiListComponent,
     LandingpageComponent,
     BundeslandMultiSelectComponent,
-    ParteiMultiSelectComponent
+    ParteiMultiSelectComponent,
+    WahlResultComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-    NgMultiSelectDropDownModule.forRoot()
+    NgMultiSelectDropDownModule.forRoot(),
+    BrowserAnimationsModule,
+    MatPaginatorModule,
+    MatTableModule,
+    MatProgressSpinnerModule,
+    MatSortModule
   ],
   providers: [],
   bootstrap: [AppComponent]

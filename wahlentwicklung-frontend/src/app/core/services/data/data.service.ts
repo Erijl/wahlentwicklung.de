@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Bundesland, Partei, Wahl} from "../../types/common-types";
 import {catchError, Observable, of, tap} from "rxjs";
+import {WahlResult} from "../../types/function-types";
 
 @Injectable({
   providedIn: 'root'
@@ -33,10 +34,18 @@ export class DataService {
 
   getParteien() {
     return this.http.get<Partei[]>(this.dataUrl + 'parteien')
-        .pipe(
-            tap(_ => this.log('fetched Parteien')),
-            catchError(this.handleError<Partei[]>('getParteien', []))
-        );
+      .pipe(
+        tap(_ => this.log('fetched Parteien')),
+        catchError(this.handleError<Partei[]>('getParteien', []))
+      );
+  }
+
+  getWahlResult(id: number) {
+    return this.http.get<WahlResult[]>(this.dataUrl + 'wahl/result/' + id)
+      .pipe(
+        tap(_ => this.log('fetched wahlResult')),
+        catchError(this.handleError<WahlResult[]>('wahlResult', []))
+      );
   }
 
   /**

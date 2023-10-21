@@ -122,7 +122,12 @@ export class WahlResultComponent implements OnInit {
   }
 
     ngOnInit(): void {
-      this.getResultData();
+      this.dataService.getSelectedWahl().subscribe(wahl => {
+        if (wahl) {
+          this.getResultData(wahl.wahl_id);
+        }
+      });
+
       this.chartData = this.wahlResultData.slice(0, 6).map((item) => ({
         name: item.partei_name,
         value: item.percentage_of_votes_zweitstimmen,
@@ -132,8 +137,8 @@ export class WahlResultComponent implements OnInit {
       this.dataSource.sort = this.sort;
     }
 
-    getResultData() {
-        this.dataService.getWahlResult(21).subscribe(result => {
+    getResultData(wahlId: number) {
+        this.dataService.getWahlResult(wahlId).subscribe(result => {
           console.log('result: ', result);
           this.wahlResultData = result
           this.dataSource = new MatTableDataSource(this.wahlResultData);

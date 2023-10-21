@@ -24,6 +24,8 @@ import {MatButtonModule} from "@angular/material/button";
 import { TestAreaComponent } from './sites/test-area/test-area.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { HeroComponent } from './sections/hero/hero.component';
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatSelectModule} from "@angular/material/select";
 
 @NgModule({
   declarations: [
@@ -52,7 +54,9 @@ import { HeroComponent } from './sections/hero/hero.component';
     MatSortModule,
     BarChartModule,
     MatButtonToggleModule,
-    MatButtonModule
+    MatButtonModule,
+    MatFormFieldModule,
+    MatSelectModule
   ],
   providers: [],
   bootstrap: [AppComponent]

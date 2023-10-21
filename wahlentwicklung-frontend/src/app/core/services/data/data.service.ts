@@ -1,13 +1,16 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {Bundesland, Partei, Wahl} from "../../types/common-types";
-import {catchError, Observable, of, tap} from "rxjs";
+import {BehaviorSubject, catchError, Observable, of, tap} from "rxjs";
 import {WahlResult} from "../../types/function-types";
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
+  // @ts-ignore
+  private selectedWahl = new BehaviorSubject<Wahl>(null);
+
   private dataUrl = 'http://localhost:8080/';  // URL to web api
 
   httpOptions = {
@@ -15,6 +18,14 @@ export class DataService {
   };
 
   constructor(private http: HttpClient) { }
+
+  setSelectedWahl(wahl: Wahl) {
+    this.selectedWahl.next(wahl);
+  }
+
+  getSelectedWahl() {
+    return this.selectedWahl.asObservable();
+  }
 
   getBundeslaender() {
     return this.http.get<Bundesland[]>(this.dataUrl + 'bundeslaender')

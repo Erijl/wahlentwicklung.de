@@ -21,6 +21,9 @@ import {MatSortModule} from "@angular/material/sort";
 import {BarChartModule} from "@swimlane/ngx-charts";
 import {MatButtonToggleModule} from "@angular/material/button-toggle";
 import {MatButtonModule} from "@angular/material/button";
+import { TestAreaComponent } from './sites/test-area/test-area.component';
+import { FooterComponent } from './components/footer/footer.component';
+import { HeroComponent } from './sections/hero/hero.component';
 
 @NgModule({
   declarations: [
@@ -31,7 +34,10 @@ import {MatButtonModule} from "@angular/material/button";
     LandingpageComponent,
     BundeslandMultiSelectComponent,
     ParteiMultiSelectComponent,
-    WahlResultComponent
+    WahlResultComponent,
+    TestAreaComponent,
+    FooterComponent,
+    HeroComponent
   ],
   imports: [
     BrowserModule,

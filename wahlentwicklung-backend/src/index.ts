@@ -3,7 +3,7 @@ import express from 'express'
 import { createClient } from '@supabase/supabase-js'
 import {getBundeslaender} from "./functions/bundesland.js";
 import {getParteien} from "./functions/partei.js";
-import {getWahlen, getWahlResult} from "./functions/wahl.js";
+import {getCleanGeneralElectionData, getWahlen, getWahlResult} from "./functions/wahl.js";
 
 
 dotenv.config();
@@ -33,6 +33,7 @@ app.get('/bundeslaender', getBundeslaender);
 app.get('/parteien', getParteien);
 app.get('/wahlen', getWahlen);
 app.get('/wahl/result/:id', getWahlResult);
+app.get('/wahl/general/:id', getCleanGeneralElectionData);
 
 app.post('/wahl/:id', (req, res) => {
     const { id } = req.params;

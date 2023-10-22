@@ -139,7 +139,6 @@ export class WahlResultComponent implements OnInit {
 
     getResultData(wahlId: number) {
         this.dataService.getWahlResult(wahlId).subscribe(result => {
-          console.log('result: ', result);
           this.wahlResultData = result
           this.dataSource = new MatTableDataSource(this.wahlResultData);
 

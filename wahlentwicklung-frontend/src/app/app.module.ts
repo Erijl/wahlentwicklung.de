@@ -26,6 +26,7 @@ import { FooterComponent } from './components/footer/footer.component';
 import { HeroComponent } from './sections/hero/hero.component';
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatSelectModule} from "@angular/material/select";
+import { GeneralStatsComponent } from './sections/general-stats/general-stats.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,8 @@ import {MatSelectModule} from "@angular/material/select";
     WahlResultComponent,
     TestAreaComponent,
     FooterComponent,
-    HeroComponent
+    HeroComponent,
+    GeneralStatsComponent
   ],
   imports: [
     BrowserModule,

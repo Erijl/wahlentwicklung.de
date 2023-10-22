@@ -21,3 +21,29 @@ export const getWahlResult = async (req, res, next) => {
 
     res.status(200).send(data);
 }
+
+export const getCleanGeneralElectionData = async (req, res, next) => {
+    const { id } = req.params;
+
+
+    const { data, error } = await supabase
+        .from('bundesland_stimmen')
+        .select('*')
+        .eq('wahl_id', id)
+        .eq('bundesland_id', 99);
+
+    if (error) {
+        res.status(500).send({ message: error.message });
+    }
+
+    const item = data[0];
+    const formattedData = {
+        wahl_id: item.wahl_id,
+        wahlberechtigte: parseInt(item.wahlberechtigte.erststimmen_endgueltig),
+        waehler: parseInt(item.waehler.erststimmen_endgueltig),
+        ungueltige_stimmen: parseInt(item.ungueltige_stimmen.erststimmen_endgueltig),
+        gueltige_stimmen: parseInt(item.gueltige_stimmen.erststimmen_endgueltig)
+    };
+
+    res.status(200).send(formattedData);
+}

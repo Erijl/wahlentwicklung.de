@@ -1,0 +1,38 @@
+version: '3.7'
+services:
+  backend:
+    build:
+        context: wahlentwicklung-backend/
+        dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    labels:
+      - "traefik.http.routers.backend.rule=(Host(`localhost`) && PathPrefix(`/api`))"
+    depends_on:
+      - reverse-proxy
+
+  frontend:
+    build:
+        context: wahlentwicklung-frontend/
+        dockerfile: Dockerfile
+    ports:
+      - "443:443"
+    labels:
+      - "traefik.http.routers.frontend.rule=Host(`localhost`)"
+    depends_on:
+      - reverse-proxy
+      - backend
+    volumes:
+        - ./wahlentwicklung-frontend/src:/app/src
+        - ./wahlentwicklung-frontend/public:/app/public
+        - /app/node_modules
+  reverse-proxy:
+    image: traefik:v2.10
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+        - /var/run/docker.sock:/var/run/docker.sock

@@ -37,15 +37,15 @@ export class WahlResultComponent implements OnInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-    constructor(private dataService: DataService) {
-      this.displayedColumns = [
-        'partei_name',
-        'total_votes_erststimmen',
-        'percentage_of_votes_erststimmen',
-        'total_votes_zweitstimmen',
-        'percentage_of_votes_zweitstimmen',
-      ];
-    }
+  constructor(private dataService: DataService) {
+    this.displayedColumns = [
+      'partei_name',
+      'total_votes_erststimmen',
+      'percentage_of_votes_erststimmen',
+      'total_votes_zweitstimmen',
+      'percentage_of_votes_zweitstimmen',
+    ];
+  }
 
   cycleChartMode() {
     // Cycle through the chart modes
@@ -121,34 +121,37 @@ export class WahlResultComponent implements OnInit {
     return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
   }
 
-    ngOnInit(): void {
-      this.dataService.getSelectedWahl().subscribe(wahl => {
-        if (wahl) {
-          this.getResultData(wahl.wahl_id);
-        }
-      });
+  ngOnInit(): void {
+    this.dataService.getSelectedWahl().subscribe(wahl => {
+      if (wahl) {
+        this.getResultData(wahl.wahl_id);
+      }
+    });
+
+    this.chartData = this.wahlResultData.slice(0, 6).map((item) => ({
+      name: item.partei_name,
+      value: item.percentage_of_votes_zweitstimmen,
+    }));
+    this.dataSource.paginator = this.paginator;
+    this.dataSource = new MatTableDataSource(this.wahlResultData);
+    this.dataSource.sort = this.sort;
+  }
+
+  getResultData(wahlId: number) {
+    this.dataService.getWahlResult(wahlId).subscribe(result => {
+      this.wahlResultData = result
+      this.dataSource = new MatTableDataSource(this.wahlResultData);
 
       this.chartData = this.wahlResultData.slice(0, 6).map((item) => ({
         name: item.partei_name,
         value: item.percentage_of_votes_zweitstimmen,
       }));
+
       this.dataSource.paginator = this.paginator;
-      this.dataSource = new MatTableDataSource(this.wahlResultData);
       this.dataSource.sort = this.sort;
-    }
 
-    getResultData(wahlId: number) {
-        this.dataService.getWahlResult(wahlId).subscribe(result => {
-          this.wahlResultData = result
-          this.dataSource = new MatTableDataSource(this.wahlResultData);
-
-          this.chartData = this.wahlResultData.slice(0, 6).map((item) => ({
-            name: item.partei_name,
-            value: item.percentage_of_votes_zweitstimmen,
-          }));
-
-          this.dataSource.paginator = this.paginator;
-          this.dataSource.sort = this.sort;
-        });
-    }
+      this.chartMode = this.chartModes[0];
+      this.currentChartModeIndex = 0;
+    });
+  }
 }

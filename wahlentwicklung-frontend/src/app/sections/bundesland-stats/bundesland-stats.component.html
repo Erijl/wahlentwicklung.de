@@ -1,0 +1,40 @@
+<div class="bg-white py-24 sm:py-32">
+  <div class="mx-auto max-w-7xl px-6 lg:px-8 justify-center">
+    <mat-form-field>
+      <mat-label>Bundesland auswählen</mat-label>
+      <mat-select [(ngModel)]="selectedBundesland" (selectionChange)="onBundeslandSelect()" [disabled]="!bundeslaender">
+        <mat-option *ngIf="!bundeslaender" [value]="">Loading...</mat-option>
+        <mat-option *ngFor="let bundesland of bundeslaender" [value]="bundesland">{{ bundesland.name }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+
+
+
+    <ng-container #containerRef class="w-full h-96 mx-auto mt-12">
+      <ngx-charts-bar-vertical #stimmenChart
+                               [view]="[containerRef.offsetWidth, containerRef.offsetHeight]"
+                               [scheme]="chartConfig.scheme"
+                               [results]="chartData"
+                               [xAxis]="chartConfig.showXAxis"
+                               [yAxis]="chartConfig.showYAxis"
+                               [gradient]="chartConfig.gradient"
+                               [showXAxisLabel]="chartConfig.showXAxisLabel"
+                               [xAxisLabel]="chartConfig.xAxisLabel"
+                               [showYAxisLabel]="chartConfig.showYAxisLabel"
+                               [yAxisLabel]="chartConfig.yAxisLabel"
+                               [legend]="chartConfig.showLegend"
+                               [legendTitle]="chartConfig.legendTitle"
+                               [customColors]="barChartColorScheme"
+      >
+        <!-- Define a custom tooltip template within ngx-charts-bar-vertical -->
+        <ng-template #tooltipTemplate let-model="model">
+          <div class="custom-tooltip text-xl">
+            <span>{{ model.name }}:</span> <br>
+            <span>{{ model.value | number: '1.2-2' }}%</span>
+          </div>
+        </ng-template>
+      </ngx-charts-bar-vertical>
+    </ng-container>
+  </div>
+</div>

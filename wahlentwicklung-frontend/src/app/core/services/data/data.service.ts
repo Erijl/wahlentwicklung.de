@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {Bundesland, Partei, Wahl} from "../../types/common-types";
+import {Bundesland, Partei, Wahl, Wahlkreis} from "../../types/common-types";
 import {BehaviorSubject, catchError, Observable, of, tap} from "rxjs";
 import {GeneralElectionData, WahlResult} from "../../types/function-types";
 
@@ -32,6 +32,14 @@ export class DataService {
       .pipe(
         tap(_ => this.log('fetched Bundeslaender')),
         catchError(this.handleError<Bundesland[]>('getBundeslaender', []))
+      );
+  }
+
+  getBundeslandResult(wahlId: number, bundeslandId: number) {
+    return this.http.get<Wahlkreis[]>(`${this.dataUrl}bundesland/result/${wahlId}/${bundeslandId}`)
+      .pipe(
+        tap(_ => this.log('fetched Wahlkreise')),
+        catchError(this.handleError<Wahlkreis[]>('getWahlkreise', []))
       );
   }
 

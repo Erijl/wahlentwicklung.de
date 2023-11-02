@@ -1,9 +1,10 @@
 import * as dotenv from 'dotenv'
 import express from 'express'
 import { createClient } from '@supabase/supabase-js'
-import {getBundeslaender} from "./functions/bundesland.js";
+import {getBundeslaender, getBundeslandWahlResult} from "./functions/bundesland.js";
 import {getParteien} from "./functions/partei.js";
 import {getCleanGeneralElectionData, getWahlen, getWahlResult} from "./functions/wahl.js";
+import {getWahlkreise} from "./functions/wahlkreis.js";
 
 
 dotenv.config();
@@ -19,9 +20,13 @@ app.use((req, res, next) => {
     res.header('Access-Control-Allow-Headers', 'Content-Type');
     next();
 });
+app.get('/wahlkreise/:id', getWahlkreise);
 
 app.get('/bundeslaender', getBundeslaender);
+app.get('/bundesland/result/:wahlId/:bundeslandId', getBundeslandWahlResult)
+
 app.get('/parteien', getParteien);
+
 app.get('/wahlen', getWahlen);
 app.get('/wahl/result/:id', getWahlResult);
 app.get('/wahl/general/:id', getCleanGeneralElectionData);

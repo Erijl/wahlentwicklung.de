@@ -27,6 +27,12 @@ import { HeroComponent } from './sections/hero/hero.component';
 import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatSelectModule} from "@angular/material/select";
 import { GeneralStatsComponent } from './sections/general-stats/general-stats.component';
+import { BundeslandStatsComponent } from './sections/bundesland-stats/bundesland-stats.component';
+import {MatListModule} from "@angular/material/list";
+import {MatIconModule} from "@angular/material/icon";
+import {MatExpansionModule} from "@angular/material/expansion";
+import {MatCheckboxModule} from "@angular/material/checkbox";
+import {MatRadioModule} from "@angular/material/radio";
 
 @NgModule({
   declarations: [
@@ -41,7 +47,8 @@ import { GeneralStatsComponent } from './sections/general-stats/general-stats.co
     TestAreaComponent,
     FooterComponent,
     HeroComponent,
-    GeneralStatsComponent
+    GeneralStatsComponent,
+    BundeslandStatsComponent
   ],
   imports: [
     BrowserModule,
@@ -58,7 +65,12 @@ import { GeneralStatsComponent } from './sections/general-stats/general-stats.co
     MatButtonToggleModule,
     MatButtonModule,
     MatFormFieldModule,
-    MatSelectModule
+    MatSelectModule,
+    MatListModule,
+    MatIconModule,
+    MatExpansionModule,
+    MatCheckboxModule,
+    MatRadioModule
   ],
   providers: [],
   bootstrap: [AppComponent]

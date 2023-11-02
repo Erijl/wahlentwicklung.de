@@ -4,7 +4,7 @@ export const getWahlen = async (req, res, next) => {
     const { data, error } = await supabase.from('wahl').select('*').eq('active', 'true');
 
     if (error) {
-        res.status(500).send({ message: error.message });
+        return res.status(500).send({ message: error.message });
     }
 
     res.status(200).send(data);
@@ -16,7 +16,7 @@ export const getWahlResult = async (req, res, next) => {
     const { data, error } = await supabase.rpc('getelectionresults', { p_wahl_id: id });
     console.log('req wahlResult')
     if (error) {
-        res.status(500).send({ message: error.message });
+        return res.status(500).send({ message: error.message });
     }
 
     res.status(200).send(data);
@@ -33,7 +33,7 @@ export const getCleanGeneralElectionData = async (req, res, next) => {
         .eq('bundesland_id', 99);
 
     if (error || !data) {
-        res.status(500).send({ message: error.message });
+        return res.status(500).send({ message: error.message });
     }
 
     const item = data[0];

@@ -32,7 +32,7 @@ export const getCleanGeneralElectionData = async (req, res, next) => {
         .eq('wahl_id', id)
         .eq('bundesland_id', 99);
 
-    if (error) {
+    if (error || !data) {
         res.status(500).send({ message: error.message });
     }
 

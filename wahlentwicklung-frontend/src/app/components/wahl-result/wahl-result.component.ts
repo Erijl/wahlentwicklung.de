@@ -4,6 +4,8 @@ import {WahlResult} from "../../core/types/function-types";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatTableDataSource} from "@angular/material/table";
 import {MatSort} from "@angular/material/sort";
+import {ConverterService} from "../../core/services/converter/converter.service";
+import {defaultColorScheme} from "../../core/data/color";
 
 @Component({
   selector: 'app-wahl-result',
@@ -33,11 +35,14 @@ export class WahlResultComponent implements OnInit {
   };
   chartData: any[] = [];
 
+  barChartColorScheme: any[] = [];
+  barChart2DColorScheme: any[] = [];
+
   dataSource!: MatTableDataSource<any>;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  constructor(private dataService: DataService) {
+  constructor(private dataService: DataService, private converterService: ConverterService) {
     this.displayedColumns = [
       'partei_name',
       'total_votes_erststimmen',
@@ -45,6 +50,20 @@ export class WahlResultComponent implements OnInit {
       'total_votes_zweitstimmen',
       'percentage_of_votes_zweitstimmen',
     ];
+  }
+
+  setCustomColorScheme() {
+    this.barChartColorScheme = this.converterService.convertWahlResultToColorScheme(this.wahlResultData);
+    /*
+    Assigning seperate colors to the 2d bar chart does not work, since the only format supported is
+      { name: 'Erststimme', value: '#E5FF36' },
+      { name: 'Zweitstimmen', value: '#4E39B4' },
+
+     and if you were to individualize the column names, the chart would break and not display them correctly. Example:
+      { name: 'Erststimmen (CDU)', value: '#E5FF36' },
+      { name: 'Zweitstimmen (CDU)', value: '#4E39B4' },
+      ....
+     */
   }
 
   cycleChartMode() {
@@ -73,11 +92,11 @@ export class WahlResultComponent implements OnInit {
         name: item.partei_name,
         series: [
           {
-            name: 'Zweitstimmen',
+            name: `Zweitstimmen`,
             value: item.percentage_of_votes_zweitstimmen,
           },
           {
-            name: 'Erststimmen',
+            name: `Erststimmen`,
             value: item.percentage_of_votes_erststimmen,
           }],
       }));
@@ -152,6 +171,8 @@ export class WahlResultComponent implements OnInit {
 
       this.chartMode = this.chartModes[0];
       this.currentChartModeIndex = 0;
+
+      this.setCustomColorScheme();
     });
   }
 }

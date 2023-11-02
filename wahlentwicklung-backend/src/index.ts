@@ -20,15 +20,6 @@ app.use((req, res, next) => {
     next();
 });
 
-app.get('/wahl', (req, res) => {
-    console.log('REQ: /wahl');
-
-    res.status(200).send({
-        year: 2021,
-        id: 16
-    })
-});
-
 app.get('/bundeslaender', getBundeslaender);
 app.get('/parteien', getParteien);
 app.get('/wahlen', getWahlen);

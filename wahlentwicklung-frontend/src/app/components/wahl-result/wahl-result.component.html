@@ -17,6 +17,7 @@
                                [yAxisLabel]="chartConfig.yAxisLabel"
                                [legend]="chartConfig.showLegend"
                                [legendTitle]="chartConfig.legendTitle"
+                               [customColors]="barChartColorScheme"
       >
         <!-- Define a custom tooltip template within ngx-charts-bar-vertical -->
         <ng-template #tooltipTemplate let-model="model">
@@ -44,6 +45,7 @@
                                   [yAxisLabel]="chartConfig.yAxisLabel"
                                   [legend]="chartConfig.showLegend"
                                   [legendTitle]="chartConfig.legendTitle"
+                                  [customColors]="barChart2DColorScheme"
       >
         <ng-template #tooltipTemplate let-model="model">
           <div class="custom-tooltip text-xl">

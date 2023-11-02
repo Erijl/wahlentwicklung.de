@@ -6,6 +6,7 @@ export type WahlResult = {
   percentage_of_votes_erststimmen: number | null;
   total_votes_zweitstimmen: bigint;
   percentage_of_votes_zweitstimmen: number | null;
+  color_hex: string | null;
 };
 
 export type GeneralElectionData = {

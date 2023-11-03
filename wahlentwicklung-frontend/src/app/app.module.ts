@@ -12,7 +12,7 @@ import { LandingpageComponent } from './sites/landingpage/landingpage.component'
 import {NgMultiSelectDropDownModule} from "ng-multiselect-dropdown";
 import { BundeslandMultiSelectComponent } from './components/bundesland-multi-select/bundesland-multi-select.component';
 import { ParteiMultiSelectComponent } from './components/partei-multi-select/partei-multi-select.component';
-import { WahlResultComponent } from './components/wahl-result/wahl-result.component';
+import { WahlResultComponent } from './sections/wahl-result/wahl-result.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {MatPaginatorModule} from "@angular/material/paginator";
 import {MatTableModule} from "@angular/material/table";

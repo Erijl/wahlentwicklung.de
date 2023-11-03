@@ -34,7 +34,7 @@
     <ng-container *ngIf="chartMode === 'grouped'">
       <ngx-charts-bar-vertical-2d #groupedChart class="w-full h-96 mx-auto"
                                   [view]="[containerRef.offsetWidth, containerRef.offsetHeight]"
-                                  [scheme]="chartConfig.secondScheme"
+                                  [scheme]="chartConfig.scheme"
                                   [results]="chartData"
                                   [xAxis]="chartConfig.showXAxis"
                                   [yAxis]="chartConfig.showYAxis"

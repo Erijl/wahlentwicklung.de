@@ -13,7 +13,7 @@ export const getBundeslaender = async (req, res, next) => {
 export const getBundeslandWahlResult = async (req, res, next) => {
     const { wahlId, bundeslandId } = req.params;
 
-    const { data, error } = await supabase.rpc('getBundeslandElectionResults', { p_wahl_id: wahlId, p_bundesland_id: bundeslandId });
+    const { data, error } = await supabase.rpc('getbundeslandelectionresults', { p_wahl_id: wahlId, p_bundesland_id: bundeslandId });
     console.log('req bundeslandWahlResult')
     if (error) {
         return res.status(500).send({ message: error.message });

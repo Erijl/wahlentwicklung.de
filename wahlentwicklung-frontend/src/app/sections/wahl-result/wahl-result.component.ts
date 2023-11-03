@@ -14,7 +14,6 @@ import {defaultColorScheme} from "../../core/data/color";
 })
 export class WahlResultComponent implements OnInit {
   wahlResultData: WahlResult[] = [];
-  displayedColumns: string[];
   chartModes: string[] = ['zweitstimmen', 'erststimmen', 'grouped'];
   currentChartModeIndex: number = 0;
   chartMode: string = this.chartModes[this.currentChartModeIndex];
@@ -43,13 +42,6 @@ export class WahlResultComponent implements OnInit {
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(private dataService: DataService, private converterService: ConverterService) {
-    this.displayedColumns = [
-      'partei_name',
-      'total_votes_erststimmen',
-      'percentage_of_votes_erststimmen',
-      'total_votes_zweitstimmen',
-      'percentage_of_votes_zweitstimmen',
-    ];
   }
 
   setCustomColorScheme() {
@@ -103,42 +95,6 @@ export class WahlResultComponent implements OnInit {
     }
   }
 
-
-  onSortChange(event: any) {
-    const data = this.wahlResultData.slice(); // Create a shallow copy of the data array
-
-    if (!event.active || event.direction === '') {
-      this.dataSource.data = data;
-      return;
-    }
-
-    const isAsc = event.direction === 'asc';
-    switch (event.active) {
-      case 'partei_name':
-        data.sort((a, b) => this.compare(a.partei_name, b.partei_name, isAsc));
-        break;
-      case 'total_votes_erststimmen':
-        data.sort((a, b) => this.compare(a.total_votes_erststimmen, b.total_votes_erststimmen, isAsc));
-        break;
-      case 'percentage_of_votes_erststimmen':
-        data.sort((a, b) => this.compare(a.percentage_of_votes_erststimmen, b.percentage_of_votes_erststimmen, isAsc));
-        break;
-      case 'total_votes_zweitstimmen':
-        data.sort((a, b) => this.compare(a.total_votes_zweitstimmen, b.total_votes_zweitstimmen, isAsc));
-        break;
-      case 'percentage_of_votes_zweitstimmen':
-        data.sort((a, b) => this.compare(a.percentage_of_votes_zweitstimmen, b.percentage_of_votes_zweitstimmen, isAsc));
-        break;
-      default:
-        break;
-    }
-
-    this.dataSource.data = data;
-  }
-
-  compare(a: any, b: any, isAsc: boolean) {
-    return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
-  }
 
   ngOnInit(): void {
     this.dataService.getSelectedWahl().subscribe(wahl => {

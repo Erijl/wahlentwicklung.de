@@ -1,0 +1,24 @@
+<section class="bg-white">
+  <div class="container max-w-4xl px-6 py-6 mx-auto">
+    <h1 class="text-2xl font-semibold text-center text-gray-800 lg:text-3xl">Häufig gestellte Fragen</h1>
+
+    <div class="mt-12 space-y-4">
+      <div *ngFor="let faq of faqs" class="border-2 border-gray-100 rounded-lg">
+        <button class="flex items-center justify-between w-full p-4 text-xl " (click)="toggleFaq(faq)">
+          <h1 class="font-semibold text-gray-700">{{ faq.question }}</h1>
+          <span [ngClass]="{'text-blue-500': !faq.open, 'text-gray-400': faq.open}" class="rounded-full">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                        </svg>
+          </span>
+        </button>
+
+        <hr class="border-gray-200">
+
+        <p class="p-8 text-sm text-gray-500" [class.hidden]="!faq.open">
+          {{ faq.answer }}
+        </p>
+      </div>
+    </div>
+  </div>
+</section>

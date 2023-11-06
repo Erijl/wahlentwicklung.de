@@ -33,6 +33,7 @@ import {MatIconModule} from "@angular/material/icon";
 import {MatExpansionModule} from "@angular/material/expansion";
 import {MatCheckboxModule} from "@angular/material/checkbox";
 import {MatRadioModule} from "@angular/material/radio";
+import { FaqSectionComponent } from './sections/faq-section/faq-section.component';
 
 @NgModule({
   declarations: [
@@ -48,7 +49,8 @@ import {MatRadioModule} from "@angular/material/radio";
     FooterComponent,
     HeroComponent,
     GeneralStatsComponent,
-    BundeslandStatsComponent
+    BundeslandStatsComponent,
+    FaqSectionComponent
   ],
   imports: [
     BrowserModule,

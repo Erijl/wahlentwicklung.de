@@ -1,22 +1,22 @@
-<div class="bg-white py-24 sm:py-32">
-  <div class="mx-auto max-w-7xl px-6 lg:px-8 flex flex-col items-center justify-center">
-    <div class="">
-      <mat-form-field>
-        <mat-label>Bundesland auswählen</mat-label>
-        <mat-select [(ngModel)]="selectedBundesland" (selectionChange)="onBundeslandSelect()"
-                    [disabled]="!bundeslaender">
-          <mat-option *ngIf="!bundeslaender" [value]="">Loading...</mat-option>
-          <mat-option *ngFor="let bundesland of bundeslaender" [value]="bundesland">{{ bundesland.name }}</mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
+<div class="w-2/3 h-96 mx-auto max-w-7xl px-10 lg:px-12">
+  <div class="flex justify-center">
+    <mat-form-field>
+      <mat-label>Bundesland auswählen</mat-label>
+      <mat-select [(ngModel)]="selectedBundesland" (selectionChange)="onBundeslandSelect()"
+                  [disabled]="!bundeslaender">
+        <mat-option *ngIf="!bundeslaender" [value]="">Loading...</mat-option>
+        <mat-option *ngFor="let bundesland of bundeslaender" [value]="bundesland">{{ bundesland.name }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
 
-    <h2 class="text-center">Wahl Ergebnis
-      ({{chartMode == 'zweitstimmen' ? "Zweitstimmen" : "Erststimmen"}})</h2>
+  <h2 class="text-center">Bundesland Wahlergebnis
+    ({{chartMode == 'zweitstimmen' ? "Zweitstimmen" : "Erststimmen"}})</h2>
 
 
-    <ng-container #containerRef class="w-full h-96 mx-auto mt-12">
-      <ngx-charts-bar-vertical #stimmenChart
+  <div #containerRef class="flex justify-center">
+    <ng-container>
+      <ngx-charts-bar-vertical #stimmenChart class="w-full h-96 mx-auto mt-12"
                                [view]="[containerRef.offsetWidth, containerRef.offsetHeight]"
                                [scheme]="chartConfig.scheme"
                                [results]="chartData"
@@ -39,11 +39,11 @@
         </ng-template>
       </ngx-charts-bar-vertical>
     </ng-container>
+  </div>
 
-    <div class="flex justify-center pt-6">
-      <button mat-button class="text-xl px-4 py-2 rounded-lg" (click)="cycleChartMode()">
-        Nächste >
-      </button>
-    </div>
+  <div class="flex justify-center pt-16">
+    <button mat-button class="text-xl px-4 py-2 rounded-lg" (click)="cycleChartMode()">
+      Nächste >
+    </button>
   </div>
 </div>

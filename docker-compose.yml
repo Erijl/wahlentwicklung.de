@@ -11,17 +11,17 @@ services:
     depends_on:
       - reverse-proxy
 
-  frontend:
-    build:
-      context: wahlentwicklung-frontend/
-      dockerfile: Dockerfile
-    ports:
-      - "4200:4200"
-    labels:
-      - "traefik.http.routers.frontend.rule=Host(`localhost`)"
-    depends_on:
-      - reverse-proxy
-      - backend
+#  frontend:
+#    build:
+#      context: wahlentwicklung-frontend/
+#      dockerfile: Dockerfile
+#    ports:
+#      - "4200:4200"
+#    labels:
+#      - "traefik.http.routers.frontend.rule=Host(`localhost`)"
+#    depends_on:
+#      - reverse-proxy
+#      - backend
 
   reverse-proxy:
     image: traefik:v2.10

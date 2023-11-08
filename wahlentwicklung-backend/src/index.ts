@@ -7,7 +7,7 @@ import {getCleanGeneralElectionData, getWahlen, getWahlResult} from "./functions
 import {getWahlkreise} from "./functions/wahlkreis.js";
 
 
-dotenv.config();
+dotenv.config({ path: process.cwd() + '\\env.env' });
 const app = express();
 const PORT = process.env.PORT;
 export const supabase = createClient(process.env._SUPABASE_URL, process.env._SUPABASE_SERVICE_KEY);

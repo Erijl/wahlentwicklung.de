@@ -6,7 +6,7 @@ services:
         dockerfile: Dockerfile
     environment:
       - SUPABASE_URL=${_SUPABASE_URL}
-      - SUPABASE_URL=${_SUPABASE_SERVICE_KEY}
+      - SUPABASE_SERVICE_KEY=${_SUPABASE_SERVICE_KEY}
     ports:
       - "8082:8082"
     labels:

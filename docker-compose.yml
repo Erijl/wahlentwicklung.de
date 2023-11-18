@@ -2,7 +2,7 @@ version: '3.7'
 services:
   backend:
     build:
-        context: wahlentwicklung-backend/
+        context: ./wahlentwicklung-backend
         dockerfile: Dockerfile
     environment:
       - SUPABASE_URL=${_SUPABASE_URL}
@@ -12,21 +12,21 @@ services:
     labels:
       - "traefik.http.routers.backend.rule=(Host(`api.localhost`))"
     depends_on:
-      - reverse-proxy
+      - traefik
 
-#  frontend:
-#    build:
-#      context: wahlentwicklung-frontend/
-#      dockerfile: Dockerfile
-#    ports:
-#      - "4200:4200"
-#    labels:
-#      - "traefik.http.routers.frontend.rule=Host(`localhost`)"
-#    depends_on:
-#      - reverse-proxy
-#      - backend
+  frontend:
+    build:
+      context: ./wahlentwicklung-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "443:443"
+    labels:
+      - "traefik.http.routers.frontend.rule=Host(`app.localhost`)"
+    depends_on:
+      - traefik
+      - backend
 
-  reverse-proxy:
+  traefik:
     image: traefik:v2.10
     command:
       - "--api.insecure=true"

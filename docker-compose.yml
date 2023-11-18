@@ -10,7 +10,7 @@ services:
     ports:
       - "8082:8082"
     labels:
-      - "traefik.http.routers.backend.rule=(Host(`api.localhost`))"
+      - "traefik.http.routers.backend.rule=(Host(`app.localhost`) && PathPrefix(`/api`) && Method(`GET`))"
     depends_on:
       - traefik
 

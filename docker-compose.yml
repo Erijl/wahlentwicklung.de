@@ -14,18 +14,6 @@ services:
     depends_on:
       - traefik
 
-  frontend:
-    build:
-      context: ./wahlentwicklung-frontend
-      dockerfile: Dockerfile
-    ports:
-      - "443:443"
-    labels:
-      - "traefik.http.routers.frontend.rule=Host(`app.localhost`)"
-    depends_on:
-      - traefik
-      - backend
-
   traefik:
     image: traefik:v2.10
     command:

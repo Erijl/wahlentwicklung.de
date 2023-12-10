@@ -11,7 +11,7 @@ export class DataService {
   // @ts-ignore
   private selectedWahl = new BehaviorSubject<Wahl>(null);
 
-  private dataUrl = 'http://api.wahlentwicklung.de:8082/';  // URL to web api
+  private dataUrl = 'https://api.wahlentwicklung.de/';  // URL to web api
 
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': 'origin' })

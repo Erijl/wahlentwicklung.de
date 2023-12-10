@@ -9,18 +9,46 @@ services:
       - SUPABASE_SERVICE_KEY=${_SUPABASE_SERVICE_KEY}
     ports:
       - "8082:8082"
+    command:
+      - --port=8082
+      - "traefik.http.services.backend.loadbalancer.server.port=8082"
     labels:
       - "traefik.http.routers.backend.rule=(Host(`app.localhost`) && PathPrefix(`/api`) && Method(`GET`))"
+      - "traefik.http.routers.backend.middlewares=auth"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.tls=true"
+      - "traefik.http.routers.backend.tls.certresolver=leresolver"
+      - "traefik.http.middlewares.auth.basicauth.users=user:$$apr1$$q8eZFHjF$$Fvmkk//V6Btlaf2i/ju5n/" # user/password
     depends_on:
       - traefik
 
   traefik:
     image: traefik:v2.10
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
     ports:
       - "80:80"
-      - "8080:8080"
+      - "443:443"
+    command:
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --providers.docker
+      - --api
+      - --certificatesresolvers.leresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
+      - --certificatesresolvers.le.acme.email=info@wahlentwicklung.de
+      - --certificatesresolvers.le.acme.storage=/acme.json
+      - --certificatesresolvers.le.acme.tlschallenge=true
+    labels:
+      - "traefik.http.routers.traefik.rule=Host(`api.localhost`)"
+      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.traefik.middlewares=admin"
+      - "traefik.http.routers.traefik.tls.certresolver=leresolver"
+      - "traefik.http.routers.traefik.entrypoints=websecure"
+      - "traefik.http.middlewares.admin.basicauth.users=admin:xxx"
+      # global redirect to https
+      - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
+      - "traefik.http.routers.http-catchall.entrypoints=web"
+      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
+      # middleware redirect
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
     volumes:
         - /var/run/docker.sock:/var/run/docker.sock
+        - "./acme.json:/acme.json"

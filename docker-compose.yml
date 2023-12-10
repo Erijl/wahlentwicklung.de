@@ -1,6 +1,6 @@
 version: '3.7'
 services:
-  backend:
+  wahlentwicklung-backend:
     container_name: wahlentwicklung-backend
     build:
         context: ./wahlentwicklung-backend
@@ -13,12 +13,13 @@ services:
     networks:
         - traefik
     labels:
-      - "traefik.http.routers.backend.rule=(Host(`api.wahlentwicklung.de`) && Method(`GET`))"
-      - "traefik.http.routers.backend.middlewares=auth"
-      - "traefik.http.routers.backend.entrypoints=websecure"
-      - "traefik.http.routers.backend.tls=true"
-      - "traefik.http.routers.backend.tls.certresolver=le"
-      - "traefik.http.middlewares.auth.basicauth.users=user:$$apr1$$q8eZFHjF$$Fvmkk//V6Btlaf2i/ju5n/" # user/password
+      - traefik.http.routers.wahlentwicklung-backend.rule=Host(`api.wahlentwicklung.de`)
+      - traefik.http.routers.wahlentwicklung-backend.entrypoints=websecure
+      - traefik.http.routers.wahlentwicklung-backend.tls=true
+      - traefik.http.routers.wahlentwicklung-backend.tls.certresolver=le
+      - traefik.http.routers.wahlentwicklung-backend.middlewares=backend_get_only
+
+      - traefik.http.middlewares.backend_get_only.headers.customresponseheaders.Access-Control-Allow-Methods=GET
     depends_on:
       - traefik
 
@@ -52,10 +53,7 @@ services:
       - ./acme.json:/acme.json
       - ./traefik_conf.yml:/traefik_conf.yml:ro
       - ./logs:/logs
-
-
     labels:
-
       # Redirect all HTTP to HTTPS permanently
       - traefik.http.routers.http_catchall.rule=HostRegexp(`{any:.+}`)
       - traefik.http.routers.http_catchall.entrypoints=web

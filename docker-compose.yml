@@ -1,16 +1,20 @@
 version: '3.7'
 services:
   backend:
+    container_name: wahlentwicklung-backend
     build:
         context: ./wahlentwicklung-backend
         dockerfile: Dockerfile
     environment:
       - SUPABASE_URL=${_SUPABASE_URL}
       - SUPABASE_SERVICE_KEY=${_SUPABASE_SERVICE_KEY}
+    command:
+      - --port=8082
+      - "traefik.http.services.backend.loadbalancer.server.port=8082"
     ports:
       - "8082:8082"
-    command:
-
+    networks:
+        - traefik
     labels:
       - "traefik.http.routers.backend.rule=(Host(`app.localhost`) && Method(`GET`))"
       - "traefik.http.routers.backend.middlewares=auth"
@@ -22,36 +26,63 @@ services:
       - traefik
 
   traefik:
+    container_name: trafik
     image: traefik:v2.10
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.network=traefik"
+      - "--entryPoints.web.address=:80"
+      - "--entryPoints.websecure.address=:443"
+
+      # NOTE: YOU NEED AN EMAIL HERE!
+      - "--certificatesResolvers.le.acme.email=info@wahlentwicklung.de"
+
+      - "--certificatesResolvers.le.acme.storage=acme.json"
+      - "--certificatesResolvers.le.acme.tlsChallenge=true"
+      - "--certificatesResolvers.le.acme.httpChallenge=true"
+      - "--certificatesResolvers.le.acme.httpChallenge.entryPoint=web"
+      - "--providers.file.filename=/traefik_conf.yml"
+      - "--accesslog=true"
+      - "--accesslog.filepath=/logs/access.log"
+      - "--accesslog.bufferingsize=100"
+    restart: always
     ports:
       - "80:80"
       - "443:443"
-    command:
-      - --entrypoints.web.address=:80
-      - --entrypoints.websecure.address=:443
-      - --entrypoints.web.http.redirections.entrypoint.scheme=https
-      - --entrypoints.web.http.redirections.entrypoint.to=web-secure
-      - --serverstransport.forwardingtimeouts.dialtimeout=2
-      - --providers.docker
-      - --api
-      - --certificatesresolvers.leresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory
-      - --certificatesresolvers.leresolver.acme.email=info@wahlentwicklung.de
-      - --certificatesresolvers.le.acme.email=info@wahlentwicklung.de
-      - --certificatesresolvers.le.acme.storage=/acme.json
-      - --certificatesresolvers.le.acme.tlschallenge=true
-    labels:
-      - "traefik.http.routers.traefik.rule=Host(`api.localhost`)"
-      - "traefik.http.routers.traefik.service=api@internal"
-      - "traefik.http.routers.traefik.middlewares=admin"
-      - "traefik.http.routers.traefik.tls.certresolver=leresolver"
-      - "traefik.http.routers.traefik.entrypoints=websecure"
-      - "traefik.http.middlewares.admin.basicauth.users=admin:xxx"
-      # global redirect to https
-      - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
-      - "traefik.http.routers.http-catchall.entrypoints=web"
-      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
-      # middleware redirect
-      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+    networks:
+      - traefik
     volumes:
-        - /var/run/docker.sock:/var/run/docker.sock
-        - "./acme.json:/acme.json"
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./acme.json:/acme.json
+      - ./traefik_conf.yml:/traefik_conf.yml:ro
+      - ./logs:/logs
+
+
+    labels:
+
+      # Redirect all HTTP to HTTPS permanently
+      - traefik.http.routers.http_catchall.rule=HostRegexp(`{any:.+}`)
+      - traefik.http.routers.http_catchall.entrypoints=web
+      - traefik.http.routers.http_catchall.middlewares=https_redirect
+      - traefik.http.middlewares.https_redirect.redirectscheme.scheme=https
+      - traefik.http.middlewares.https_redirect.redirectscheme.permanent=true
+
+      # gzip all responses
+      - traefik.http.middlewares.gzip.compress=true
+
+      # Adding in secure headers
+      - traefik.http.middlewares.securedheaders.headers.forcestsheader=true
+      - traefik.http.middlewares.securedheaders.headers.sslRedirect=true
+      - traefik.http.middlewares.securedheaders.headers.STSPreload=true
+      - traefik.http.middlewares.securedheaders.headers.ContentTypeNosniff=true
+      - traefik.http.middlewares.securedheaders.headers.BrowserXssFilter=true
+      - traefik.http.middlewares.securedheaders.headers.STSIncludeSubdomains=true
+      - traefik.http.middlewares.securedheaders.headers.STSSeconds=315360000
+      - traefik.http.middlewares.securedheaders.headers.frameDeny=true
+      - traefik.http.middlewares.securedheaders.headers.browserXssFilter=true
+      - traefik.http.middlewares.securedheaders.headers.contentTypeNosniff=true
+
+
+networks:
+  traefik:
+    external: true

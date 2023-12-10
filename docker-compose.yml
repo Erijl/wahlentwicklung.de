@@ -31,7 +31,6 @@ services:
       - "--entryPoints.web.address=:80"
       - "--entryPoints.websecure.address=:443"
 
-      # NOTE: YOU NEED AN EMAIL HERE!
       - "--certificatesResolvers.le.acme.email=info@wahlentwicklung.de"
 
       - "--certificatesResolvers.le.acme.storage=acme.json"

@@ -8,19 +8,16 @@ services:
     environment:
       - SUPABASE_URL=${_SUPABASE_URL}
       - SUPABASE_SERVICE_KEY=${_SUPABASE_SERVICE_KEY}
-    command:
-      - --port=8082
-      - "traefik.http.services.backend.loadbalancer.server.port=8082"
     ports:
       - "8082:8082"
     networks:
         - traefik
     labels:
-      - "traefik.http.routers.backend.rule=(Host(`app.localhost`) && Method(`GET`))"
+      - "traefik.http.routers.backend.rule=(Host(`api.wahlentwicklung.de`) && Method(`GET`))"
       - "traefik.http.routers.backend.middlewares=auth"
       - "traefik.http.routers.backend.entrypoints=websecure"
       - "traefik.http.routers.backend.tls=true"
-      - "traefik.http.routers.backend.tls.certresolver=leresolver"
+      - "traefik.http.routers.backend.tls.certresolver=le"
       - "traefik.http.middlewares.auth.basicauth.users=user:$$apr1$$q8eZFHjF$$Fvmkk//V6Btlaf2i/ju5n/" # user/password
     depends_on:
       - traefik

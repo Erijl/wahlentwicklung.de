@@ -13,7 +13,7 @@ services:
       - --port=8082
       - "traefik.http.services.backend.loadbalancer.server.port=8082"
     labels:
-      - "traefik.http.routers.backend.rule=(Host(`app.localhost`) && PathPrefix(`/api`) && Method(`GET`))"
+      - "traefik.http.routers.backend.rule=(Host(`app.localhost`) && Method(`GET`))"
       - "traefik.http.routers.backend.middlewares=auth"
       - "traefik.http.routers.backend.entrypoints=websecure"
       - "traefik.http.routers.backend.tls=true"
@@ -30,6 +30,9 @@ services:
     command:
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      - --entrypoints.web.http.redirections.entrypoint.to=web-secure
+      - --serverstransport.forwardingtimeouts.dialtimeout=2
       - --providers.docker
       - --api
       - --certificatesresolvers.leresolver.acme.caserver=https://acme-staging-v02.api.letsencrypt.org/directory

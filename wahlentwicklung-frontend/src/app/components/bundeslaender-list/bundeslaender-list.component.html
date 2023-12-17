@@ -1,21 +1,15 @@
 <div class="bg-white p-4">
     <h2 class="text-xl font-semibold">Bundesländer</h2>
-    <ul class="mt-4">
-        <li
-                *ngFor="let bundesland of bundeslaender"
-                class="flex justify-between items-center py-2"
-        >
-            <div>
-                {{ bundesland.name }}
-            </div>
-            <button
-                    class="text-blue-600"
-                    (click)="starBundesland(bundesland)"
-            >
-                Star
-            </button>
-        </li>
-    </ul>
+  <mat-list>
+    <ng-container *ngFor="let bundesland of bundeslaender">
+      <mat-list-item>{{bundesland.name}}</mat-list-item>
+      <mat-list style="margin-left:30px;">
+        <div *ngFor="let wahlkreis of bundeslaender.wahlkreise">
+          <mat-list-item>{{ wahlkreis.name }}</mat-list-item>
+        </div>
+      </mat-list>
+    </ng-container>
+  </mat-list>
     <div *ngIf="starredBundesland" class="mt-4">
         <p class="font-semibold">Starred Bundesland:</p>
         <p>{{ starredBundesland.name }}</p>

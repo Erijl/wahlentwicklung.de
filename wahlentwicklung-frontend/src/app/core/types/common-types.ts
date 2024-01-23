@@ -1,50 +1,50 @@
 
-export type Bundesland = {
+export type State = {
   abbreviation: string | null;
-  bundesland_id: number;
+  state_id: number;
   identifier: number | null;
   name: string | null;
 };
 
-export type Partei = {
+export type Party = {
   name: string | null;
-  partei_id: number;
-  wahl_id: number | null;
+  party_id: number;
+  election_id: number | null;
 };
 
-export type Wahl = {
-  wahl_id: number;
+export type Election = {
+  election_id: number;
   year: number | null;
   active: boolean;
 };
 
-export type Wahlkreis = {
-  bundesland_id: number | null;
-  gueltige_stimmen: Json | null;
+export type District = {
+  state_id: number | null;
+  valid_votes: Json | null;
   identifier: number | null;
   name: string | null;
-  ungueltige_stimmen: Json | null;
-  waehler: Json | null;
-  wahl_id: number | null;
-  wahlberechtigte: Json | null;
-  wahlkreis_id: number;
+  invalid_vote: Json | null;
+  voters: Json | null;
+  election_id: number | null;
+  eligible_voters: Json | null;
+  district_id: number;
 };
 
-export type ParteiStimmen = {
-  partei_id: number | null;
-  stimmen: Json | null;
+export type PartyVotes = {
+  party_id: number | null;
+  vote_count: Json | null;
   vote_id: number;
-  wahlkreis_id: number | null;
+  district_id: number | null;
 };
 
-export type BundeslandStimmen = {
-  bundesland_id: number | null;
-  bundesland_stimmen_id: number;
-  gueltige_stimmen: Json | null;
-  ungueltige_stimmen: Json | null;
-  waehler: Json | null;
-  wahl_id: number | null;
-  wahlberechtigte: Json | null;
+export type StateVotes = {
+  state_id: number | null;
+  state_vote_id: number;
+  valid_votes: Json | null;
+  invalid_votes: Json | null;
+  voters: Json | null;
+  election_id: number | null;
+  eligible_voters: Json | null;
 };
 
 export type Json =

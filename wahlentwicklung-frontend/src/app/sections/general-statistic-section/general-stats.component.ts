@@ -33,7 +33,7 @@ export class GeneralStatsComponent implements OnInit {
     ngOnInit(): void {
         this.dataService.getSelectedWahl().subscribe(wahl => {
             if (wahl) {
-                this.getGeneralElectionData(wahl.wahl_id);
+                this.getGeneralElectionData(wahl.election_id);
             }
         });
     }
@@ -52,9 +52,9 @@ export class GeneralStatsComponent implements OnInit {
     getGeneralElectionData(id: number) {
       this.dataService.getGeneralElectionData(id).subscribe((data: any) => {
         this.electionData = data;
-        this.voterTurnout = ((this.electionData!.waehler / this.electionData!.wahlberechtigte) * 100).toFixed(1);
-          this.createCountUp('wahlberechtigte', this.electionData?.wahlberechtigte || 0, this.countUpOptions);
-          this.createCountUp('waehler', this.electionData?.waehler || 0, this.countUpOptions);
+        this.voterTurnout = ((this.electionData!.voters / this.electionData!.eligible_voters) * 100).toFixed(1);
+          this.createCountUp('wahlberechtigte', this.electionData?.eligible_voters || 0, this.countUpOptions);
+          this.createCountUp('waehler', this.electionData?.voters || 0, this.countUpOptions);
           this.createCountUp('wahlbeteilligung', parseFloat(this.voterTurnout || '0'), this.countUpDecimalOptions);
       });
     }

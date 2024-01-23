@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {DataService} from "../../core/services/data/data.service";
-import {Wahl} from "../../core/types/common-types";
+import {Election} from "../../core/types/common-types";
 
 @Component({
   selector: 'app-header',
@@ -8,11 +8,11 @@ import {Wahl} from "../../core/types/common-types";
   styleUrls: []
 })
 export class HeaderComponent implements OnInit {
-  wahlen: Wahl[] = [];
+  wahlen: Election[] = [];
 
   selectedMode: string = 'detail'; // Default to 'detail' mode
-  firstSelectedWahl: Wahl | null = null;
-  secondSelectedWahl: Wahl | null = null;
+  firstSelectedWahl: Election | null = null;
+  secondSelectedWahl: Election | null = null;
 
   constructor(private dataService: DataService) {  }
 

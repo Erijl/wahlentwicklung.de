@@ -6,14 +6,14 @@
           Bundestagswahlen im Überblick
         </div>
         <p class="mt-6 text-lg leading-8 text-gray-600">Erfahren Sie alles über die Entwicklung der Bundestagswahlen von
-          2005 bis 2021. Entdecken Sie wichtige Trends, Ergebnisse und Analysen.</p>
+          2005 bis 2021. Entdecken Sie Trends, Ergebnisse und Analysen.</p>
         <div class="mt-10 flex items-center justify-center gap-x-6">
           <a href="#" class="text-4xl">
             <mat-form-field>
               <mat-label>Wahljahr auswählen</mat-label>
-              <mat-select [(ngModel)]="selectedWahl" (selectionChange)="onWahlChange()" [disabled]="!wahlen">
-                <mat-option *ngIf="!wahlen" [value]="">Loading...</mat-option>
-                <mat-option *ngFor="let wahl of wahlen" [value]="wahl">{{ wahl.year }}</mat-option>
+              <mat-select [(ngModel)]="selectedElection" (selectionChange)="onElectionChange()" [disabled]="!elections">
+                <mat-option *ngIf="!elections" [value]="">Loading...</mat-option>
+                <mat-option *ngFor="let election of elections" [value]="election">{{ election.year }}</mat-option>
               </mat-select>
             </mat-form-field>
           </a>

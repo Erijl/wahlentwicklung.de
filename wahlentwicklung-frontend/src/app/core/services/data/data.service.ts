@@ -1,25 +1,26 @@
 import { Injectable } from '@angular/core';
-import {HttpClient, HttpHeaders} from "@angular/common/http";
-import {Bundesland, Partei, Wahl, Wahlkreis} from "../../types/common-types";
-import {BehaviorSubject, catchError, Observable, of, tap} from "rxjs";
-import {GeneralElectionData, WahlResult} from "../../types/function-types";
+import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { State, Party, Election, District } from "../../types/common-types";
+import { BehaviorSubject, catchError, Observable, of, tap } from "rxjs";
+import { GeneralElectionData, ElectionResult } from "../../types/function-types";
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
   // @ts-ignore
-  private selectedWahl = new BehaviorSubject<Wahl>(null);
+  private selectedWahl = new BehaviorSubject<Election>(null);
 
   private dataUrl = 'https://api.wahlentwicklung.de/';  // URL to web api
 
   httpOptions = {
-    headers: new HttpHeaders({ 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': 'origin' })
+    headers: new HttpHeaders({'Content-Type': 'application/json', 'Access-Control-Allow-Origin': 'origin'})
   };
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+  }
 
-  setSelectedWahl(wahl: Wahl) {
+  setSelectedWahl(wahl: Election) {
     this.selectedWahl.next(wahl);
   }
 
@@ -28,51 +29,51 @@ export class DataService {
   }
 
   getBundeslaender() {
-    return this.http.get<Bundesland[]>(this.dataUrl + 'bundeslaender')
+    return this.http.get<State[]>(this.dataUrl + 'bundeslaender')
       .pipe(
         tap(_ => this.log('fetched Bundeslaender')),
-        catchError(this.handleError<Bundesland[]>('getBundeslaender', []))
+        catchError(this.handleError<State[]>('getBundeslaender', []))
       );
   }
 
   getBundeslandResult(wahlId: number, bundeslandId: number) {
-    return this.http.get<Wahlkreis[]>(`${this.dataUrl}bundesland/result/${wahlId}/${bundeslandId}`)
+    return this.http.get<District[]>(`${this.dataUrl}bundesland/result/${wahlId}/${bundeslandId}`)
       .pipe(
         tap(_ => this.log('fetched Wahlkreise')),
-        catchError(this.handleError<Wahlkreis[]>('getWahlkreise', []))
+        catchError(this.handleError<District[]>('getWahlkreise', []))
       );
   }
 
   getWahlen() {
-    return this.http.get<Wahl[]>(this.dataUrl + 'wahlen')
-        .pipe(
-            tap(_ => this.log('fetched Wahlen')),
-            catchError(this.handleError<Wahl[]>('getWahlen', []))
-        );
+    return this.http.get<Election[]>(this.dataUrl + 'wahlen')
+      .pipe(
+        tap(_ => this.log('fetched Wahlen')),
+        catchError(this.handleError<Election[]>('getWahlen', []))
+      );
   }
 
   getParteien() {
-    return this.http.get<Partei[]>(this.dataUrl + 'parteien')
+    return this.http.get<Party[]>(this.dataUrl + 'parteien')
       .pipe(
         tap(_ => this.log('fetched Parteien')),
-        catchError(this.handleError<Partei[]>('getParteien', []))
+        catchError(this.handleError<Party[]>('getParteien', []))
       );
   }
 
   getWahlResult(id: number) {
-    return this.http.get<WahlResult[]>(this.dataUrl + 'wahl/result/' + id)
-        .pipe(
-            tap(_ => this.log('fetched wahlResult')),
-            catchError(this.handleError<WahlResult[]>('wahlResult', []))
-        );
+    return this.http.get<ElectionResult[]>(this.dataUrl + 'wahl/result/' + id)
+      .pipe(
+        tap(_ => this.log('fetched wahlResult')),
+        catchError(this.handleError<ElectionResult[]>('wahlResult', []))
+      );
   }
 
   getGeneralElectionData(id: number) {
     return this.http.get<GeneralElectionData[]>(this.dataUrl + 'wahl/general/' + id)
-        .pipe(
-            tap(_ => this.log('fetched GeneralElectionData')),
-            catchError(this.handleError<GeneralElectionData[]>('generalElectionData', []))
-        );
+      .pipe(
+        tap(_ => this.log('fetched GeneralElectionData')),
+        catchError(this.handleError<GeneralElectionData[]>('generalElectionData', []))
+      );
   }
 
   /**

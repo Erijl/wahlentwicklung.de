@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {Wahl} from "../../core/types/common-types";
+import {Election} from "../../core/types/common-types";
 import {DataService} from "../../core/services/data/data.service";
 
 @Component({
@@ -8,25 +8,25 @@ import {DataService} from "../../core/services/data/data.service";
   styleUrls: []
 })
 export class HeroComponent implements OnInit {
-  wahlen: Wahl[] = [];
-  selectedWahl: Wahl | null = null;
+  elections: Election[] = [];
+  selectedElection: Election | null = null;
 
   constructor(private dataService: DataService) {  }
 
   ngOnInit() {
-    this.getWahlen();
+    this.getElections();
   }
 
-  onWahlChange() {
-    this.dataService.setSelectedWahl(this.selectedWahl!);
+  onElectionChange() {
+    this.dataService.setSelectedWahl(this.selectedElection!);
   }
 
-  getWahlen(): void {
+  getElections(): void {
     this.dataService.getWahlen().subscribe(wahlen => {
-      this.wahlen = wahlen;
+      this.elections = wahlen;
 
-      this.selectedWahl = this.wahlen[0];
-      this.dataService.setSelectedWahl(this.selectedWahl!);
+      this.selectedElection = this.elections[0];
+      this.dataService.setSelectedWahl(this.selectedElection!);
     });
   }
 

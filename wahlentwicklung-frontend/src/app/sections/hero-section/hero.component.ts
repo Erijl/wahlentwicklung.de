@@ -18,15 +18,15 @@ export class HeroComponent implements OnInit {
   }
 
   onElectionChange() {
-    this.dataService.setSelectedWahl(this.selectedElection!);
+    this.dataService.setSelectedElection(this.selectedElection!);
   }
 
   getElections(): void {
-    this.dataService.getWahlen().subscribe(wahlen => {
+    this.dataService.getElections().subscribe(wahlen => {
       this.elections = wahlen;
 
       this.selectedElection = this.elections[0];
-      this.dataService.setSelectedWahl(this.selectedElection!);
+      this.dataService.setSelectedElection(this.selectedElection!);
     });
   }
 

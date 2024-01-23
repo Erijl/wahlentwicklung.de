@@ -10,13 +10,13 @@ export class ConverterService {
   constructor() {
   }
 
-  convertWahlResultToColorScheme(sortedWahlResult: ElectionResult[]) {
+  convertElectionResultToColorScheme(sortedElectionResult: ElectionResult[]) {
     let colorScheme = [];
     let nullColors = 0;
-    for (const wahlResult of sortedWahlResult) {
+    for (const electionResult of sortedElectionResult) {
       colorScheme.push({
-        'name': wahlResult.party_name,
-        'value': wahlResult.color_hex || defaultColorScheme[(nullColors++) % defaultColorScheme.length]
+        'name': electionResult.party_name,
+        'value': electionResult.color_hex || defaultColorScheme[(nullColors++) % defaultColorScheme.length]
       });
     }
 

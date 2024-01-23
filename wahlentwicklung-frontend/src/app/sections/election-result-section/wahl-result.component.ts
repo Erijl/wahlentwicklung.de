@@ -13,7 +13,7 @@ import {defaultColorScheme} from "../../core/data/color";
   styleUrls: []
 })
 export class WahlResultComponent implements OnInit {
-  wahlResultData: ElectionResult[] = [];
+  electionResultData: ElectionResult[] = [];
   chartModes: string[] = ['zweitstimmen', 'erststimmen', 'grouped'];
   currentChartModeIndex: number = 0;
   chartMode: string = this.chartModes[this.currentChartModeIndex];
@@ -45,9 +45,9 @@ export class WahlResultComponent implements OnInit {
   }
 
   setCustomColorScheme() {
-    this.barChartColorScheme = this.converterService.convertWahlResultToColorScheme(this.wahlResultData);
+    this.barChartColorScheme = this.converterService.convertElectionResultToColorScheme(this.electionResultData);
     /*
-    Assigning seperate colors to the 2d bar chart does not work, since the only format supported is
+    Assigning separate colors to the 2d grouped bar chart does not work, since the only format supported is
       { name: 'Erststimme', value: '#E5FF36' },
       { name: 'Zweitstimmen', value: '#4E39B4' },
 
@@ -68,19 +68,19 @@ export class WahlResultComponent implements OnInit {
   updateChartData() {
     if (this.chartMode === 'zweitstimmen') {
       // Map the fields for Zweitstimmen mode
-      this.chartData = this.wahlResultData.slice(0, 6).map((item) => ({
+      this.chartData = this.electionResultData.slice(0, 6).map((item) => ({
         name: item.party_name,
         value: item.percentage_of_votes_secondary,
       }));
     } else if (this.chartMode === 'erststimmen') {
       // Map the fields for Erststimmen mode
-      this.chartData = this.wahlResultData.slice(0, 6).map((item) => ({
+      this.chartData = this.electionResultData.slice(0, 6).map((item) => ({
         name: item.party_name,
         value: item.percentage_of_votes_primary,
       }));
     } else if (this.chartMode === 'grouped') {
       // Create a grouped dataset by mapping both fields
-      this.chartData = this.wahlResultData.slice(0, 6).map((item) => ({
+      this.chartData = this.electionResultData.slice(0, 6).map((item) => ({
         name: item.party_name,
         series: [
           {
@@ -97,27 +97,27 @@ export class WahlResultComponent implements OnInit {
 
 
   ngOnInit(): void {
-    this.dataService.getSelectedWahl().subscribe(wahl => {
-      if (wahl) {
-        this.getResultData(wahl.election_id);
+    this.dataService.getSelectedElection().subscribe(election => {
+      if (election) {
+        this.getResultData(election.election_id);
       }
     });
 
-    this.chartData = this.wahlResultData.slice(0, 6).map((item) => ({
+    this.chartData = this.electionResultData.slice(0, 6).map((item) => ({
       name: item.party_name,
       value: item.percentage_of_votes_secondary,
     }));
     this.dataSource.paginator = this.paginator;
-    this.dataSource = new MatTableDataSource(this.wahlResultData);
+    this.dataSource = new MatTableDataSource(this.electionResultData);
     this.dataSource.sort = this.sort;
   }
 
-  getResultData(wahlId: number) {
-    this.dataService.getWahlResult(wahlId).subscribe(result => {
-      this.wahlResultData = result
-      this.dataSource = new MatTableDataSource(this.wahlResultData);
+  getResultData(electionId: number) {
+    this.dataService.getElectionResult(electionId).subscribe(result => {
+      this.electionResultData = result
+      this.dataSource = new MatTableDataSource(this.electionResultData);
 
-      this.chartData = this.wahlResultData.slice(0, 6).map((item) => ({
+      this.chartData = this.electionResultData.slice(0, 6).map((item) => ({
         name: item.party_name,
         value: item.percentage_of_votes_secondary,
       }));

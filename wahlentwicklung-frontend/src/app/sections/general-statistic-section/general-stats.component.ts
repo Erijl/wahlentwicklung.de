@@ -12,9 +12,9 @@ export class GeneralStatsComponent implements OnInit {
     electionData: GeneralElectionData | null = null;
     voterTurnout: string | null = null;
 
-    @ViewChild('wahlberechtigte', { static: false }) wahlberechtigteElement: ElementRef | undefined;
-    @ViewChild('waehler', { static: false }) waehlerElement: ElementRef | undefined;
-    @ViewChild('wahlbeteilligung', { static: false }) wahlbeteilligungElement: ElementRef | undefined;
+    @ViewChild('eligible_voters', { static: false }) eligibleVotersElement: ElementRef | undefined;
+    @ViewChild('voters', { static: false }) votersElement: ElementRef | undefined;
+    @ViewChild('voter_turnout', { static: false }) voterTurnoutElement: ElementRef | undefined;
 
     countUpOptions = {
         duration: 2,
@@ -31,9 +31,9 @@ export class GeneralStatsComponent implements OnInit {
     constructor(private dataService: DataService) { }
 
     ngOnInit(): void {
-        this.dataService.getSelectedWahl().subscribe(wahl => {
-            if (wahl) {
-                this.getGeneralElectionData(wahl.election_id);
+        this.dataService.getSelectedElection().subscribe(election => {
+            if (election) {
+                this.getGeneralElectionData(election.election_id);
             }
         });
     }
@@ -53,9 +53,9 @@ export class GeneralStatsComponent implements OnInit {
       this.dataService.getGeneralElectionData(id).subscribe((data: any) => {
         this.electionData = data;
         this.voterTurnout = ((this.electionData!.voters / this.electionData!.eligible_voters) * 100).toFixed(1);
-          this.createCountUp('wahlberechtigte', this.electionData?.eligible_voters || 0, this.countUpOptions);
-          this.createCountUp('waehler', this.electionData?.voters || 0, this.countUpOptions);
-          this.createCountUp('wahlbeteilligung', parseFloat(this.voterTurnout || '0'), this.countUpDecimalOptions);
+          this.createCountUp('eligible_voters', this.electionData?.eligible_voters || 0, this.countUpOptions);
+          this.createCountUp('voters', this.electionData?.voters || 0, this.countUpOptions);
+          this.createCountUp('voter_turnout', parseFloat(this.voterTurnout || '0'), this.countUpDecimalOptions);
       });
     }
 

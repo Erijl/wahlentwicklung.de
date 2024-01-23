@@ -48,10 +48,10 @@ export class BundeslandStatsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.dataService.getSelectedWahl().subscribe(wahl => {
-      if (wahl) {
-        this.getBundeslaenderData(wahl.election_id);
-        this.wahl = wahl;
+    this.dataService.getSelectedElection().subscribe(election => {
+      if (election) {
+        this.getBundeslaenderData(election.election_id);
+        this.wahl = election;
       }
     });
 
@@ -65,12 +65,12 @@ export class BundeslandStatsComponent implements OnInit {
   }
 
   setCustomColorScheme() {
-    this.barChartColorScheme = this.converterService.convertWahlResultToColorScheme(this.wahlResultData);
+    this.barChartColorScheme = this.converterService.convertElectionResultToColorScheme(this.wahlResultData);
     //Assigning seperate colors to the 2d bar chart does not work, see wahl-result.component.ts for reference
   }
 
   onBundeslandSelect() {
-    this.getResultData(this.wahl!.election_id, this.selectedBundesland.bundesland_id)
+    this.getResultData(this.wahl!.election_id, this.selectedBundesland.state_id)
   }
 
   cycleChartMode() {
@@ -110,16 +110,16 @@ export class BundeslandStatsComponent implements OnInit {
     }
   }
 
-  getBundeslaenderData(wahlId: number) {
-    this.dataService.getBundeslaender().subscribe((data: any) => {
+  getBundeslaenderData(electionId: number) {
+    this.dataService.getStates().subscribe((data: any) => {
       this.bundeslaender = data;
       this.selectedBundesland = this.bundeslaender[0];
-      this.getResultData(wahlId, this.selectedBundesland.bundesland_id);
+      this.getResultData(electionId, this.selectedBundesland.state_id);
     });
   }
 
-  getResultData(wahlId: number, bundeslandId: number) {
-    this.dataService.getBundeslandResult(wahlId, bundeslandId).subscribe((data: any) => {
+  getResultData(electionId: number, stateId: number) {
+    this.dataService.getStateResult(electionId, stateId).subscribe((data: any) => {
       this.wahlResultData = data;
       this.dataSource = new MatTableDataSource(this.wahlResultData);
 

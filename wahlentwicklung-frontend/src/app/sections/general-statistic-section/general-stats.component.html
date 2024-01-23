@@ -5,7 +5,7 @@
                 <dt class="text-xl leading-7 text-gray-600">Wahlberechtigte</dt>
                 <dd
                         class="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl"
-                        #wahlberechtigte
+                        #eligible_voters
                 >
                     {{ this.electionData?.eligible_voters | number }}
                 </dd>
@@ -14,7 +14,7 @@
                 <dt class="text-xl leading-7 text-gray-600">Wähler</dt>
                 <dd
                         class="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl"
-                        #waehler
+                        #voters
                 >
                     {{ this.electionData?.voters | number }}
                 </dd>
@@ -23,7 +23,7 @@
                 <dt class="text-xl leading-7 text-gray-600">Wahlbeteilligung</dt>
                 <dd
                     class="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl"
-                    #wahlbeteilligung
+                    #voter_turnout
             >
                 {{ this.voterTurnout | number }}%
             </dd>

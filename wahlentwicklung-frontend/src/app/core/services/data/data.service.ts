@@ -9,7 +9,7 @@ import { GeneralElectionData, ElectionResult } from "../../types/function-types"
 })
 export class DataService {
   // @ts-ignore
-  private selectedWahl = new BehaviorSubject<Election>(null);
+  private selectedElection = new BehaviorSubject<Election>(null);
 
   private dataUrl = 'https://api.wahlentwicklung.de/';  // URL to web api
 
@@ -20,15 +20,15 @@ export class DataService {
   constructor(private http: HttpClient) {
   }
 
-  setSelectedWahl(wahl: Election) {
-    this.selectedWahl.next(wahl);
+  setSelectedElection(wahl: Election) {
+    this.selectedElection.next(wahl);
   }
 
-  getSelectedWahl() {
-    return this.selectedWahl.asObservable();
+  getSelectedElection() {
+    return this.selectedElection.asObservable();
   }
 
-  getBundeslaender() {
+  getStates() {
     return this.http.get<State[]>(this.dataUrl + 'bundeslaender')
       .pipe(
         tap(_ => this.log('fetched Bundeslaender')),
@@ -36,7 +36,7 @@ export class DataService {
       );
   }
 
-  getBundeslandResult(wahlId: number, bundeslandId: number) {
+  getStateResult(wahlId: number, bundeslandId: number) {
     return this.http.get<District[]>(`${this.dataUrl}bundesland/result/${wahlId}/${bundeslandId}`)
       .pipe(
         tap(_ => this.log('fetched Wahlkreise')),
@@ -44,7 +44,7 @@ export class DataService {
       );
   }
 
-  getWahlen() {
+  getElections() {
     return this.http.get<Election[]>(this.dataUrl + 'wahlen')
       .pipe(
         tap(_ => this.log('fetched Wahlen')),
@@ -52,7 +52,7 @@ export class DataService {
       );
   }
 
-  getParteien() {
+  getParties() {
     return this.http.get<Party[]>(this.dataUrl + 'parteien')
       .pipe(
         tap(_ => this.log('fetched Parteien')),
@@ -60,7 +60,7 @@ export class DataService {
       );
   }
 
-  getWahlResult(id: number) {
+  getElectionResult(id: number) {
     return this.http.get<ElectionResult[]>(this.dataUrl + 'wahl/result/' + id)
       .pipe(
         tap(_ => this.log('fetched wahlResult')),
@@ -77,8 +77,7 @@ export class DataService {
   }
 
   /**
-   * Handle Http operation that failed.
-   * Let the app continue.
+   * Handle a Http operation that failed, without crashing the app.
    *
    * @param operation - name of the operation that failed
    * @param result - optional value to return as the observable result
@@ -86,18 +85,16 @@ export class DataService {
   private handleError<T>(operation = 'operation', result?: T) {
     return (error: any): Observable<T> => {
 
-      // TODO: send the error to remote logging infrastructure
+      // TODO refactor
       console.error(error); // log to console instead
 
-      // TODO: better job of transforming error for user consumption
+      // TODO refactor
       this.log(`${operation} failed: ${error.message}`);
 
-      // Let the app keep running by returning an empty result.
       return of(result as T);
     };
   }
 
-  /** Log a HeroService message with the MessageService */
   private log(message: string) {
     console.log(`DEBUG: ${message}`);
   }

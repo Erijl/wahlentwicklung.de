@@ -18,11 +18,11 @@ import { BarChartModule } from "@swimlane/ngx-charts";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { MatButtonModule } from "@angular/material/button";
 import { FooterComponent } from './components/footer/footer.component';
-import { HeroComponent } from './sections/hero-section/hero.component';
+import { HeroSectionComponent } from './sections/hero-section/hero-section.component';
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatSelectModule } from "@angular/material/select";
-import { GeneralStatsComponent } from './sections/general-statistic-section/general-stats.component';
-import { BundeslandStatsComponent } from './sections/state-statistic-section/bundesland-stats.component';
+import { GeneralStatisticSection } from './sections/general-statistic-section/general-statistic-section';
+import { StateStatisticSection } from './sections/state-statistic-section/state-statistic-section';
 import { MatListModule } from "@angular/material/list";
 import { MatIconModule } from "@angular/material/icon";
 import { MatExpansionModule } from "@angular/material/expansion";
@@ -37,9 +37,9 @@ import { FaqSectionComponent } from './sections/faq-section/faq-section.componen
     LandingpageComponent,
     ElectionResultSectionComponent,
     FooterComponent,
-    HeroComponent,
-    GeneralStatsComponent,
-    BundeslandStatsComponent,
+    HeroSectionComponent,
+    GeneralStatisticSection,
+    StateStatisticSection,
     FaqSectionComponent
   ],
   imports: [

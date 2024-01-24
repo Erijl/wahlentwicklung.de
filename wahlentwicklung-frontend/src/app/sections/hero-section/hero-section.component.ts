@@ -4,10 +4,10 @@ import { DataService } from "../../core/services/data/data.service";
 
 @Component({
   selector: 'app-hero',
-  templateUrl: './hero.component.html',
+  templateUrl: './hero-section.component.html',
   styleUrls: []
 })
-export class HeroComponent implements OnInit {
+export class HeroSectionComponent implements OnInit {
   elections: Election[] = [];
   selectedElection: Election | null = null;
 

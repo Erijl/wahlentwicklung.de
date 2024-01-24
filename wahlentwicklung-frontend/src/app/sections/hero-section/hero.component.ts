@@ -1,6 +1,6 @@
-import {Component, OnInit} from '@angular/core';
-import {Election} from "../../core/types/common-types";
-import {DataService} from "../../core/services/data/data.service";
+import { Component, OnInit } from '@angular/core';
+import { Election } from "../../core/types/common-types";
+import { DataService } from "../../core/services/data/data.service";
 
 @Component({
   selector: 'app-hero',
@@ -11,7 +11,8 @@ export class HeroComponent implements OnInit {
   elections: Election[] = [];
   selectedElection: Election | null = null;
 
-  constructor(private dataService: DataService) {  }
+  constructor(private dataService: DataService) {
+  }
 
   ngOnInit() {
     this.getElections();
@@ -22,8 +23,8 @@ export class HeroComponent implements OnInit {
   }
 
   getElections(): void {
-    this.dataService.getElections().subscribe(wahlen => {
-      this.elections = wahlen;
+    this.dataService.getElections().subscribe(elections => {
+      this.elections = elections;
 
       this.selectedElection = this.elections[0];
       this.dataService.setSelectedElection(this.selectedElection!);

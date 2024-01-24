@@ -4,11 +4,11 @@ import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './routing/app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from "@angular/common/http";
-import { HeaderComponent } from './components/header-component/header.component';
+import { HeaderComponent } from './components/header/header.component';
 import { FormsModule } from "@angular/forms";
 import { LandingpageComponent } from './sites/landingpage/landingpage.component';
 import { NgMultiSelectDropDownModule } from "ng-multiselect-dropdown";
-import { WahlResultComponent } from './sections/election-result-section/wahl-result.component';
+import { ElectionResultSectionComponent } from './sections/election-result-section/election-result-section.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatPaginatorModule } from "@angular/material/paginator";
 import { MatTableModule } from "@angular/material/table";
@@ -17,7 +17,7 @@ import { MatSortModule } from "@angular/material/sort";
 import { BarChartModule } from "@swimlane/ngx-charts";
 import { MatButtonToggleModule } from "@angular/material/button-toggle";
 import { MatButtonModule } from "@angular/material/button";
-import { FooterComponent } from './components/footer-component/footer.component';
+import { FooterComponent } from './components/footer/footer.component';
 import { HeroComponent } from './sections/hero-section/hero.component';
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatSelectModule } from "@angular/material/select";
@@ -35,7 +35,7 @@ import { FaqSectionComponent } from './sections/faq-section/faq-section.componen
     AppComponent,
     HeaderComponent,
     LandingpageComponent,
-    WahlResultComponent,
+    ElectionResultSectionComponent,
     FooterComponent,
     HeroComponent,
     GeneralStatsComponent,

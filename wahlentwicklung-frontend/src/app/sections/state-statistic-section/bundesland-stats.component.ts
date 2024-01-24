@@ -1,11 +1,11 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {DataService} from "../../core/services/data/data.service";
-import {ConverterService} from "../../core/services/converter/converter.service";
-import {Election} from "../../core/types/common-types";
-import {MatTableDataSource} from "@angular/material/table";
-import {ElectionResult} from "../../core/types/function-types";
-import {MatPaginator} from "@angular/material/paginator";
-import {MatSort} from "@angular/material/sort";
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { DataService } from "../../core/services/data/data.service";
+import { ConverterService } from "../../core/services/converter/converter.service";
+import { Election } from "../../core/types/common-types";
+import { MatTableDataSource } from "@angular/material/table";
+import { ElectionResult } from "../../core/types/function-types";
+import { MatPaginator } from "@angular/material/paginator";
+import { MatSort } from "@angular/material/sort";
 
 @Component({
   selector: 'app-bundesland-stats',
@@ -66,7 +66,7 @@ export class BundeslandStatsComponent implements OnInit {
 
   setCustomColorScheme() {
     this.barChartColorScheme = this.converterService.convertElectionResultToColorScheme(this.wahlResultData);
-    //Assigning seperate colors to the 2d bar chart does not work, see wahl-result.component.ts for reference
+    //Assigning seperate colors to the 2d bar chart does not work, see election-result-section.component.ts for reference
   }
 
   onBundeslandSelect() {

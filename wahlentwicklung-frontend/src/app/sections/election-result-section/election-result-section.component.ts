@@ -1,18 +1,17 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {DataService} from "../../core/services/data/data.service";
-import {ElectionResult} from "../../core/types/function-types";
-import {MatPaginator} from "@angular/material/paginator";
-import {MatTableDataSource} from "@angular/material/table";
-import {MatSort} from "@angular/material/sort";
-import {ConverterService} from "../../core/services/converter/converter.service";
-import {defaultColorScheme} from "../../core/data/color";
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { DataService } from "../../core/services/data/data.service";
+import { ElectionResult } from "../../core/types/function-types";
+import { MatPaginator } from "@angular/material/paginator";
+import { MatTableDataSource } from "@angular/material/table";
+import { MatSort } from "@angular/material/sort";
+import { ConverterService } from "../../core/services/converter/converter.service";
 
 @Component({
   selector: 'app-wahl-result',
-  templateUrl: './wahl-result.component.html',
+  templateUrl: './election-result-section.component.html',
   styleUrls: []
 })
-export class WahlResultComponent implements OnInit {
+export class ElectionResultSectionComponent implements OnInit {
   electionResultData: ElectionResult[] = [];
   chartModes: string[] = ['zweitstimmen', 'erststimmen', 'grouped'];
   currentChartModeIndex: number = 0;

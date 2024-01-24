@@ -9,10 +9,10 @@ import { MatSort } from "@angular/material/sort";
 
 @Component({
   selector: 'app-bundesland-stats',
-  templateUrl: './bundesland-stats.component.html',
+  templateUrl: './state-statistic-section.component.html',
   styleUrls: []
 })
-export class BundeslandStatsComponent implements OnInit {
+export class StateStatisticSection implements OnInit {
   bundeslaender: any[] = [];
   selectedBundesland: any = null;
   wahl: Election | null = null;

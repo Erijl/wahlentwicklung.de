@@ -5,10 +5,10 @@ import { CountUp } from "countup.js";
 
 @Component({
   selector: 'app-general-stats',
-  templateUrl: './general-stats.component.html',
+  templateUrl: './general-statistic-section.html',
   styleUrls: []
 })
-export class GeneralStatsComponent implements OnInit {
+export class GeneralStatisticSection implements OnInit {
   electionData: GeneralElectionData | null = null;
   voterTurnout: string | null = null;
 

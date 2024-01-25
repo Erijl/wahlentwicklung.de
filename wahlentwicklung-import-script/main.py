@@ -2,8 +2,8 @@ import os
 from dotenv import load_dotenv
 from supabase import create_client, Client
 import csv
-from models import Wahl, Bundesland, ParteiNID, Partei, WahlkreisNID, Wahlkreis, ParteiStimmenNID, BundeslandStimmen, \
-    BundeslandStimmenNID
+from models import Election, Party, PartyNID, PartyVotes, PartyVotesNID, District, DistrictNID, State, StateVotes, \
+    StateVotesNID
 
 
 def parse_to_int(value):
@@ -31,27 +31,28 @@ key: str = os.getenv("_SUPABASE_SERVICE_KEY")
 supabase: Client = create_client(url, key)
 
 # get Wahlen
-wahl_raw = supabase.table("wahl").select("*").execute()
-wahl_list = [Wahl(**data) for data in wahl_raw.data]
-wahl = next(filter(lambda obj: obj.year == year, wahl_list), None)
+election_raw = supabase.table("election").select("*").execute()
+election_list = [Election(**data) for data in election_raw.data]
+election = next(filter(lambda obj: obj.year == year, election_list), None)
 
 # get Bundesländer
-bundesland_raw = supabase.table("bundesland").select("*").execute()
-bundesland_list = [Bundesland(**data) for data in bundesland_raw.data]
+state_raw = supabase.table("bundesland").select("*").execute()
+state_list = [State(**data) for data in state_raw.data]
 
-with open('data/btw2017_kerg.csv', newline='', encoding='utf-8') as csvfile: # Files newer than 2013 are commonly saved in the format UTF-8, older files may be saved in windows-1252; Check before importing!
+with open('data/btw2017_kerg.csv', newline='',
+          encoding='utf-8') as csvfile:  # Files newer than 2013 are commonly saved in the format UTF-8, older files may be saved in windows-1252; Check before importing!
     print(csvfile)
-    reader = csv.reader(csvfile, delimiter='|') #Usage of not relevant delimiter to allow access using array syntax
+    reader = csv.reader(csvfile, delimiter='|')  # Usage of not relevant delimiter to allow access using array syntax
 
     csv_data = list(reader)
 
 csv_data = csv_data[skip_entries:]
 
-bundesland_stimmen_dicts = []
-wahlkreis_dicts = []
-partei_dicts = []
-partei_stimmen = []
-partei_stimmen_dicts = []
+state_votes_dicts = []
+district_dicts = []
+party_dicts = []
+party_votes = []
+party_votes_dicts = []
 
 for index, row in enumerate(csv_data):
     entries = str(row[0]).split(';')
@@ -62,91 +63,91 @@ for index, row in enumerate(csv_data):
             for party_index, entry in enumerate(entries):
 
                 if party_index >= party_beginning and entries[party_index] != '':
-                    partei = ParteiNID(entries[party_index], wahl.wahl_id)
+                    party = PartyNID(entries[party_index], election.election_id)
 
-                    partei_dicts.append(partei.to_dict())
+                    party_dicts.append(party.to_dict())
 
         # create bundesland stimmen
         if entries[0] != "Nr" and int(entries[0]) >= 900:
-            bundesland = next(filter(lambda bland: bland.identifier == int(entries[0]), bundesland_list), None)
+            state = next(filter(lambda bland: bland.identifier == int(entries[0]), state_list), None)
 
-            stimmen = BundeslandStimmenNID(wahl.wahl_id, bundesland.bundesland_id, {
-                "erststimmen_endgueltig": parse_to_int(entries[3]),
-                "erststimmen_vorperiode": parse_to_int(entries[4]),
-                "zweitstimmen_endgueltig": parse_to_int(entries[5]),
-                "zweitstimmen_vorperiode": parse_to_int(entries[6]),
+            state_votes = StateVotesNID(election.election_id, state.state_id, {
+                "primary_votes_final": parse_to_int(entries[3]),
+                "primary_votes_prior": parse_to_int(entries[4]),
+                "secondary_votes_final": parse_to_int(entries[5]),
+                "secondary_votes_prior": parse_to_int(entries[6]),
             }, {
-                                               "erststimmen_endgueltig": parse_to_int(entries[7]),
-                                               "erststimmen_vorperiode": parse_to_int(entries[8]),
-                                               "zweitstimmen_endgueltig": parse_to_int(entries[9]),
-                                               "zweitstimmen_vorperiode": parse_to_int(entries[10]),
-                                           }, {
-                                               "erststimmen_endgueltig": parse_to_int(entries[11]),
-                                               "erststimmen_vorperiode": parse_to_int(entries[12]),
-                                               "zweitstimmen_endgueltig": parse_to_int(entries[13]),
-                                               "zweitstimmen_vorperiode": parse_to_int(entries[14]),
-                                           }, {
-                                               "erststimmen_endgueltig": parse_to_int(entries[15]),
-                                               "erststimmen_vorperiode": parse_to_int(entries[16]),
-                                               "zweitstimmen_endgueltig": parse_to_int(entries[17]),
-                                               "zweitstimmen_vorperiode": parse_to_int(entries[18]),
-                                           })
-            bundesland_stimmen_dicts.append(stimmen.to_dict())
+                                            "primary_votes_final": parse_to_int(entries[7]),
+                                            "primary_votes_prior": parse_to_int(entries[8]),
+                                            "secondary_votes_final": parse_to_int(entries[9]),
+                                            "secondary_votes_prior": parse_to_int(entries[10]),
+                                        }, {
+                                            "primary_votes_final": parse_to_int(entries[11]),
+                                            "primary_votes_prior": parse_to_int(entries[12]),
+                                            "secondary_votes_final": parse_to_int(entries[13]),
+                                            "secondary_votes_prior": parse_to_int(entries[14]),
+                                        }, {
+                                            "primary_votes_final": parse_to_int(entries[15]),
+                                            "primary_votes_prior": parse_to_int(entries[16]),
+                                            "secondary_votes_final": parse_to_int(entries[17]),
+                                            "secondary_votes_prior": parse_to_int(entries[18]),
+                                        })
+            state_votes_dicts.append(state_votes.to_dict())
 
         # create wahlkreis & wahlkreis stimmen
         elif entries[0] != "Nr" and int(entries[0]) < 900:
-            bundesland = next(filter(lambda bland: bland.identifier == int(entries[2]), bundesland_list), None)
+            state = next(filter(lambda bland: bland.identifier == int(entries[2]), state_list), None)
 
-            wahlkreis = WahlkreisNID(wahl.wahl_id, bundesland.bundesland_id, entries[0], entries[1], {
-                "erststimmen_endgueltig": parse_to_int(entries[3]),
-                "erststimmen_vorperiode": parse_to_int(entries[4]),
-                "zweitstimmen_endgueltig": parse_to_int(entries[5]),
-                "zweitstimmen_vorperiode": parse_to_int(entries[6]),
+            districts = DistrictNID(election.election_id, state.state_id, entries[0], entries[1], {
+                "primary_votes_final": parse_to_int(entries[3]),
+                "primary_votes_prior": parse_to_int(entries[4]),
+                "secondary_votes_final": parse_to_int(entries[5]),
+                "secondary_votes_prior": parse_to_int(entries[6]),
             }, {
-                                               "erststimmen_endgueltig": parse_to_int(entries[7]),
-                                               "erststimmen_vorperiode": parse_to_int(entries[8]),
-                                               "zweitstimmen_endgueltig": parse_to_int(entries[9]),
-                                               "zweitstimmen_vorperiode": parse_to_int(entries[10]),
-                                           }, {
-                                               "erststimmen_endgueltig": parse_to_int(entries[11]),
-                                               "erststimmen_vorperiode": parse_to_int(entries[12]),
-                                               "zweitstimmen_endgueltig": parse_to_int(entries[13]),
-                                               "zweitstimmen_vorperiode": parse_to_int(entries[14]),
-                                           }, {
-                                               "erststimmen_endgueltig": parse_to_int(entries[15]),
-                                               "erststimmen_vorperiode": parse_to_int(entries[16]),
-                                               "zweitstimmen_endgueltig": parse_to_int(entries[17]),
-                                               "zweitstimmen_vorperiode": parse_to_int(entries[18]),
-                                           })
+                                        "primary_votes_final": parse_to_int(entries[7]),
+                                        "primary_votes_prior": parse_to_int(entries[8]),
+                                        "secondary_votes_final": parse_to_int(entries[9]),
+                                        "secondary_votes_prior": parse_to_int(entries[10]),
+                                    }, {
+                                        "primary_votes_final": parse_to_int(entries[11]),
+                                        "primary_votes_prior": parse_to_int(entries[12]),
+                                        "secondary_votes_final": parse_to_int(entries[13]),
+                                        "secondary_votes_prior": parse_to_int(entries[14]),
+                                    }, {
+                                        "primary_votes_final": parse_to_int(entries[15]),
+                                        "primary_votes_prior": parse_to_int(entries[16]),
+                                        "secondary_votes_final": parse_to_int(entries[17]),
+                                        "secondary_votes_prior": parse_to_int(entries[18]),
+                                    })
 
-            wahlkreis_dicts.append(wahlkreis.to_dict())
+            district_dicts.append(districts.to_dict())
 
             # Partei Stimmen dicts
             p_index = party_beginning
             while p_index < len(entries):
                 # TODO change if supporting years with just 2 types of votes instead of 4
-                partei_stimme = ParteiStimmenNID(str(csv_data[0]).split(';')[p_index], wahlkreis.identifier, {
-                    "erststimmen_endgueltig": parse_to_int(entries[p_index]),
-                    "erststimmen_vorperiode": parse_to_int(entries[p_index + 1]),
-                    "zweitstimmen_endgueltig": parse_to_int(entries[p_index + 2]),
-                    "zweitstimmen_vorperiode": parse_to_int(entries[p_index + 3]),
+                party_votes = PartyVotesNID(str(csv_data[0]).split(';')[p_index], districts.identifier, {
+                    "primary_votes_final": parse_to_int(entries[p_index]),
+                    "primary_votes_prior": parse_to_int(entries[p_index + 1]),
+                    "secondary_votes_final": parse_to_int(entries[p_index + 2]),
+                    "secondary_votes_prior": parse_to_int(entries[p_index + 3]),
                 })
-                partei_stimmen.append(partei_stimme)
+                party_votes.append(party_votes)
 
                 p_index += party_distance
 
-bundesland_response = supabase.table("bundesland_stimmen").insert(bundesland_stimmen_dicts).execute()
-wahlkreis_response = supabase.table("wahlkreis").insert(wahlkreis_dicts).execute()
-partei_response = supabase.table("partei").insert(partei_dicts).execute()
+state_response = supabase.table("party_votes").insert(state_votes_dicts).execute()
+district_response = supabase.table("district").insert(district_dicts).execute()
+partei_response = supabase.table("party").insert(party_dicts).execute()
 
-wahlkreis_response_list = [Wahlkreis(**data) for data in wahlkreis_response.data]
-partei_response_list = [Partei(**data) for data in partei_response.data]
+district_response_list = [District(**data) for data in district_response.data]
+party_response_list = [Party(**data) for data in partei_response.data]
 
-for p_stimme in partei_stimmen:
-    p_stimme.wahlkreis_id = next(
-        filter(lambda obj: obj.identifier == int(p_stimme.wahlkreis_id), wahlkreis_response_list), None).wahlkreis_id
-    p_stimme.partei_id = next(filter(lambda obj: obj.name == p_stimme.partei_id, partei_response_list), None).partei_id
+for p_vote in party_votes:
+    p_vote.district_id = next(
+        filter(lambda obj: obj.identifier == int(p_vote.district_id), district_response_list), None).district_id
+    p_vote.party_id = next(filter(lambda obj: obj.name == p_vote.party_id, party_response_list), None).party_id
 
-    partei_stimmen_dicts.append(p_stimme.to_dict())
+    party_votes_dicts.append(p_vote.to_dict())
 
-partei_stimmen_response = supabase.table("partei_stimmen").insert(partei_stimmen_dicts).execute()
+party_votes_response = supabase.table("party_votes").insert(party_votes_dicts).execute()

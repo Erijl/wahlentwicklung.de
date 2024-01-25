@@ -36,7 +36,7 @@ election_list = [Election(**data) for data in election_raw.data]
 election = next(filter(lambda obj: obj.year == year, election_list), None)
 
 # get Bundesländer
-state_raw = supabase.table("bundesland").select("*").execute()
+state_raw = supabase.table("state").select("*").execute()
 state_list = [State(**data) for data in state_raw.data]
 
 with open('data/btw2017_kerg.csv', newline='',
@@ -126,17 +126,17 @@ for index, row in enumerate(csv_data):
             p_index = party_beginning
             while p_index < len(entries):
                 # TODO change if supporting years with just 2 types of votes instead of 4
-                party_votes = PartyVotesNID(str(csv_data[0]).split(';')[p_index], districts.identifier, {
+                party_votes_local = PartyVotesNID(str(csv_data[0]).split(';')[p_index], districts.identifier, {
                     "primary_votes_final": parse_to_int(entries[p_index]),
                     "primary_votes_prior": parse_to_int(entries[p_index + 1]),
                     "secondary_votes_final": parse_to_int(entries[p_index + 2]),
                     "secondary_votes_prior": parse_to_int(entries[p_index + 3]),
                 })
-                party_votes.append(party_votes)
+                party_votes.append(party_votes_local)
 
                 p_index += party_distance
 
-state_response = supabase.table("party_votes").insert(state_votes_dicts).execute()
+state_response = supabase.table("state_votes").insert(state_votes_dicts).execute()
 district_response = supabase.table("district").insert(district_dicts).execute()
 partei_response = supabase.table("party").insert(party_dicts).execute()
 

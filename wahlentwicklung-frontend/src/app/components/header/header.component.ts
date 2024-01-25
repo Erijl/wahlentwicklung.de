@@ -1,35 +1,12 @@
-import {Component, OnInit} from '@angular/core';
-import {DataService} from "../../core/services/data/data.service";
-import {Wahl} from "../../core/types/common-types";
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
   styleUrls: []
 })
-export class HeaderComponent implements OnInit {
-  wahlen: Wahl[] = [];
+export class HeaderComponent {
 
-  selectedMode: string = 'detail'; // Default to 'detail' mode
-  firstSelectedWahl: Wahl | null = null;
-  secondSelectedWahl: Wahl | null = null;
-
-  constructor(private dataService: DataService) {  }
-
-  onModeChange(value: string) {
-    this.selectedMode = value;
-  }
-
-  ngOnInit() {
-    this.getWahlen();
-  }
-
-  getWahlen(): void {
-    this.dataService.getWahlen().subscribe(wahlen => {
-      this.wahlen = wahlen;
-
-      this.firstSelectedWahl = this.wahlen[0];
-      this.secondSelectedWahl = this.wahlen[0];
-    });
+  constructor() {
   }
 }

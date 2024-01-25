@@ -1,25 +1,25 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {DataService} from "../../core/services/data/data.service";
-import {ConverterService} from "../../core/services/converter/converter.service";
-import {Wahl} from "../../core/types/common-types";
-import {MatTableDataSource} from "@angular/material/table";
-import {WahlResult} from "../../core/types/function-types";
-import {MatPaginator} from "@angular/material/paginator";
-import {MatSort} from "@angular/material/sort";
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { DataService } from "../../core/services/data/data.service";
+import { ConverterService } from "../../core/services/converter/converter.service";
+import { Election } from "../../core/types/common-types";
+import { MatTableDataSource } from "@angular/material/table";
+import { ElectionResult } from "../../core/types/function-types";
+import { MatPaginator } from "@angular/material/paginator";
+import { MatSort } from "@angular/material/sort";
 
 @Component({
   selector: 'app-bundesland-stats',
-  templateUrl: './bundesland-stats.component.html',
+  templateUrl: './state-statistic-section.component.html',
   styleUrls: []
 })
-export class BundeslandStatsComponent implements OnInit {
+export class StateStatisticSection implements OnInit {
   bundeslaender: any[] = [];
   selectedBundesland: any = null;
-  wahl: Wahl | null = null;
+  wahl: Election | null = null;
 
   barChartColorScheme: any[] = [];
   chartData: any[] = [];
-  wahlResultData: WahlResult[] = [];
+  wahlResultData: ElectionResult[] = [];
 
   chartModes: string[] = ['zweitstimmen', 'erststimmen'];
   currentChartModeIndex: number = 0;
@@ -48,16 +48,16 @@ export class BundeslandStatsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.dataService.getSelectedWahl().subscribe(wahl => {
-      if (wahl) {
-        this.getBundeslaenderData(wahl.wahl_id);
-        this.wahl = wahl;
+    this.dataService.getSelectedElection().subscribe(election => {
+      if (election) {
+        this.getBundeslaenderData(election.election_id);
+        this.wahl = election;
       }
     });
 
     this.chartData = this.wahlResultData.slice(0, 6).map((item) => ({
-      name: item.partei_name,
-      value: item.percentage_of_votes_zweitstimmen,
+      name: item.party_name,
+      value: item.percentage_of_votes_secondary,
     }));
     this.dataSource.paginator = this.paginator;
     this.dataSource = new MatTableDataSource(this.wahlResultData);
@@ -65,12 +65,12 @@ export class BundeslandStatsComponent implements OnInit {
   }
 
   setCustomColorScheme() {
-    this.barChartColorScheme = this.converterService.convertWahlResultToColorScheme(this.wahlResultData);
-    //Assigning seperate colors to the 2d bar chart does not work, see wahl-result.component.ts for reference
+    this.barChartColorScheme = this.converterService.convertElectionResultToColorScheme(this.wahlResultData);
+    //Assigning seperate colors to the 2d bar chart does not work, see election-result-section.component.ts for reference
   }
 
   onBundeslandSelect() {
-    this.getResultData(this.wahl!.wahl_id, this.selectedBundesland.bundesland_id)
+    this.getResultData(this.wahl!.election_id, this.selectedBundesland.state_id)
   }
 
   cycleChartMode() {
@@ -84,48 +84,48 @@ export class BundeslandStatsComponent implements OnInit {
     if (this.chartMode === 'zweitstimmen') {
       // Map the fields for Zweitstimmen mode
       this.chartData = this.wahlResultData.slice(0, 6).map((item) => ({
-        name: item.partei_name,
-        value: item.percentage_of_votes_zweitstimmen,
+        name: item.party_name,
+        value: item.percentage_of_votes_secondary,
       }));
     } else if (this.chartMode === 'erststimmen') {
       // Map the fields for Erststimmen mode
       this.chartData = this.wahlResultData.slice(0, 6).map((item) => ({
-        name: item.partei_name,
-        value: item.percentage_of_votes_erststimmen,
+        name: item.party_name,
+        value: item.percentage_of_votes_primary,
       }));
     } else if (this.chartMode === 'grouped') {
       // Create a grouped dataset by mapping both fields
       this.chartData = this.wahlResultData.slice(0, 6).map((item) => ({
-        name: item.partei_name,
+        name: item.party_name,
         series: [
           {
             name: `Zweitstimmen`,
-            value: item.percentage_of_votes_zweitstimmen,
+            value: item.percentage_of_votes_secondary,
           },
           {
             name: `Erststimmen`,
-            value: item.percentage_of_votes_erststimmen,
+            value: item.percentage_of_votes_primary,
           }],
       }));
     }
   }
 
-  getBundeslaenderData(wahlId: number) {
-    this.dataService.getBundeslaender().subscribe((data: any) => {
+  getBundeslaenderData(electionId: number) {
+    this.dataService.getStates().subscribe((data: any) => {
       this.bundeslaender = data;
       this.selectedBundesland = this.bundeslaender[0];
-      this.getResultData(wahlId, this.selectedBundesland.bundesland_id);
+      this.getResultData(electionId, this.selectedBundesland.state_id);
     });
   }
 
-  getResultData(wahlId: number, bundeslandId: number) {
-    this.dataService.getBundeslandResult(wahlId, bundeslandId).subscribe((data: any) => {
+  getResultData(electionId: number, stateId: number) {
+    this.dataService.getStateResult(electionId, stateId).subscribe((data: any) => {
       this.wahlResultData = data;
       this.dataSource = new MatTableDataSource(this.wahlResultData);
 
       this.chartData = this.wahlResultData.slice(0, 6).map((item) => ({
-        name: item.partei_name,
-        value: item.percentage_of_votes_zweitstimmen,
+        name: item.party_name,
+        value: item.percentage_of_votes_secondary,
       }));
       console.log(this.chartData)
 

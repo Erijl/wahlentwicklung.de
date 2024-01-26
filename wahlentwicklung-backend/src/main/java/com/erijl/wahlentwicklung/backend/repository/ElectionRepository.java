@@ -1,41 +1,97 @@
 package com.erijl.wahlentwicklung.backend.repository;
 
+import com.erijl.wahlentwicklung.backend.model.Election;
+import com.erijl.wahlentwicklung.backend.model.ElectionStatistic;
+import com.erijl.wahlentwicklung.backend.model.PartyElectionResult;
+import com.erijl.wahlentwicklung.backend.util.RestUtil;
+import com.erijl.wahlentwicklung.backend.util.UrlBuilder;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Repository
 public class ElectionRepository {
 
-    @Value("${supabase.service.key}")
-    private String supabaseServiceKey;
+    @Value("${supabase.url}")
+    private String supabaseUrl;
 
-    public ElectionRepository() {
+    private final RestUtil restUtil;
 
+    private final Gson gson = new GsonBuilder().create();
+
+    public ElectionRepository(RestUtil restUtil) {
+        this.restUtil = restUtil;
     }
 
-    public void fetchAllElections() {
+    public Election[] fetchAllElections() {
         RestTemplate restTemplate = new RestTemplate();
-        final String supabaseUrl = "https://yunvtkoxdvyltqdinama.supabase.co/rest/v1/election?select=*";
+        final String supabaseUrl = new UrlBuilder(this.supabaseUrl).from("election").select("*").getUrl();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
-        headers.set("apikey", supabaseServiceKey);
-        headers.set("Authorization", "Bearer " + supabaseServiceKey);
-
-        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
-
+        System.out.println(supabaseUrl);
         ResponseEntity<String> response = restTemplate.exchange(
-                supabaseUrl, HttpMethod.GET, requestEntity, String.class);
+                supabaseUrl, HttpMethod.GET, this.restUtil.getStandardHttpEntity(), String.class);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            String responseBody = response.getBody();
-            System.out.println(responseBody);
+            return this.gson.fromJson(response.getBody(), Election[].class);
         } else {
             System.out.println("Request Failed");
             System.out.println(response.getStatusCode());
         }
+
+        return null;
+    }
+
+    public PartyElectionResult[] fetchElectionResult(int electionId) {
+        RestTemplate restTemplate = new RestTemplate();
+        final String supabaseUrl = new UrlBuilder(this.supabaseUrl).rpc("getelectionresults").getUrl();
+
+        Map<String, String> body = new HashMap<>();
+        body.put("p_election_id", String.valueOf(electionId));
+
+        HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(body, this.restUtil.getStandardHeaders());
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                supabaseUrl, HttpMethod.POST, requestEntity, String.class);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+
+            return this.gson.fromJson(response.getBody(), PartyElectionResult[].class);
+        } else {
+            System.out.println("Request Failed");
+            System.out.println(response.getStatusCode());
+        }
+
+        return null;
+    }
+
+    public ElectionStatistic[] fetchElectionStatistic(int electionId, int stateId) {
+        RestTemplate restTemplate = new RestTemplate();
+        final String supabaseUrl = new UrlBuilder(this.supabaseUrl)
+                .from("state_votes")
+                .select("*")
+                .eq("election_id", electionId)
+                .eq("state_id", stateId)
+                .getUrl();
+
+        ResponseEntity<String> response = restTemplate.exchange(
+                supabaseUrl, HttpMethod.GET, this.restUtil.getStandardHttpEntity(), String.class);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
+            System.out.println(response.getBody());
+
+            return this.gson.fromJson(response.getBody(), ElectionStatistic[].class);
+        } else {
+            System.out.println("Request Failed");
+            System.out.println(response.getStatusCode());
+        }
+
+        return null;
     }
 
 }

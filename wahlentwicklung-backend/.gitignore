@@ -34,3 +34,4 @@ build/
 
 ### Other ###
 *.properties
+*.log

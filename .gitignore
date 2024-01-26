@@ -4,3 +4,5 @@
 wahlentwicklung-backend/.env
 wahlentwicklung-backend/node_modules/*
 wahlentwicklung-backend/dist/*
+
+logs/

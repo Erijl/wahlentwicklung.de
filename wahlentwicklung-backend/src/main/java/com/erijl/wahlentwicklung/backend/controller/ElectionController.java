@@ -1,5 +1,8 @@
 package com.erijl.wahlentwicklung.backend.controller;
 
+import com.erijl.wahlentwicklung.backend.model.Election;
+import com.erijl.wahlentwicklung.backend.model.ElectionStatistic;
+import com.erijl.wahlentwicklung.backend.model.PartyElectionResult;
 import com.erijl.wahlentwicklung.backend.service.ElectionService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -14,19 +17,18 @@ public class ElectionController {
         this.electionService = electionService;
     }
     @RequestMapping("/election/all")
-    public String getAllElections() {
-        this.electionService.getAllElections();
-        return "Hello world!";
+    public Election[] getAllElections() {
+        return this.electionService.getAllElections();
     }
 
     @RequestMapping("/election/result")
-    public String getElectionResult(@RequestParam(value="electionId") String electionId) {
-        return "Hello world! " + electionId;
+    public PartyElectionResult[] getElectionResult(@RequestParam(value="electionId") int electionId) {
+        return this.electionService.getElectionResult(electionId);
     }
 
     @RequestMapping("/election/statistic")
-    public String getElectionStatistics(@RequestParam(value="electionId") String electionId) {
-        return "Hello world!";
+    public ElectionStatistic getElectionStatistics(@RequestParam(value="electionId") int electionId) {
+        return this.electionService.getElectionStatistics(electionId);
     }
 
 }

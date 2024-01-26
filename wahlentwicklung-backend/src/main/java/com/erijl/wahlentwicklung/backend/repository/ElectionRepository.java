@@ -33,7 +33,6 @@ public class ElectionRepository {
         RestTemplate restTemplate = new RestTemplate();
         final String supabaseUrl = new UrlBuilder(this.supabaseUrl).from("election").select("*").getUrl();
 
-        System.out.println(supabaseUrl);
         ResponseEntity<String> response = restTemplate.exchange(
                 supabaseUrl, HttpMethod.GET, this.restUtil.getStandardHttpEntity(), String.class);
 

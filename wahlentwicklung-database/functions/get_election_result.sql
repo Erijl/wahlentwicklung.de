@@ -4,7 +4,7 @@ CREATE OR REPLACE FUNCTION getElectionResults(p_election_id integer)
                 party_name                    text,
                 total_votes_primary           bigint,
                 percentage_of_votes_primary   numeric,
-                total_votes_seconary          bigint,
+                total_votes_secondary          bigint,
                 percentage_of_votes_secondary numeric,
                 color_hex                     text
             )
@@ -22,7 +22,7 @@ BEGIN
                SUM(CAST(pv.votes ->> 'primary_votes_final' AS INTEGER))   AS total_votes_primary,
                (SUM(CAST(pv.votes ->> 'primary_votes_final' AS INTEGER)) * 100.0 /
                 stv.total_valid_votes)::numeric                           AS percentage_of_votes_primary,
-               SUM(CAST(pv.votes ->> 'secondary_votes_final' AS INTEGER)) AS total_votes_seconary,
+               SUM(CAST(pv.votes ->> 'secondary_votes_final' AS INTEGER)) AS total_votes_secondary,
                (SUM(CAST(pv.votes ->> 'secondary_votes_final' AS INTEGER)) * 100.0 /
                 stv.total_valid_votes_s)::numeric                         AS percentage_of_votes_secondary,
                p.color_hex::text

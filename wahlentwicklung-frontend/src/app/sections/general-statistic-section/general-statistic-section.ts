@@ -1,7 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { DataService } from "../../core/services/data/data.service";
-import { GeneralElectionData } from "../../core/types/function-types";
 import { CountUp } from "countup.js";
+import { ElectionStatistic } from "../../core/types/common-types";
 
 @Component({
   selector: 'app-general-stats',
@@ -9,7 +9,7 @@ import { CountUp } from "countup.js";
   styleUrls: []
 })
 export class GeneralStatisticSection implements OnInit {
-  electionData: GeneralElectionData | null = null;
+  electionData: ElectionStatistic | null = null;
   voterTurnout: string | null = null;
 
   @ViewChild('eligible_voters', {static: false}) eligibleVotersElement: ElementRef | undefined;
@@ -34,7 +34,7 @@ export class GeneralStatisticSection implements OnInit {
   ngOnInit(): void {
     this.dataService.getSelectedElection().subscribe(election => {
       if (election) {
-        this.getGeneralElectionData(election.election_id);
+        this.getGeneralElectionData(election.electionId);
       }
     });
   }
@@ -53,9 +53,9 @@ export class GeneralStatisticSection implements OnInit {
   getGeneralElectionData(id: number) {
     this.dataService.getGeneralElectionData(id).subscribe((data: any) => {
       this.electionData = data;
-      this.voterTurnout = ((this.electionData!.voters / this.electionData!.eligible_voters) * 100).toFixed(1);
-      this.createCountUp('eligible_voters', this.electionData?.eligible_voters || 0, this.countUpOptions);
-      this.createCountUp('voters', this.electionData?.voters || 0, this.countUpOptions);
+      this.voterTurnout = ((this.electionData!.voters.primaryVotesFinal / this.electionData!.eligibleVoters.primaryVotesFinal) * 100).toFixed(1);
+      this.createCountUp('eligible_voters', this.electionData?.eligibleVoters.primaryVotesFinal || 0, this.countUpOptions);
+      this.createCountUp('voters', this.electionData?.voters.primaryVotesFinal || 0, this.countUpOptions);
       this.createCountUp('voter_turnout', parseFloat(this.voterTurnout || '0'), this.countUpDecimalOptions);
     });
   }

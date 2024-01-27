@@ -1,4 +1,48 @@
+export type Election = {
+  electionId: number;
+  year: number | null;
+  active: boolean;
+};
 
+export type ElectionStatistic = {
+  electionId: number;
+  eligibleVoters: VoterRepresentation;
+  voters: VoterRepresentation;
+  invalidVotes: VoterRepresentation;
+  validVotes: VoterRepresentation;
+};
+
+export type Party = {
+  partyId: number;
+  name: string | null;
+  electionId: number;
+  colorHex: string | null;
+};
+
+export type PartyElectionResult = {
+  partyName: string | null;
+  totalVotesPrimary: number;
+  totalVotesPrimaryPercentage: number;
+  totalVotesSecondary: number;
+  totalVotesSecondaryPercentage: number;
+  colorHex: string | null;
+};
+
+export type State = {
+  stateId: number;
+  name: string | null;
+  identifier: number;
+  abbreviation: string | null;
+};
+
+export type VoterRepresentation = {
+  primaryVotesPrior: number;
+  primaryVotesFinal: number;
+  secondaryVotesPrior: number;
+  secondaryVotesFinal: number;
+};
+
+/* OLD
 export type State = {
   abbreviation: string | null;
   state_id: number;
@@ -54,3 +98,6 @@ export type Json =
     | null
     | { [key: string]: Json | undefined }
     | Json[];
+
+
+ */

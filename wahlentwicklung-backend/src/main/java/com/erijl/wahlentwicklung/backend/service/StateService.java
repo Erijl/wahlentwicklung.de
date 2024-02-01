@@ -29,6 +29,10 @@ public class StateService {
         return this.stateRepository.fetchAllStates();
     }
 
+    public List<PartyElectionResult> getStateElectionResult(int electionId, int stateId) {
+        return this.filterUtil.filterForValidParties(this.stateRepository.fetchStateElectionResult(electionId, stateId));
+    }
+
     public State getBellwetherState(int electionId) {
         List<PartyElectionResult> electionResult = this.electionService.getElectionResult(electionId);
         List<State> states = this.filterUtil.filterOutFederal(this.stateRepository.fetchAllStates());

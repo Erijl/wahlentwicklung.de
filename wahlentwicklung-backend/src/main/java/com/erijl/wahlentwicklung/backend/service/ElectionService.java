@@ -20,7 +20,7 @@ public class ElectionService {
         this.electionRepository = electionRepository;
         this.filterUtil = filterUtil;
     }
-    public Election[] getAllElections() {
+    public List<Election> getAllElections() {
         return this.electionRepository.fetchAllElections();
     }
 
@@ -30,10 +30,10 @@ public class ElectionService {
     }
 
     public ElectionStatistic getElectionStatistics(int electionId) {
-        ElectionStatistic[] statistics = this.electionRepository.fetchElectionStatistic(electionId, 99);
+        List<ElectionStatistic> statistics = this.electionRepository.fetchElectionStatistic(electionId, 99);
 
-        if (statistics.length > 0) {
-            return statistics[0];
+        if (!statistics.isEmpty()) {
+            return statistics.getFirst();
         }
 
         return null;

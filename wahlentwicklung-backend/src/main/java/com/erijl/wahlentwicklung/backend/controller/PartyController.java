@@ -5,6 +5,8 @@ import com.erijl.wahlentwicklung.backend.service.PartyService;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 public class PartyController {
 
@@ -15,7 +17,7 @@ public class PartyController {
     }
 
     @RequestMapping("/party/all")
-    public Party[] getAllParties() {
+    public List<Party> getAllParties() {
         return this.partyService.getAllParties();
     }
 }

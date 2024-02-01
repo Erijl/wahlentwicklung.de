@@ -4,6 +4,8 @@ import com.erijl.wahlentwicklung.backend.model.Party;
 import com.erijl.wahlentwicklung.backend.repository.PartyRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class PartyService {
 
@@ -13,7 +15,7 @@ public class PartyService {
         this.partyRepository = partyRepository;
     }
 
-    public Party[] getAllParties() {
+    public List<Party> getAllParties() {
         return this.partyRepository.fetchAllParties();
     }
 }

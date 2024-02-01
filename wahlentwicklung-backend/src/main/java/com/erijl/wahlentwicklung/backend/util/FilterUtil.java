@@ -23,7 +23,7 @@ public class FilterUtil {
     public List<State> filterOutFederal(List<State> states) {
         return states.stream()
                 .filter(state ->
-                        state.getStateId() == 99)
+                        state.getStateId() != 99)
                 .collect(Collectors.toList());
     }
 }

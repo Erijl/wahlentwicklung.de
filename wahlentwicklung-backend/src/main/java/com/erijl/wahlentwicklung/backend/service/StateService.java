@@ -1,19 +1,52 @@
 package com.erijl.wahlentwicklung.backend.service;
 
+import com.erijl.wahlentwicklung.backend.model.PartyElectionResult;
 import com.erijl.wahlentwicklung.backend.model.State;
 import com.erijl.wahlentwicklung.backend.repository.StateRepository;
+import com.erijl.wahlentwicklung.backend.util.ComparisonUtil;
+import com.erijl.wahlentwicklung.backend.util.FilterUtil;
 import org.springframework.stereotype.Service;
+
+import javax.swing.*;
+import java.util.List;
 
 @Service
 public class StateService {
 
     private final StateRepository stateRepository;
+    private final ElectionService electionService;
+    private final FilterUtil filterUtil;
+    private final ComparisonUtil comparisonUtil;
 
-    public StateService(StateRepository stateRepository) {
+    public StateService(StateRepository stateRepository, ElectionService electionService, FilterUtil filterUtil, ComparisonUtil comparisonUtil) {
         this.stateRepository = stateRepository;
+        this.electionService = electionService;
+        this.filterUtil = filterUtil;
+        this.comparisonUtil = comparisonUtil;
     }
 
-    public State[] getAllStates() {
+    public List<State> getAllStates() {
         return this.stateRepository.fetchAllStates();
+    }
+
+    public State getBellwetherState(int electionId) {
+        List<PartyElectionResult> electionResult = this.electionService.getElectionResult(electionId);
+        List<State> states = this.filterUtil.filterOutFederal(this.stateRepository.fetchAllStates());
+
+        State bellwetherState = new State();
+        double lowestDiff = 10000.00;
+        for(State state : states) {
+            List<PartyElectionResult> stateElectionResult = this.stateRepository
+                    .fetchStateElectionResult(electionId, state.getStateId());
+
+            double diff = comparisonUtil.getDifferenceBetweenPartyElectionResultLists(electionResult, stateElectionResult);
+            System.out.println("########## State" + state.getName() + " Total Diff: " + diff + "#################");
+
+            if(diff < lowestDiff) {
+                lowestDiff = diff;
+                bellwetherState = state;
+            }
+        }
+        return bellwetherState;
     }
 }

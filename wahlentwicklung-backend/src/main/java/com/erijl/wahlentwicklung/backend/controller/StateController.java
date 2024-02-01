@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 public class StateController {
 
@@ -16,7 +18,13 @@ public class StateController {
     }
 
     @RequestMapping("/state/all")
-    public State[] getAllStates() {
+    public List<State> getAllStates() {
         return this.stateService.getAllStates();
     }
+
+    @RequestMapping("/state/bellwether")
+    public State getBellwetherState(@RequestParam(value="electionId") int electionId) {
+        return this.stateService.getBellwetherState(electionId);
+    }
+
 }

@@ -1,5 +1,6 @@
 package com.erijl.wahlentwicklung.backend.controller;
 
+import com.erijl.wahlentwicklung.backend.model.PartyElectionResult;
 import com.erijl.wahlentwicklung.backend.model.State;
 import com.erijl.wahlentwicklung.backend.service.StateService;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +23,12 @@ public class StateController {
         return this.stateService.getAllStates();
     }
 
+    @RequestMapping("/state/electionresult")
+    public List<PartyElectionResult> getStateElectionResult(
+            @RequestParam(value="electionId") int electionId,
+            @RequestParam(value="stateId") int stateId) {
+        return this.stateService.getStateElectionResult(electionId, stateId);
+    }
     @RequestMapping("/state/bellwether")
     public State getBellwetherState(@RequestParam(value="electionId") int electionId) {
         return this.stateService.getBellwetherState(electionId);

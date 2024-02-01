@@ -4,22 +4,29 @@ import com.erijl.wahlentwicklung.backend.model.Election;
 import com.erijl.wahlentwicklung.backend.model.ElectionStatistic;
 import com.erijl.wahlentwicklung.backend.model.PartyElectionResult;
 import com.erijl.wahlentwicklung.backend.repository.ElectionRepository;
+import com.erijl.wahlentwicklung.backend.util.FilterUtil;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class ElectionService {
 
     private final ElectionRepository electionRepository;
 
-    public ElectionService(ElectionRepository electionRepository) {
+    private final FilterUtil filterUtil;
+
+    public ElectionService(ElectionRepository electionRepository, FilterUtil filterUtil) {
         this.electionRepository = electionRepository;
+        this.filterUtil = filterUtil;
     }
     public Election[] getAllElections() {
         return this.electionRepository.fetchAllElections();
     }
 
-    public PartyElectionResult[] getElectionResult(int electionId) {
-        return this.electionRepository.fetchElectionResult(electionId);
+    public List<PartyElectionResult> getElectionResult(int electionId) {
+        List<PartyElectionResult> partyElectionResults = this.electionRepository.fetchElectionResult(electionId);
+        return this.filterUtil.filterForValidParties(partyElectionResults);
     }
 
     public ElectionStatistic getElectionStatistics(int electionId) {

@@ -7,12 +7,15 @@ import com.erijl.wahlentwicklung.backend.util.RestUtil;
 import com.erijl.wahlentwicklung.backend.util.UrlBuilder;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.lang.reflect.Type;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Repository
@@ -46,7 +49,7 @@ public class ElectionRepository {
         return null;
     }
 
-    public PartyElectionResult[] fetchElectionResult(int electionId) {
+    public List<PartyElectionResult> fetchElectionResult(int electionId) {
         RestTemplate restTemplate = new RestTemplate();
         final String supabaseUrl = new UrlBuilder(this.supabaseUrl).rpc("getelectionresults").getUrl();
 
@@ -59,8 +62,8 @@ public class ElectionRepository {
                 supabaseUrl, HttpMethod.POST, requestEntity, String.class);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-
-            return this.gson.fromJson(response.getBody(), PartyElectionResult[].class);
+            Type listType = new TypeToken<List<PartyElectionResult>>() {}.getType();
+            return this.gson.fromJson(response.getBody(), listType);
         } else {
             System.out.println("Request Failed");
             System.out.println(response.getStatusCode());
@@ -92,5 +95,4 @@ public class ElectionRepository {
 
         return null;
     }
-
 }

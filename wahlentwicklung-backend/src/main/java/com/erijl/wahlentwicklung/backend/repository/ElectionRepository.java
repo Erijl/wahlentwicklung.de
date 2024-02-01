@@ -32,7 +32,7 @@ public class ElectionRepository {
         this.restUtil = restUtil;
     }
 
-    public Election[] fetchAllElections() {
+    public List<Election> fetchAllElections() {
         RestTemplate restTemplate = new RestTemplate();
         final String supabaseUrl = new UrlBuilder(this.supabaseUrl).from("election").select("*").getUrl();
 
@@ -40,7 +40,8 @@ public class ElectionRepository {
                 supabaseUrl, HttpMethod.GET, this.restUtil.getStandardHttpEntity(), String.class);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            return this.gson.fromJson(response.getBody(), Election[].class);
+            Type listType = new TypeToken<List<Election>>() {}.getType();
+            return this.gson.fromJson(response.getBody(), listType);
         } else {
             System.out.println("Request Failed");
             System.out.println(response.getStatusCode());
@@ -72,7 +73,7 @@ public class ElectionRepository {
         return null;
     }
 
-    public ElectionStatistic[] fetchElectionStatistic(int electionId, int stateId) {
+    public List<ElectionStatistic> fetchElectionStatistic(int electionId, int stateId) {
         RestTemplate restTemplate = new RestTemplate();
         final String supabaseUrl = new UrlBuilder(this.supabaseUrl)
                 .from("state_votes")
@@ -85,9 +86,8 @@ public class ElectionRepository {
                 supabaseUrl, HttpMethod.GET, this.restUtil.getStandardHttpEntity(), String.class);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            System.out.println(response.getBody());
-
-            return this.gson.fromJson(response.getBody(), ElectionStatistic[].class);
+            Type listType = new TypeToken<List<ElectionStatistic>>() {}.getType();
+            return this.gson.fromJson(response.getBody(), listType);
         } else {
             System.out.println("Request Failed");
             System.out.println(response.getStatusCode());

@@ -6,12 +6,17 @@ import com.erijl.wahlentwicklung.backend.util.RestUtil;
 import com.erijl.wahlentwicklung.backend.util.UrlBuilder;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import jakarta.servlet.http.Part;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
+
+import java.lang.reflect.Type;
+import java.util.List;
 
 @Repository
 public class PartyRepository {
@@ -27,7 +32,7 @@ public class PartyRepository {
         this.restUtil = restUtil;
     }
 
-    public Party[] fetchAllParties() {
+    public List<Party> fetchAllParties() {
         RestTemplate restTemplate = new RestTemplate();
 
         final String supabaseUrl = new UrlBuilder(this.supabaseUrl)
@@ -39,9 +44,8 @@ public class PartyRepository {
                 supabaseUrl, HttpMethod.GET, this.restUtil.getStandardHttpEntity(), String.class);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            System.out.println(response.getBody());
-
-            return this.gson.fromJson(response.getBody(), Party[].class);
+            Type listType = new TypeToken<List<Party>>(){}.getType();
+            return this.gson.fromJson(response.getBody(), listType);
         } else {
             System.out.println("Request Failed");
             System.out.println(response.getStatusCode());

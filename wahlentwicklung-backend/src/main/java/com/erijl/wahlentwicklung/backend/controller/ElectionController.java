@@ -19,7 +19,7 @@ public class ElectionController {
         this.electionService = electionService;
     }
     @RequestMapping("/election/all")
-    public Election[] getAllElections() {
+    public List<Election> getAllElections() {
         return this.electionService.getAllElections();
     }
 

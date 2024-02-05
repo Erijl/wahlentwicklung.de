@@ -15,7 +15,7 @@ public class PartyService {
         this.partyRepository = partyRepository;
     }
 
-    public List<Party> getAllParties() {
-        return this.partyRepository.fetchAllParties();
+    public List<Party> getAllParties(int electionId) {
+        return this.partyRepository.fetchAllPartiesFromElection(electionId);
     }
 }

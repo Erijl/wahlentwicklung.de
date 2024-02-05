@@ -3,6 +3,7 @@ package com.erijl.wahlentwicklung.backend.controller;
 import com.erijl.wahlentwicklung.backend.model.Party;
 import com.erijl.wahlentwicklung.backend.service.PartyService;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -17,8 +18,8 @@ public class PartyController {
     }
 
     @RequestMapping("/party/all")
-    public List<Party> getAllParties() {
-        return this.partyService.getAllParties();
+    public List<Party> getAllParties(@RequestParam(value="electionId") int electionId) {
+        return this.partyService.getAllParties(electionId);
     }
 }
 

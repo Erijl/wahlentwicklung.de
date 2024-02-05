@@ -25,12 +25,13 @@ public class StateController {
 
     @RequestMapping("/state/electionresult")
     public List<PartyElectionResult> getStateElectionResult(
-            @RequestParam(value="electionId") int electionId,
-            @RequestParam(value="stateId") int stateId) {
+            @RequestParam(value = "electionId") int electionId,
+            @RequestParam(value = "stateId") int stateId) {
         return this.stateService.getStateElectionResult(electionId, stateId);
     }
+
     @RequestMapping("/state/bellwether")
-    public State getBellwetherState(@RequestParam(value="electionId") int electionId) {
+    public State getBellwetherState(@RequestParam(value = "electionId") int electionId) {
         return this.stateService.getBellwetherState(electionId);
     }
 

@@ -1,13 +1,11 @@
 package com.erijl.wahlentwicklung.backend.repository;
 
-import com.erijl.wahlentwicklung.backend.model.Election;
 import com.erijl.wahlentwicklung.backend.model.Party;
 import com.erijl.wahlentwicklung.backend.util.RestUtil;
 import com.erijl.wahlentwicklung.backend.util.UrlBuilder;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import jakarta.servlet.http.Part;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -32,19 +30,21 @@ public class PartyRepository {
         this.restUtil = restUtil;
     }
 
-    public List<Party> fetchAllParties() {
+    public List<Party> fetchAllPartiesFromElection(int electionId) {
         RestTemplate restTemplate = new RestTemplate();
 
         final String supabaseUrl = new UrlBuilder(this.supabaseUrl)
                 .from("party")
                 .select("*")
+                .eq("election_id", electionId)
                 .getUrl();
 
         ResponseEntity<String> response = restTemplate.exchange(
                 supabaseUrl, HttpMethod.GET, this.restUtil.getStandardHttpEntity(), String.class);
 
         if (response.getStatusCode() == HttpStatus.OK) {
-            Type listType = new TypeToken<List<Party>>(){}.getType();
+            Type listType = new TypeToken<List<Party>>() {
+            }.getType();
             return this.gson.fromJson(response.getBody(), listType);
         } else {
             System.out.println("Request Failed");

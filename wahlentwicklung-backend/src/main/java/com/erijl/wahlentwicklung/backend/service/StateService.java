@@ -7,7 +7,6 @@ import com.erijl.wahlentwicklung.backend.util.ComparisonUtil;
 import com.erijl.wahlentwicklung.backend.util.FilterUtil;
 import org.springframework.stereotype.Service;
 
-import javax.swing.*;
 import java.util.List;
 
 @Service
@@ -39,14 +38,14 @@ public class StateService {
 
         State bellwetherState = new State();
         double lowestDiff = 10000.00;
-        for(State state : states) {
+        for (State state : states) {
             List<PartyElectionResult> stateElectionResult = this.stateRepository
                     .fetchStateElectionResult(electionId, state.getStateId());
 
             double diff = comparisonUtil.getDifferenceBetweenPartyElectionResultLists(electionResult, stateElectionResult);
             System.out.println("########## State" + state.getName() + " Total Diff: " + diff + "#################");
 
-            if(diff < lowestDiff) {
+            if (diff < lowestDiff) {
                 lowestDiff = diff;
                 bellwetherState = state;
             }

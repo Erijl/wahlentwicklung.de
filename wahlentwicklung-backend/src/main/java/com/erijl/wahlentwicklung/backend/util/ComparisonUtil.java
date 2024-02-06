@@ -23,10 +23,7 @@ public class ComparisonUtil {
                     if(percentageOne == 0.00 || percentageTwo == 0.00) {
                         continue;
                     }
-                    //TODO add "Sonstige" ?
-                    double minusValue = percentageOne - percentageTwo;
-                    minusValue = minusValue < 0 ? (minusValue*(-1)) : minusValue;
-                    diff += (minusValue/((percentageOne + percentageTwo)/2))*100;
+                    diff += Math.abs(percentageOne - percentageTwo) / percentageOne * 100.00;
                 }
             }
         }

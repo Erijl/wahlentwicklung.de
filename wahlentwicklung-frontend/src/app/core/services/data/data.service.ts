@@ -17,8 +17,8 @@ export class DataService {
   // @ts-ignore
   private selectedElection = new BehaviorSubject<Election>(null);
 
-  //private dataUrl = 'https://api.wahlentwicklung.de/';
-  private dataUrl = 'http://localhost:8080/';
+  private dataUrl = 'https://api.wahlentwicklung.de/';
+  //private dataUrl = 'http://localhost:8080/';
 
   constructor(private http: HttpClient) {
   }

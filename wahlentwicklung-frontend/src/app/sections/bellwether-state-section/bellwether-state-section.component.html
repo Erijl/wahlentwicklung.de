@@ -1,14 +1,16 @@
 
 <div class="w-2/3 h-96 mx-auto max-w-7xl px-10 lg:px-12 flex flex-col">
-  <h2 class="text-left">"Bellwether" Bundesland Phänomen</h2>
+  <h2 class="text-left">"Bellwether" Bundesland Phänomen: {{selectedBellwetherState?.state?.name}}</h2>
 
   <div class="flex">
     <div class="w-1/4 text-base">
-      <p>Das "Bellwether" Bundesland spiegelt das US-Amerikanische phänomen des Bundesstaates mit dem Wahlergebnis
-        das dass Bundesweite am ehesten wiederspiegelt. Im falle der Wahl {{election?.year}} ist dies Hessen mit einer differenz von nur 99%</p>
+      <p>Das "Bellwether" Bundesland spiegelt das US-amerikanische Phänomen wider, bei dem das Wahlergebnis
+        eines Bundesstaates eng mit dem landesweiten Ergebnis übereinstimmt.
+        Bei der Wahl von {{election?.year}} verkörpert dies {{selectedBellwetherState?.state?.name}},
+        mit einer Differenz von nur {{selectedBellwetherState?.percentageDifference | number: '1.2-2'}}%.</p>
     </div>
     <div class="w-3/4">
-      <div class="text-center justify-center">
+      <!--<div class="text-center justify-center">
         <mat-form-field>
           <mat-label>Bundesland auswählen</mat-label>
           <mat-select [(ngModel)]="selectedBellwetherState" (selectionChange)="onBellwetherStateChange()" [disabled]="!bellwetherStates">
@@ -16,7 +18,7 @@
             <mat-option *ngFor="let state of bellwetherStates" [value]="state">{{ state?.state?.name }} ({{state?.percentageDifference | number: '1.2-2'}}%)</mat-option>
           </mat-select>
         </mat-form-field>
-      </div>
+      </div>-->
       <div #containerRef class="flex justify-center">
 
         <ng-container>

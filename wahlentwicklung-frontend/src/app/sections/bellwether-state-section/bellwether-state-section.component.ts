@@ -1,5 +1,5 @@
 import {Component, OnInit, ViewChild} from '@angular/core';
-import {BellwetherState, Election, PartyElectionResult, State} from "../../core/types/common-types";
+import {BellwetherState, Election, PartyElectionResult} from "../../core/types/common-types";
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
 import {MatSort} from "@angular/material/sort";
@@ -88,11 +88,6 @@ export class BellwetherStateSectionComponent implements OnInit {
     });
 
     this.chartData = updatedChartData;
-  }
-
-  onBellwetherStateChange() {
-    // @ts-ignore
-    this.getStateElectionResultData(this.selectedBellwetherState.state.stateId, this.election.electionId);
   }
 
   //TODO cleanup all async calls global

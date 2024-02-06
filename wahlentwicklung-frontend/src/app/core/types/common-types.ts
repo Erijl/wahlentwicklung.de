@@ -35,6 +35,11 @@ export type State = {
   abbreviation: string | null;
 };
 
+export type BellwetherState = {
+  state: State;
+  percentageDifference: number;
+};
+
 export type VoterRepresentation = {
   primaryVotesPrior: number;
   primaryVotesFinal: number;

@@ -1,5 +1,6 @@
 package com.erijl.wahlentwicklung.backend.controller;
 
+import com.erijl.wahlentwicklung.backend.dto.BellwetherState;
 import com.erijl.wahlentwicklung.backend.model.PartyElectionResult;
 import com.erijl.wahlentwicklung.backend.model.State;
 import com.erijl.wahlentwicklung.backend.service.StateService;
@@ -31,7 +32,7 @@ public class StateController {
     }
 
     @RequestMapping("/state/bellwether")
-    public State getBellwetherState(@RequestParam(value = "electionId") int electionId) {
+    public List<BellwetherState> getBellwetherState(@RequestParam(value = "electionId") int electionId) {
         return this.stateService.getBellwetherState(electionId);
     }
 

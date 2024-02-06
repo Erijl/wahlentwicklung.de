@@ -1,0 +1,49 @@
+
+<div class="w-2/3 h-96 mx-auto max-w-7xl px-10 lg:px-12 flex flex-col">
+  <h2 class="text-left">"Bellwether" Bundesland Phänomen</h2>
+
+  <div class="flex">
+    <div class="w-1/4 text-base">
+      <p>Das "Bellwether" Bundesland spiegelt das US-Amerikanische phänomen des Bundesstaates mit dem Wahlergebnis
+        das dass Bundesweite am ehesten wiederspiegelt. Im falle der Wahl {{election?.year}} ist dies Hessen mit einer differenz von nur 99%</p>
+    </div>
+    <div class="w-3/4">
+      <div class="text-center justify-center">
+        <mat-form-field>
+          <mat-label>Bundesland auswählen</mat-label>
+          <mat-select [(ngModel)]="selectedBellwetherState" (selectionChange)="onBellwetherStateChange()" [disabled]="!bellwetherStates">
+            <mat-option *ngIf="!bellwetherStates" [value]="">Loading...</mat-option>
+            <mat-option *ngFor="let state of bellwetherStates" [value]="state">{{ state?.state?.name }} ({{state?.percentageDifference | number: '1.2-2'}}%)</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div #containerRef class="flex justify-center">
+
+        <ng-container>
+          <ngx-charts-bar-vertical-2d class="w-full h-96 mx-auto"
+                                      [view]="[containerRef.offsetWidth, containerRef.offsetHeight]"
+                                      [scheme]="chartConfig.scheme"
+                                      [results]="chartData"
+                                      [xAxis]="chartConfig.showXAxis"
+                                      [yAxis]="chartConfig.showYAxis"
+                                      [gradient]="chartConfig.gradient"
+                                      [showXAxisLabel]="chartConfig.showXAxisLabel"
+                                      [xAxisLabel]="chartConfig.xAxisLabel"
+                                      [showYAxisLabel]="chartConfig.showYAxisLabel"
+                                      [yAxisLabel]="chartConfig.yAxisLabel"
+                                      [legend]="chartConfig.showLegend"
+                                      [legendTitle]="chartConfig.legendTitle"
+                                      [customColors]="barChart2DColorScheme"
+          >
+            <ng-template #tooltipTemplate let-model="model">
+              <div class="custom-tooltip text-xl">
+                <span>{{ model.name }}:</span> <br>
+                <span>{{ model.value | number: '1.2-2' }}%</span>
+              </div>
+            </ng-template>
+          </ngx-charts-bar-vertical-2d>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>

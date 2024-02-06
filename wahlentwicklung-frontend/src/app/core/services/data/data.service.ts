@@ -1,6 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { State, Party, Election, ElectionStatistic, PartyElectionResult } from "../../types/common-types";
+import {
+  State,
+  Party,
+  Election,
+  ElectionStatistic,
+  PartyElectionResult,
+  BellwetherState
+} from "../../types/common-types";
 import { BehaviorSubject, catchError, Observable, of, tap } from "rxjs";
 
 @Injectable({
@@ -10,7 +17,8 @@ export class DataService {
   // @ts-ignore
   private selectedElection = new BehaviorSubject<Election>(null);
 
-  private dataUrl = 'https://api.wahlentwicklung.de/';
+  //private dataUrl = 'https://api.wahlentwicklung.de/';
+  private dataUrl = 'http://localhost:8080/';
 
   constructor(private http: HttpClient) {
   }
@@ -39,14 +47,6 @@ export class DataService {
       );
   }
 
-  getParties() {
-    return this.http.get<Party[]>(this.dataUrl + 'party/all')
-      .pipe(
-        tap(_ => this.log('fetched Parteien')),
-        catchError(this.handleError<Party[]>('getParteien', []))
-      );
-  }
-
   getElectionResult(id: number) {
     return this.http.get<PartyElectionResult[]>(this.dataUrl + 'election/result?electionId=' + id)
       .pipe(
@@ -55,11 +55,27 @@ export class DataService {
       );
   }
 
+  getStateElectionResult(electionId: number, stateId: number) {
+    return this.http.get<PartyElectionResult[]>(this.dataUrl + 'state/electionresult?electionId=' + electionId + '&stateId=' + stateId)
+      .pipe(
+        tap(_ => this.log('fetched stateElectionResult')),
+        catchError(this.handleError<PartyElectionResult[]>('stateElectionResult', []))
+      );
+  }
+
   getGeneralElectionData(id: number) {
     return this.http.get<ElectionStatistic[]>(this.dataUrl + 'election/statistic?electionId=' + id)
       .pipe(
         tap(_ => this.log('fetched GeneralElectionData')),
         catchError(this.handleError<ElectionStatistic[]>('generalElectionData', []))
+      );
+  }
+
+  getBellwetherState(id: number) {
+    return this.http.get<BellwetherState[]>(this.dataUrl + 'state/bellwether?electionId=' + id)
+      .pipe(
+        tap(_ => this.log('fetched getBellwetherState')),
+        catchError(this.handleError<BellwetherState[]>('getBellwetherState', []))
       );
   }
 

@@ -24,7 +24,8 @@ export class HeroSectionComponent implements OnInit {
 
   getElections(): void {
     this.dataService.getElections().subscribe(elections => {
-      this.elections = elections;
+
+      this.elections = elections.filter(election => election.active);
 
       this.selectedElection = this.elections[0];
       this.dataService.setSelectedElection(this.selectedElection!);

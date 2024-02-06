@@ -12,7 +12,7 @@ AS
 $$
 BEGIN
     RETURN QUERY
-        WITH bundesland_votes
+        WITH state_votes
                  AS (SELECT SUM(CAST(stv.valid_votes ->> 'primary_votes_final' AS INTEGER))   AS total_valid_votes,
                             SUM(CAST(stv.valid_votes ->> 'secondary_votes_final' AS INTEGER)) AS total_valid_votes_s
                      FROM state_votes stv

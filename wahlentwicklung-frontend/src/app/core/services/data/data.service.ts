@@ -1,8 +1,14 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from "@angular/common/http";
-import { State, Party, Election, District } from "../../types/common-types";
+import {
+  State,
+  Party,
+  Election,
+  ElectionStatistic,
+  PartyElectionResult,
+  BellwetherState
+} from "../../types/common-types";
 import { BehaviorSubject, catchError, Observable, of, tap } from "rxjs";
-import { GeneralElectionData, ElectionResult } from "../../types/function-types";
 
 @Injectable({
   providedIn: 'root'
@@ -11,11 +17,8 @@ export class DataService {
   // @ts-ignore
   private selectedElection = new BehaviorSubject<Election>(null);
 
-  private dataUrl = 'https://api.wahlentwicklung.de/';  // URL to web api
-
-  httpOptions = {
-    headers: new HttpHeaders({'Content-Type': 'application/json', 'Access-Control-Allow-Origin': 'origin'})
-  };
+  private dataUrl = 'https://api.wahlentwicklung.de/';
+  //private dataUrl = 'http://localhost:8080/';
 
   constructor(private http: HttpClient) {
   }
@@ -29,50 +32,50 @@ export class DataService {
   }
 
   getStates() {
-    return this.http.get<State[]>(this.dataUrl + 'bundeslaender')
+    return this.http.get<State[]>(this.dataUrl + 'state/all')
       .pipe(
         tap(_ => this.log('fetched Bundeslaender')),
         catchError(this.handleError<State[]>('getBundeslaender', []))
       );
   }
 
-  getStateResult(wahlId: number, bundeslandId: number) {
-    return this.http.get<District[]>(`${this.dataUrl}bundesland/result/${wahlId}/${bundeslandId}`)
-      .pipe(
-        tap(_ => this.log('fetched Wahlkreise')),
-        catchError(this.handleError<District[]>('getWahlkreise', []))
-      );
-  }
-
   getElections() {
-    return this.http.get<Election[]>(this.dataUrl + 'wahlen')
+    return this.http.get<Election[]>(this.dataUrl + 'election/all')
       .pipe(
         tap(_ => this.log('fetched Wahlen')),
         catchError(this.handleError<Election[]>('getWahlen', []))
       );
   }
 
-  getParties() {
-    return this.http.get<Party[]>(this.dataUrl + 'parteien')
+  getElectionResult(id: number) {
+    return this.http.get<PartyElectionResult[]>(this.dataUrl + 'election/result?electionId=' + id)
       .pipe(
-        tap(_ => this.log('fetched Parteien')),
-        catchError(this.handleError<Party[]>('getParteien', []))
+        tap(_ => this.log('fetched wahlResult')),
+        catchError(this.handleError<PartyElectionResult[]>('wahlResult', []))
       );
   }
 
-  getElectionResult(id: number) {
-    return this.http.get<ElectionResult[]>(this.dataUrl + 'wahl/result/' + id)
+  getStateElectionResult(electionId: number, stateId: number) {
+    return this.http.get<PartyElectionResult[]>(this.dataUrl + 'state/electionresult?electionId=' + electionId + '&stateId=' + stateId)
       .pipe(
-        tap(_ => this.log('fetched wahlResult')),
-        catchError(this.handleError<ElectionResult[]>('wahlResult', []))
+        tap(_ => this.log('fetched stateElectionResult')),
+        catchError(this.handleError<PartyElectionResult[]>('stateElectionResult', []))
       );
   }
 
   getGeneralElectionData(id: number) {
-    return this.http.get<GeneralElectionData[]>(this.dataUrl + 'wahl/general/' + id)
+    return this.http.get<ElectionStatistic[]>(this.dataUrl + 'election/statistic?electionId=' + id)
       .pipe(
         tap(_ => this.log('fetched GeneralElectionData')),
-        catchError(this.handleError<GeneralElectionData[]>('generalElectionData', []))
+        catchError(this.handleError<ElectionStatistic[]>('generalElectionData', []))
+      );
+  }
+
+  getBellwetherState(id: number) {
+    return this.http.get<BellwetherState[]>(this.dataUrl + 'state/bellwether?electionId=' + id)
+      .pipe(
+        tap(_ => this.log('fetched getBellwetherState')),
+        catchError(this.handleError<BellwetherState[]>('getBellwetherState', []))
       );
   }
 

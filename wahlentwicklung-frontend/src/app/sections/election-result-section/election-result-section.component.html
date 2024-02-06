@@ -1,8 +1,8 @@
 <div class="w-2/3 h-96 mx-auto max-w-7xl px-10 lg:px-12">
-  <h2 class="text-center">Wahlergebnis
-    ({{chartMode == 'zweitstimmen' ? "Zweitstimmen" : chartMode == 'erststimmen' ? "Erststimmen" : "Gruppiert"}})</h2>
+  <h1 class="text-center font-medium">Wahlergebnis
+    ({{chartMode == 'zweitstimmen' ? "Zweitstimmen" : chartMode == 'erststimmen' ? "Erststimmen" : "Gruppiert"}})</h1>
 
-  <div #containerRef class="flex justify-center">
+  <div #containerRef class="flex justify-center text-xl">
     <ng-container *ngIf="chartMode === 'zweitstimmen' || chartMode === 'erststimmen'">
       <ngx-charts-bar-vertical #stimmenChart class="w-full h-96 mx-auto"
                                [view]="[containerRef.offsetWidth, containerRef.offsetHeight]"
@@ -30,7 +30,7 @@
     </ng-container>
   </div>
 
-  <div #containerRef class="flex justify-center">
+  <div #containerRef class="flex justify-center text-xl">
     <ng-container *ngIf="chartMode === 'grouped'">
       <ngx-charts-bar-vertical-2d #groupedChart class="w-full h-96 mx-auto"
                                   [view]="[containerRef.offsetWidth, containerRef.offsetHeight]"
@@ -58,11 +58,13 @@
   </div>
 
 
+  <!--
   <div class="flex justify-center pt-6">
     <button mat-button class="text-xl px-4 py-2 rounded-lg" (click)="cycleChartMode()">
       Nächste >
     </button>
   </div>
+  -->
 </div>
 
 

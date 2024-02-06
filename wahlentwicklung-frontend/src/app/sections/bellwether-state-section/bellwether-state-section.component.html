@@ -1,10 +1,10 @@
 
 <div class="w-2/3 h-96 mx-auto max-w-7xl px-10 lg:px-12 flex flex-col">
-  <h2 class="text-left">"Bellwether" Bundesland Phänomen: {{selectedBellwetherState?.state?.name}}</h2>
+  <h1 class="text-left">"Bellwether" Bundesland Phänomen: {{selectedBellwetherState?.state?.name}}</h1>
 
   <div class="flex">
     <div class="w-1/4 text-base">
-      <p>Das "Bellwether" Bundesland spiegelt das US-amerikanische Phänomen wider, bei dem das Wahlergebnis
+      <p>Das "Bellwether" Bundesland spiegelt das US-Amerikanische Phänomen wieder, bei dem das Wahlergebnis
         eines Bundesstaates eng mit dem landesweiten Ergebnis übereinstimmt.
         Bei der Wahl von {{election?.year}} verkörpert dies {{selectedBellwetherState?.state?.name}},
         mit einer Differenz von nur {{selectedBellwetherState?.percentageDifference | number: '1.2-2'}}%.</p>
@@ -19,7 +19,7 @@
           </mat-select>
         </mat-form-field>
       </div>-->
-      <div #containerRef class="flex justify-center">
+      <div #containerRef class="flex justify-center text-xl">
 
         <ng-container>
           <ngx-charts-bar-vertical-2d class="w-full h-96 mx-auto"

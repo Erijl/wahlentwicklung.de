@@ -29,6 +29,7 @@ import { MatExpansionModule } from "@angular/material/expansion";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatRadioModule } from "@angular/material/radio";
 import { FaqSectionComponent } from './sections/faq-section/faq-section.component';
+import { BellwetherStateSectionComponent } from './sections/bellwether-state-section/bellwether-state-section.component';
 
 @NgModule({
   declarations: [
@@ -40,7 +41,8 @@ import { FaqSectionComponent } from './sections/faq-section/faq-section.componen
     HeroSectionComponent,
     GeneralStatisticSection,
     StateStatisticSection,
-    FaqSectionComponent
+    FaqSectionComponent,
+    BellwetherStateSectionComponent
   ],
   imports: [
     BrowserModule,

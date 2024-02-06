@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { DataService } from "../../core/services/data/data.service";
-import { ElectionResult } from "../../core/types/function-types";
 import { MatPaginator } from "@angular/material/paginator";
 import { MatTableDataSource } from "@angular/material/table";
 import { MatSort } from "@angular/material/sort";
 import { ConverterService } from "../../core/services/converter/converter.service";
+import { PartyElectionResult } from "../../core/types/common-types";
 
 @Component({
   selector: 'app-wahl-result',
@@ -12,7 +12,7 @@ import { ConverterService } from "../../core/services/converter/converter.servic
   styleUrls: []
 })
 export class ElectionResultSectionComponent implements OnInit {
-  electionResultData: ElectionResult[] = [];
+  electionResultData: PartyElectionResult[] = [];
   chartModes: string[] = ['zweitstimmen', 'erststimmen', 'grouped'];
   currentChartModeIndex: number = 0;
   chartMode: string = this.chartModes[this.currentChartModeIndex];
@@ -68,27 +68,27 @@ export class ElectionResultSectionComponent implements OnInit {
     if (this.chartMode === 'zweitstimmen') {
       // Map the fields for Zweitstimmen mode
       this.chartData = this.electionResultData.slice(0, 6).map((item) => ({
-        name: item.party_name,
-        value: item.percentage_of_votes_secondary,
+        name: item.partyName,
+        value: item.totalVotesSecondaryPercentage,
       }));
     } else if (this.chartMode === 'erststimmen') {
       // Map the fields for Erststimmen mode
       this.chartData = this.electionResultData.slice(0, 6).map((item) => ({
-        name: item.party_name,
-        value: item.percentage_of_votes_primary,
+        name: item.partyName,
+        value: item.totalVotesPrimaryPercentage,
       }));
     } else if (this.chartMode === 'grouped') {
       // Create a grouped dataset by mapping both fields
       this.chartData = this.electionResultData.slice(0, 6).map((item) => ({
-        name: item.party_name,
+        name: item.partyName,
         series: [
           {
             name: `Zweitstimmen`,
-            value: item.percentage_of_votes_secondary,
+            value: item.totalVotesSecondaryPercentage,
           },
           {
             name: `Erststimmen`,
-            value: item.percentage_of_votes_primary,
+            value: item.totalVotesPrimaryPercentage,
           }],
       }));
     }
@@ -98,13 +98,13 @@ export class ElectionResultSectionComponent implements OnInit {
   ngOnInit(): void {
     this.dataService.getSelectedElection().subscribe(election => {
       if (election) {
-        this.getResultData(election.election_id);
+        this.getResultData(election.electionId);
       }
     });
 
     this.chartData = this.electionResultData.slice(0, 6).map((item) => ({
-      name: item.party_name,
-      value: item.percentage_of_votes_secondary,
+      name: item.partyName,
+      value: item.totalVotesSecondaryPercentage,
     }));
     this.dataSource.paginator = this.paginator;
     this.dataSource = new MatTableDataSource(this.electionResultData);
@@ -117,8 +117,8 @@ export class ElectionResultSectionComponent implements OnInit {
       this.dataSource = new MatTableDataSource(this.electionResultData);
 
       this.chartData = this.electionResultData.slice(0, 6).map((item) => ({
-        name: item.party_name,
-        value: item.percentage_of_votes_secondary,
+        name: item.partyName,
+        value: item.totalVotesSecondaryPercentage,
       }));
 
       this.dataSource.paginator = this.paginator;

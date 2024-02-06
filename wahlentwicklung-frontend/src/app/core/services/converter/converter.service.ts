@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { ElectionResult } from "../../types/function-types";
 import { defaultColorScheme } from "../../data/color";
+import { PartyElectionResult } from "../../types/common-types";
 
 @Injectable({
   providedIn: 'root'
@@ -10,13 +10,13 @@ export class ConverterService {
   constructor() {
   }
 
-  convertElectionResultToColorScheme(sortedElectionResult: ElectionResult[]) {
+  convertElectionResultToColorScheme(sortedElectionResult: PartyElectionResult[]) {
     let colorScheme = [];
     let nullColors = 0;
     for (const electionResult of sortedElectionResult) {
       colorScheme.push({
-        'name': electionResult.party_name,
-        'value': electionResult.color_hex || defaultColorScheme[(nullColors++) % defaultColorScheme.length]
+        'name': electionResult.partyName,
+        'value': electionResult.colorHex || defaultColorScheme[(nullColors++) % defaultColorScheme.length]
       });
     }
 

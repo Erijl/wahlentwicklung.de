@@ -1,4 +1,6 @@
-<div class="w-2/3 h-96 mx-auto max-w-7xl px-10 lg:px-12">
+<div class="w-2/3 h-96 mx-auto max-w-7xl px-10 lg:px-12 relative">
+
+
   <h1 class="text-center font-medium">Wahlergebnis
     ({{chartMode == 'zweitstimmen' ? "Zweitstimmen" : chartMode == 'erststimmen' ? "Erststimmen" : "Gruppiert"}})</h1>
 
@@ -57,14 +59,13 @@
     </ng-container>
   </div>
 
-
-  <!--
-  <div class="flex justify-center pt-6">
-    <button mat-button class="text-xl px-4 py-2 rounded-lg" (click)="cycleChartMode()">
-      Nächste >
+  <div class="absolute right-0 top-0 bottom-0 flex items-stretch justify-center">
+    <button class="full-height-button text-3xl rounded-lg"
+            matTooltip="Details"
+            [matTooltipPosition]="'right'">
+      <mat-icon class="icon-display">keyboard_arrow_right</mat-icon>
     </button>
   </div>
-  -->
 </div>
 
 

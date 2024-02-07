@@ -30,6 +30,7 @@ import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatRadioModule } from "@angular/material/radio";
 import { FaqSectionComponent } from './sections/faq-section/faq-section.component';
 import { BellwetherStateSectionComponent } from './sections/bellwether-state-section/bellwether-state-section.component';
+import {MatTooltipModule} from "@angular/material/tooltip";
 
 @NgModule({
   declarations: [
@@ -44,28 +45,29 @@ import { BellwetherStateSectionComponent } from './sections/bellwether-state-sec
     FaqSectionComponent,
     BellwetherStateSectionComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule,
-    FormsModule,
-    NgMultiSelectDropDownModule.forRoot(),
-    BrowserAnimationsModule,
-    MatPaginatorModule,
-    MatTableModule,
-    MatProgressSpinnerModule,
-    MatSortModule,
-    BarChartModule,
-    MatButtonToggleModule,
-    MatButtonModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatListModule,
-    MatIconModule,
-    MatExpansionModule,
-    MatCheckboxModule,
-    MatRadioModule
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        HttpClientModule,
+        FormsModule,
+        NgMultiSelectDropDownModule.forRoot(),
+        BrowserAnimationsModule,
+        MatPaginatorModule,
+        MatTableModule,
+        MatProgressSpinnerModule,
+        MatSortModule,
+        BarChartModule,
+        MatButtonToggleModule,
+        MatButtonModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatListModule,
+        MatIconModule,
+        MatExpansionModule,
+        MatCheckboxModule,
+        MatRadioModule,
+        MatTooltipModule
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })

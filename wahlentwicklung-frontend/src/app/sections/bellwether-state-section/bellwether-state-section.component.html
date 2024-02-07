@@ -1,5 +1,5 @@
 
-<div class="w-2/3 h-96 mx-auto max-w-7xl px-10 lg:px-12 flex flex-col">
+<div class="w-2/3 h-96 mx-auto max-w-7xl px-10 lg:px-12 flex flex-col relative">
   <h1 class="text-left">"Bellwether" Bundesland Phänomen: {{selectedBellwetherState?.state?.name}}</h1>
 
   <div class="flex">
@@ -47,5 +47,13 @@
         </ng-container>
       </div>
     </div>
+  </div>
+
+  <div class="absolute right-0 top-0 bottom-0 flex items-stretch justify-center">
+    <button class="full-height-button text-3xl rounded-lg"
+            matTooltip="Details"
+            [matTooltipPosition]="'right'">
+      <mat-icon class="icon-display">keyboard_arrow_right</mat-icon>
+    </button>
   </div>
 </div>

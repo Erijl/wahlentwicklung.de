@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
-import { AppRoutingModule } from './routing/app-routing.module';
+import {AppRoutingModule, ROUTES} from './routing/app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from "@angular/common/http";
 import { HeaderComponent } from './components/header/header.component';
@@ -31,6 +31,8 @@ import { MatRadioModule } from "@angular/material/radio";
 import { FaqSectionComponent } from './sections/faq-section/faq-section.component';
 import { BellwetherStateSectionComponent } from './sections/bellwether-state-section/bellwether-state-section.component';
 import {MatTooltipModule} from "@angular/material/tooltip";
+import { DetailspageComponent } from './sites/detailspage/detailspage.component';
+import {provideRouter} from "@angular/router";
 
 @NgModule({
   declarations: [
@@ -43,7 +45,8 @@ import {MatTooltipModule} from "@angular/material/tooltip";
     GeneralStatisticSection,
     StateStatisticSection,
     FaqSectionComponent,
-    BellwetherStateSectionComponent
+    BellwetherStateSectionComponent,
+    DetailspageComponent
   ],
     imports: [
         BrowserModule,
@@ -68,7 +71,7 @@ import {MatTooltipModule} from "@angular/material/tooltip";
         MatRadioModule,
         MatTooltipModule
     ],
-  providers: [],
+  providers: [provideRouter(ROUTES)],
   bootstrap: [AppComponent]
 })
 export class AppModule {

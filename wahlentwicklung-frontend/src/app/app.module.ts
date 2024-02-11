@@ -22,18 +22,14 @@ import { HeroSectionComponent } from './sections/hero-section/hero-section.compo
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatSelectModule } from "@angular/material/select";
 import { GeneralStatisticSection } from './sections/general-statistic-section/general-statistic-section';
-import { StateStatisticSection } from './sections/state-statistic-section/state-statistic-section';
 import { MatListModule } from "@angular/material/list";
 import { MatIconModule } from "@angular/material/icon";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatRadioModule } from "@angular/material/radio";
-import { FaqSectionComponent } from './sections/faq-section/faq-section.component';
 import { BellwetherStateSectionComponent } from './sections/bellwether-state-section/bellwether-state-section.component';
 import {MatTooltipModule} from "@angular/material/tooltip";
-import { DetailspageComponent } from './sites/detailspage/detailspage.component';
 import {provideRouter} from "@angular/router";
-import { ElectionresultDetailsPageComponent } from './sites/electionresult-details-page/electionresult-details-page.component';
 
 @NgModule({
   declarations: [
@@ -44,11 +40,7 @@ import { ElectionresultDetailsPageComponent } from './sites/electionresult-detai
     FooterComponent,
     HeroSectionComponent,
     GeneralStatisticSection,
-    StateStatisticSection,
-    FaqSectionComponent,
     BellwetherStateSectionComponent,
-    DetailspageComponent,
-    ElectionresultDetailsPageComponent
   ],
     imports: [
         BrowserModule,

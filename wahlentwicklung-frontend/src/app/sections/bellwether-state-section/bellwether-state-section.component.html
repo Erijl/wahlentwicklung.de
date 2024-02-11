@@ -10,15 +10,6 @@
         mit einer Differenz von nur {{selectedBellwetherState?.percentageDifference | number: '1.2-2'}}%.</p>
     </div>
     <div class="w-3/4">
-      <!--<div class="text-center justify-center">
-        <mat-form-field>
-          <mat-label>Bundesland auswählen</mat-label>
-          <mat-select [(ngModel)]="selectedBellwetherState" (selectionChange)="onBellwetherStateChange()" [disabled]="!bellwetherStates">
-            <mat-option *ngIf="!bellwetherStates" [value]="">Loading...</mat-option>
-            <mat-option *ngFor="let state of bellwetherStates" [value]="state">{{ state?.state?.name }} ({{state?.percentageDifference | number: '1.2-2'}}%)</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>-->
       <div #containerRef class="flex justify-center text-xl">
 
         <ng-container>
@@ -47,14 +38,5 @@
         </ng-container>
       </div>
     </div>
-  </div>
-
-  <div class="absolute right-0 top-0 bottom-0 flex items-stretch justify-center">
-    <button routerLink="/details/bellwether"
-            class="full-height-button text-3xl rounded-lg"
-            matTooltip="Details (Coming Soon)"
-            [matTooltipPosition]="'right'">
-      <mat-icon class="icon-display">keyboard_arrow_right</mat-icon>
-    </button>
   </div>
 </div>

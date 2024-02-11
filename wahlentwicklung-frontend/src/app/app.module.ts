@@ -33,6 +33,7 @@ import { BellwetherStateSectionComponent } from './sections/bellwether-state-sec
 import {MatTooltipModule} from "@angular/material/tooltip";
 import { DetailspageComponent } from './sites/detailspage/detailspage.component';
 import {provideRouter} from "@angular/router";
+import { ElectionresultDetailsPageComponent } from './sites/electionresult-details-page/electionresult-details-page.component';
 
 @NgModule({
   declarations: [
@@ -46,7 +47,8 @@ import {provideRouter} from "@angular/router";
     StateStatisticSection,
     FaqSectionComponent,
     BellwetherStateSectionComponent,
-    DetailspageComponent
+    DetailspageComponent,
+    ElectionresultDetailsPageComponent
   ],
     imports: [
         BrowserModule,

@@ -1,11 +1,10 @@
 <div class="w-2/3 h-96 mx-auto max-w-7xl px-10 lg:px-12 relative">
 
-
   <h1 class="text-center font-medium">Wahlergebnis
-    ({{chartMode == 'zweitstimmen' ? "Zweitstimmen" : chartMode == 'erststimmen' ? "Erststimmen" : "Gruppiert"}})</h1>
+    ({{ chartMode == 'secondaryVotes' ? "Zweitstimmen" : chartMode == 'firstVotes' ? "Erststimmen" : "Gruppiert" }})</h1>
 
   <div #containerRef class="flex justify-center text-xl">
-    <ng-container *ngIf="chartMode === 'zweitstimmen' || chartMode === 'erststimmen'">
+    <ng-container *ngIf="chartMode === 'secondaryVotes' || chartMode === 'firstVotes'">
       <ngx-charts-bar-vertical #stimmenChart class="w-full h-96 mx-auto"
                                [view]="[containerRef.offsetWidth, containerRef.offsetHeight]"
                                [scheme]="chartConfig.scheme"
@@ -21,7 +20,6 @@
                                [legendTitle]="chartConfig.legendTitle"
                                [customColors]="barChartColorScheme"
       >
-        <!-- Define a custom tooltip template within ngx-charts-bar-vertical -->
         <ng-template #tooltipTemplate let-model="model">
           <div class="custom-tooltip text-xl">
             <span>{{ model.name }}:</span> <br>
@@ -59,7 +57,31 @@
     </ng-container>
   </div>
 
-  <div class="absolute right-0 top-0 bottom-0 flex items-stretch justify-center">
+  <div *ngIf="!shouldDisplayBasicView()">
+    <div class="flex items-center justify-between border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
+
+      <mat-button-toggle-group #group="matButtonToggleGroup" value="zweitstimmen">
+        <mat-button-toggle value="erststimmen"
+                           class="relative z-10 inline-flex items-center bg-indigo-600 px-4 py-2 text-sm font-medium text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                           [checked]="group.value === 'erststimmen'"
+                           (click)="selectChartMode('firstVotes')">Erststimmen
+        </mat-button-toggle>
+        <mat-button-toggle value="zweitstimmen"
+                           class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0"
+                           [checked]="group.value === 'zweitstimmen'"
+                           (click)="selectChartMode('secondaryVotes')">Zweitstimmen
+        </mat-button-toggle>
+        <mat-button-toggle value="vergleich"
+                           class="relative hidden items-center px-4 py-2 text-sm font-medium text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex"
+                           [checked]="group.value === 'vergleich'"
+                           (click)="selectChartMode('grouped')">Vergleich (Erst & Zweit)
+        </mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+  </div>
+
+
+  <div *ngIf="shouldDisplayBasicView()" class="absolute right-0 top-0 bottom-0 flex items-stretch justify-center">
     <button routerLink="/details/electionresult"
             class="full-height-button text-3xl rounded-lg"
             matTooltip="Details (Coming Soon)"
@@ -71,32 +93,32 @@
 
 
 <!-- //TODO re-add as "Details" panel/page
-    <mat-spinner *ngIf="wahlResultData.length === 0" color="primary" class="pt-10"></mat-spinner>
+        <mat-spinner *ngIf="electionResultData.length === 0" color="primary" class="pt-10"></mat-spinner>
 
-    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" *ngIf="wahlResultData.length > 0" matSort (matSortChange)="onSortChange($event)">
+    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8 mat-table-density(-10)" *ngIf="electionResultData.length > 0">
       <ng-container *ngFor="let col of displayedColumns; let i = index" [matColumnDef]="col">
         <th mat-header-cell *matHeaderCellDef>
-          <span *ngIf="col === 'partei_name'">Partei</span>
-          <span *ngIf="col === 'total_votes_erststimmen'">Eststimmen</span>
-          <span *ngIf="col === 'percentage_of_votes_erststimmen'">Erststimmen %</span>
-          <span *ngIf="col === 'total_votes_zweitstimmen'">Zweitstimmen</span>
-          <span *ngIf="col === 'percentage_of_votes_zweitstimmen'">Zweitstimmen %</span>
+          <span *ngIf="col === 'partyName'">Partei</span>
+          <span *ngIf="col === 'totalVotesPrimary'">Erststimmen</span>
+          <span *ngIf="col === 'totalVotesPrimaryPercentage'">Erststimmen %</span>
+          <span *ngIf="col === 'totalVotesSecondary'">Zweitstimmen</span>
+          <span *ngIf="col === 'totalVotesSecondaryPercentage'">Zweitstimmen %</span>
         </th>
 
         <td mat-cell *matCellDef="let element">
-          <ng-container *ngIf="col === 'partei_name'">
-            {{ element[col] }}
+          <ng-container *ngIf="col === 'partyName'">
+            <div class="font-medium">{{ element[col] }}</div>
           </ng-container>
-          <ng-container *ngIf="col === 'total_votes_erststimmen'">
+          <ng-container *ngIf="col === 'totalVotesPrimary'">
             {{ element[col] | number: '1.0-0' }}
           </ng-container>
-          <ng-container *ngIf="col === 'percentage_of_votes_erststimmen'">
+          <ng-container *ngIf="col === 'totalVotesPrimaryPercentage'">
             {{ element[col] | number: '1.2-2' }}%
           </ng-container>
-          <ng-container *ngIf="col === 'total_votes_zweitstimmen'">
+          <ng-container *ngIf="col === 'totalVotesSecondary'">
             {{ element[col] | number: '1.0-0' }}
           </ng-container>
-          <ng-container *ngIf="col === 'percentage_of_votes_zweitstimmen'">
+          <ng-container *ngIf="col === 'totalVotesSecondaryPercentage'">
             {{ element[col] | number: '1.2-2' }}%
           </ng-container>
         </td>
@@ -105,6 +127,4 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
-
-    <mat-paginator [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons></mat-paginator>
     -->

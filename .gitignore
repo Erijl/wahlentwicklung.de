@@ -7,3 +7,5 @@ wahlentwicklung-backend/dist/*
 
 logs/
 *.log
+
+acme.json

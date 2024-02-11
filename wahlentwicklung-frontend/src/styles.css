@@ -4,3 +4,19 @@
 @tailwind utilities;
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.full-height-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 110%;
+  width: 50px; /* Adjust as needed */
+  border: none;
+  background: none;
+  cursor: pointer;
+  box-shadow: 7px 0 10px -4px rgba(0, 0, 0, 0.2); /* Adjust as needed */
+}
+
+.icon-display {
+  transform: scale(2);
+}

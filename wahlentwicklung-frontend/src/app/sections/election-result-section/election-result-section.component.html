@@ -1,9 +1,10 @@
-<div class="w-2/3 h-96 mx-auto max-w-7xl px-10 lg:px-12">
-  <h2 class="text-center">Wahlergebnis
-    ({{chartMode == 'zweitstimmen' ? "Zweitstimmen" : chartMode == 'erststimmen' ? "Erststimmen" : "Gruppiert"}})</h2>
+<div class="w-2/3 h-96 mx-auto max-w-7xl px-10 lg:px-12 relative">
 
-  <div #containerRef class="flex justify-center">
-    <ng-container *ngIf="chartMode === 'zweitstimmen' || chartMode === 'erststimmen'">
+  <h1 class="text-center font-medium">Wahlergebnis
+    ({{ chartMode == 'secondaryVotes' ? "Zweitstimmen" : chartMode == 'firstVotes' ? "Erststimmen" : "Gruppiert" }})</h1>
+
+  <div #containerRef class="flex justify-center text-xl">
+    <ng-container *ngIf="chartMode === 'secondaryVotes' || chartMode === 'firstVotes'">
       <ngx-charts-bar-vertical #stimmenChart class="w-full h-96 mx-auto"
                                [view]="[containerRef.offsetWidth, containerRef.offsetHeight]"
                                [scheme]="chartConfig.scheme"
@@ -19,7 +20,6 @@
                                [legendTitle]="chartConfig.legendTitle"
                                [customColors]="barChartColorScheme"
       >
-        <!-- Define a custom tooltip template within ngx-charts-bar-vertical -->
         <ng-template #tooltipTemplate let-model="model">
           <div class="custom-tooltip text-xl">
             <span>{{ model.name }}:</span> <br>
@@ -30,7 +30,7 @@
     </ng-container>
   </div>
 
-  <div #containerRef class="flex justify-center">
+  <div #containerRef class="flex justify-center text-xl">
     <ng-container *ngIf="chartMode === 'grouped'">
       <ngx-charts-bar-vertical-2d #groupedChart class="w-full h-96 mx-auto"
                                   [view]="[containerRef.offsetWidth, containerRef.offsetHeight]"
@@ -56,51 +56,4 @@
       </ngx-charts-bar-vertical-2d>
     </ng-container>
   </div>
-
-
-  <div class="flex justify-center pt-6">
-    <button mat-button class="text-xl px-4 py-2 rounded-lg" (click)="cycleChartMode()">
-      Nächste >
-    </button>
-  </div>
 </div>
-
-
-<!-- //TODO re-add as "Details" panel/page
-    <mat-spinner *ngIf="wahlResultData.length === 0" color="primary" class="pt-10"></mat-spinner>
-
-    <table mat-table [dataSource]="dataSource" class="mat-elevation-z8" *ngIf="wahlResultData.length > 0" matSort (matSortChange)="onSortChange($event)">
-      <ng-container *ngFor="let col of displayedColumns; let i = index" [matColumnDef]="col">
-        <th mat-header-cell *matHeaderCellDef>
-          <span *ngIf="col === 'partei_name'">Partei</span>
-          <span *ngIf="col === 'total_votes_erststimmen'">Eststimmen</span>
-          <span *ngIf="col === 'percentage_of_votes_erststimmen'">Erststimmen %</span>
-          <span *ngIf="col === 'total_votes_zweitstimmen'">Zweitstimmen</span>
-          <span *ngIf="col === 'percentage_of_votes_zweitstimmen'">Zweitstimmen %</span>
-        </th>
-
-        <td mat-cell *matCellDef="let element">
-          <ng-container *ngIf="col === 'partei_name'">
-            {{ element[col] }}
-          </ng-container>
-          <ng-container *ngIf="col === 'total_votes_erststimmen'">
-            {{ element[col] | number: '1.0-0' }}
-          </ng-container>
-          <ng-container *ngIf="col === 'percentage_of_votes_erststimmen'">
-            {{ element[col] | number: '1.2-2' }}%
-          </ng-container>
-          <ng-container *ngIf="col === 'total_votes_zweitstimmen'">
-            {{ element[col] | number: '1.0-0' }}
-          </ng-container>
-          <ng-container *ngIf="col === 'percentage_of_votes_zweitstimmen'">
-            {{ element[col] | number: '1.2-2' }}%
-          </ng-container>
-        </td>
-      </ng-container>
-
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
-    </table>
-
-    <mat-paginator [pageSizeOptions]="[5, 10, 25]" showFirstLastButtons></mat-paginator>
-    -->

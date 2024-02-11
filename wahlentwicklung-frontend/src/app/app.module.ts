@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
-import { AppRoutingModule } from './routing/app-routing.module';
+import {AppRoutingModule, ROUTES} from './routing/app-routing.module';
 import { AppComponent } from './app.component';
 import { HttpClientModule } from "@angular/common/http";
 import { HeaderComponent } from './components/header/header.component';
@@ -22,14 +22,14 @@ import { HeroSectionComponent } from './sections/hero-section/hero-section.compo
 import { MatFormFieldModule } from "@angular/material/form-field";
 import { MatSelectModule } from "@angular/material/select";
 import { GeneralStatisticSection } from './sections/general-statistic-section/general-statistic-section';
-import { StateStatisticSection } from './sections/state-statistic-section/state-statistic-section';
 import { MatListModule } from "@angular/material/list";
 import { MatIconModule } from "@angular/material/icon";
 import { MatExpansionModule } from "@angular/material/expansion";
 import { MatCheckboxModule } from "@angular/material/checkbox";
 import { MatRadioModule } from "@angular/material/radio";
-import { FaqSectionComponent } from './sections/faq-section/faq-section.component';
 import { BellwetherStateSectionComponent } from './sections/bellwether-state-section/bellwether-state-section.component';
+import {MatTooltipModule} from "@angular/material/tooltip";
+import {provideRouter} from "@angular/router";
 
 @NgModule({
   declarations: [
@@ -40,33 +40,32 @@ import { BellwetherStateSectionComponent } from './sections/bellwether-state-sec
     FooterComponent,
     HeroSectionComponent,
     GeneralStatisticSection,
-    StateStatisticSection,
-    FaqSectionComponent,
-    BellwetherStateSectionComponent
+    BellwetherStateSectionComponent,
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    HttpClientModule,
-    FormsModule,
-    NgMultiSelectDropDownModule.forRoot(),
-    BrowserAnimationsModule,
-    MatPaginatorModule,
-    MatTableModule,
-    MatProgressSpinnerModule,
-    MatSortModule,
-    BarChartModule,
-    MatButtonToggleModule,
-    MatButtonModule,
-    MatFormFieldModule,
-    MatSelectModule,
-    MatListModule,
-    MatIconModule,
-    MatExpansionModule,
-    MatCheckboxModule,
-    MatRadioModule
-  ],
-  providers: [],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        HttpClientModule,
+        FormsModule,
+        NgMultiSelectDropDownModule.forRoot(),
+        BrowserAnimationsModule,
+        MatPaginatorModule,
+        MatTableModule,
+        MatProgressSpinnerModule,
+        MatSortModule,
+        BarChartModule,
+        MatButtonToggleModule,
+        MatButtonModule,
+        MatFormFieldModule,
+        MatSelectModule,
+        MatListModule,
+        MatIconModule,
+        MatExpansionModule,
+        MatCheckboxModule,
+        MatRadioModule,
+        MatTooltipModule
+    ],
+  providers: [provideRouter(ROUTES)],
   bootstrap: [AppComponent]
 })
 export class AppModule {

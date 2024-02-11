@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import {Component, Input, OnInit, ViewChild} from '@angular/core';
 import { DataService } from "../../core/services/data/data.service";
 import { MatPaginator } from "@angular/material/paginator";
 import { MatTableDataSource } from "@angular/material/table";
@@ -13,9 +13,8 @@ import { PartyElectionResult } from "../../core/types/common-types";
 })
 export class ElectionResultSectionComponent implements OnInit {
   electionResultData: PartyElectionResult[] = [];
-  chartModes: string[] = ['zweitstimmen', 'erststimmen', 'grouped'];
   currentChartModeIndex: number = 0;
-  chartMode: string = this.chartModes[this.currentChartModeIndex];
+  chartMode: string = "secondaryVotes";
 
   chartConfig: any = {
     view: [700, 400],
@@ -36,6 +35,10 @@ export class ElectionResultSectionComponent implements OnInit {
   barChartColorScheme: any[] = [];
   barChart2DColorScheme: any[] = [];
 
+  @Input()
+  displayMode: string = 'basic';
+
+  displayedColumns: string[] = ['partyName', 'totalVotesPrimary', 'totalVotesPrimaryPercentage', 'totalVotesSecondary', 'totalVotesSecondaryPercentage'];
   dataSource!: MatTableDataSource<any>;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -57,21 +60,19 @@ export class ElectionResultSectionComponent implements OnInit {
      */
   }
 
-  cycleChartMode() {
-    // Cycle through the chart modes
-    this.currentChartModeIndex = (this.currentChartModeIndex + 1) % this.chartModes.length;
-    this.chartMode = this.chartModes[this.currentChartModeIndex];
+  selectChartMode(mode: string) {
+    this.chartMode = mode;
     this.updateChartData();
   }
 
   updateChartData() {
-    if (this.chartMode === 'zweitstimmen') {
+    if (this.chartMode === 'secondaryVotes') {
       // Map the fields for Zweitstimmen mode
       this.chartData = this.electionResultData.slice(0, 6).map((item) => ({
         name: item.partyName,
         value: item.totalVotesSecondaryPercentage,
       }));
-    } else if (this.chartMode === 'erststimmen') {
+    } else if (this.chartMode === 'firstVotes') {
       // Map the fields for Erststimmen mode
       this.chartData = this.electionResultData.slice(0, 6).map((item) => ({
         name: item.partyName,
@@ -124,10 +125,14 @@ export class ElectionResultSectionComponent implements OnInit {
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
 
-      this.chartMode = this.chartModes[0];
+      this.chartMode = 'secondaryVotes'
       this.currentChartModeIndex = 0;
 
       this.setCustomColorScheme();
     });
+  }
+
+  shouldDisplayBasicView() {
+    return this.displayMode === 'basic';
   }
 }

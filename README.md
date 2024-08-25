@@ -7,13 +7,11 @@ It's a small project I started to to get the gist of Angular & Spring Boot, so i
 The website itself is built with Angular, the backend using Spring Boot, and the data is stored in a PostgreSQL database.
 To be more specific, [Supabase](https://supabase.com/).
 
-## Contributing
+# Current state
 As mentioned above, the website is nowhere near its full potential, 
-and I might revisit the project, but for now that's all.
+and is currently down due to poor infrastructure choices on my part.
 
-Regardless, the project is still maintained, and I will continue to push security updates and keep the website running.
-
-If you still want to contribute, feel free to open an issue/pull request and I'll take a look!
+I will revisite the project in preparation for the upcoming election in 2025 later this year, to also make sure the whole dataset is fully utilized.
 
 ## Project Structure
 The project is divided into four parts:
@@ -28,10 +26,7 @@ The project is divided into four parts:
 ## TODO
 Some ToDo items that, if I get back to this, definitely need to be done.
 
-- [ ] Add cache manager to speed up queries
-- [ ] Rework Frontend
-- [ ] Add more content
-- [ ] streamline publishing process
+- [ ] Rework everthing...
 
 ## Dictionary
 Since it's about the German elections, and the .csv files with the data are in german,

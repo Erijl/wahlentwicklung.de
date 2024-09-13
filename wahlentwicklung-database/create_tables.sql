@@ -1,210 +1,194 @@
 -- dto tables
 
-create table election
+CREATE TABLE election
 (
-    year integer not null,
-
-    constraint election_pkey primary key (year)
+    year INTEGER NOT NULL,
+    PRIMARY KEY (year)
 );
 
-create table state
+CREATE TABLE state
 (
-    id   integer      not null,
-    name varchar(255) not null,
-
-    constraint state_pkey primary key (id)
+    id   INTEGER      NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id)
 );
 
-create table constituency
+CREATE TABLE constituency
 (
-    id       integer not null,
-    state_id integer not null,
-
-    constraint constituency_pkey primary key (id),
-    constraint constituency_state_id_fkey foreign key (state_id) references state (id)
+    id       INTEGER      NOT NULL,
+    state_id INTEGER      NOT NULL,
+    name     VARCHAR(255) NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (state_id) REFERENCES state (id)
 );
 
-create table party
+CREATE TABLE party
 (
-    id           integer      not null,
-    name         varchar(255) not null,
-    abbreviation varchar(20),
-    color        varchar(6),
-
-    constraint party_pkey primary key (id)
+    id           INTEGER      NOT NULL,
+    name         VARCHAR(255) NOT NULL,
+    abbreviation VARCHAR(20),
+    color        VARCHAR(6),
+    PRIMARY KEY (id)
 );
-
 
 -- base data tables
 
-create table election_vote_base
+CREATE TABLE election_vote_base
 (
-    id                                       integer not null,
-    election_year                            integer not null,
+    id                                       INTEGER NOT NULL,
+    election_year                            INTEGER NOT NULL,
 
+    eligiblevoters_primaryvote_preliminary   INTEGER NOT NULL,
+    eligiblevoters_primaryvote_definitiv     INTEGER NOT NULL,
 
-    eligiblevoters_primaryvote_preliminary   integer not null,
-    eligiblevoters_primaryvote_definitiv     integer not null,
+    eligiblevoters_secondaryvote_preliminary INTEGER NOT NULL,
+    eligiblevoters_secondarybote_definitive  INTEGER NOT NULL,
 
-    eligiblevoters_secondaryvote_preliminary integer not null,
-    eligiblevoters_secondarybote_definitive  integer not null,
+    actualvoters_primaryvote_preliminary     INTEGER NOT NULL,
+    actualvoters_primaryvote_definitiv       INTEGER NOT NULL,
 
+    actualvoters_secondaryvote_preliminary   INTEGER NOT NULL,
+    actualvoters_secondarybote_definitive    INTEGER NOT NULL,
 
-    actualvoters_primaryvote_preliminary     integer not null,
-    actualvoters_primaryvote_definitiv       integer not null,
+    validvoters_primaryvote_preliminary      INTEGER NOT NULL,
+    validvoters_primaryvote_definitiv        INTEGER NOT NULL,
 
-    actualvoters_secondaryvote_preliminary   integer not null,
-    actualvoters_secondarybote_definitive    integer not null,
+    validvoters_secondaryvote_preliminary    INTEGER NOT NULL,
+    validvoters_secondarybote_definitive     INTEGER NOT NULL,
 
+    invalidvoters_primaryvote_preliminary    INTEGER NOT NULL,
+    invalidvoters_primaryvote_definitiv      INTEGER NOT NULL,
 
-    validvoters_primaryvote_preliminary      integer not null,
-    validvoters_primaryvote_definitiv        integer not null,
+    invalidvoters_secondaryvote_preliminary  INTEGER NOT NULL,
+    invalidvoters_secondarybote_definitive   INTEGER NOT NULL,
 
-    validvoters_secondaryvote_preliminary    integer not null,
-    validvoters_secondarybote_definitive     integer not null,
-
-
-    invalidvoters_primaryvote_preliminary    integer not null,
-    invalidvoters_primaryvote_definitiv      integer not null,
-
-    invalidvoters_secondaryvote_preliminary  integer not null,
-    invalidvoters_secondarybote_definitive   integer not null,
-
-    constraint election_vote_base_pkey primary key (id),
-    constraint election_vote_base_election_year_fkey foreign key (election_year) references election (year)
+    PRIMARY KEY (id),
+    FOREIGN KEY (election_year) REFERENCES election (year)
 );
 
-create table state_vote_base
+CREATE TABLE state_vote_base
 (
-    id                                       integer not null,
-    election_year                            integer not null,
-    state_id                                 integer not null,
+    id                                       INTEGER NOT NULL,
+    election_year                            INTEGER NOT NULL,
+    state_id                                 INTEGER NOT NULL,
 
+    eligiblevoters_primaryvote_preliminary   INTEGER NOT NULL,
+    eligiblevoters_primaryvote_definitiv     INTEGER NOT NULL,
 
-    eligiblevoters_primaryvote_preliminary   integer not null,
-    eligiblevoters_primaryvote_definitiv     integer not null,
+    eligiblevoters_secondaryvote_preliminary INTEGER NOT NULL,
+    eligiblevoters_secondarybote_definitive  INTEGER NOT NULL,
 
-    eligiblevoters_secondaryvote_preliminary integer not null,
-    eligiblevoters_secondarybote_definitive  integer not null,
+    actualvoters_primaryvote_preliminary     INTEGER NOT NULL,
+    actualvoters_primaryvote_definitiv       INTEGER NOT NULL,
 
+    actualvoters_secondaryvote_preliminary   INTEGER NOT NULL,
+    actualvoters_secondarybote_definitive    INTEGER NOT NULL,
 
-    actualvoters_primaryvote_preliminary     integer not null,
-    actualvoters_primaryvote_definitiv       integer not null,
+    validvoters_primaryvote_preliminary      INTEGER NOT NULL,
+    validvoters_primaryvote_definitiv        INTEGER NOT NULL,
 
-    actualvoters_secondaryvote_preliminary   integer not null,
-    actualvoters_secondarybote_definitive    integer not null,
+    validvoters_secondaryvote_preliminary    INTEGER NOT NULL,
+    validvoters_secondarybote_definitive     INTEGER NOT NULL,
 
+    invalidvoters_primaryvote_preliminary    INTEGER NOT NULL,
+    invalidvoters_primaryvote_definitiv      INTEGER NOT NULL,
 
-    validvoters_primaryvote_preliminary      integer not null,
-    validvoters_primaryvote_definitiv        integer not null,
+    invalidvoters_secondaryvote_preliminary  INTEGER NOT NULL,
+    invalidvoters_secondarybote_definitive   INTEGER NOT NULL,
 
-    validvoters_secondaryvote_preliminary    integer not null,
-    validvoters_secondarybote_definitive     integer not null,
-
-
-    invalidvoters_primaryvote_preliminary    integer not null,
-    invalidvoters_primaryvote_definitiv      integer not null,
-
-    invalidvoters_secondaryvote_preliminary  integer not null,
-    invalidvoters_secondarybote_definitive   integer not null,
-
-    constraint state_vote_base_pkey primary key (id),
-    constraint state_vote_base_election_year_fkey foreign key (election_year) references election (year),
-    constraint state_vote_base_state_id_fkey foreign key (state_id) references state (id)
+    PRIMARY KEY (id),
+    FOREIGN KEY (election_year) REFERENCES election (year),
+    FOREIGN KEY (state_id) REFERENCES state (id)
 );
 
-create table constituency_vote_base
+CREATE TABLE constituency_vote_base
 (
-    id                                       integer not null,
-    election_year                            integer not null,
-    constituency_id                          integer not null,
+    id                                       INTEGER NOT NULL,
+    election_year                            INTEGER NOT NULL,
+    constituency_id                          INTEGER NOT NULL,
 
+    eligiblevoters_primaryvote_preliminary   INTEGER NOT NULL,
+    eligiblevoters_primaryvote_definitiv     INTEGER NOT NULL,
 
-    eligiblevoters_primaryvote_preliminary   integer not null,
-    eligiblevoters_primaryvote_definitiv     integer not null,
+    eligiblevoters_secondaryvote_preliminary INTEGER NOT NULL,
+    eligiblevoters_secondarybote_definitive  INTEGER NOT NULL,
 
-    eligiblevoters_secondaryvote_preliminary integer not null,
-    eligiblevoters_secondarybote_definitive  integer not null,
+    actualvoters_primaryvote_preliminary     INTEGER NOT NULL,
+    actualvoters_primaryvote_definitiv       INTEGER NOT NULL,
 
+    actualvoters_secondaryvote_preliminary   INTEGER NOT NULL,
+    actualvoters_secondarybote_definitive    INTEGER NOT NULL,
 
-    actualvoters_primaryvote_preliminary     integer not null,
-    actualvoters_primaryvote_definitiv       integer not null,
+    validvoters_primaryvote_preliminary      INTEGER NOT NULL,
+    validvoters_primaryvote_definitiv        INTEGER NOT NULL,
 
-    actualvoters_secondaryvote_preliminary   integer not null,
-    actualvoters_secondarybote_definitive    integer not null,
+    validvoters_secondaryvote_preliminary    INTEGER NOT NULL,
+    validvoters_secondarybote_definitive     INTEGER NOT NULL,
 
+    invalidvoters_primaryvote_preliminary    INTEGER NOT NULL,
+    invalidvoters_primaryvote_definitiv      INTEGER NOT NULL,
 
-    validvoters_primaryvote_preliminary      integer not null,
-    validvoters_primaryvote_definitiv        integer not null,
+    invalidvoters_secondaryvote_preliminary  INTEGER NOT NULL,
+    invalidvoters_secondarybote_definitive   INTEGER NOT NULL,
 
-    validvoters_secondaryvote_preliminary    integer not null,
-    validvoters_secondarybote_definitive     integer not null,
-
-
-    invalidvoters_primaryvote_preliminary    integer not null,
-    invalidvoters_primaryvote_definitiv      integer not null,
-
-    invalidvoters_secondaryvote_preliminary  integer not null,
-    invalidvoters_secondarybote_definitive   integer not null,
-
-    constraint constituency_vote_base_pkey primary key (id),
-    constraint constituency_vote_base_election_year_fkey foreign key (election_year) references election (year),
-    constraint constituency_vote_base_constituency_id_fkey foreign key (constituency_id) references constituency (id)
+    PRIMARY KEY (id),
+    FOREIGN KEY (election_year) REFERENCES election (year),
+    FOREIGN KEY (constituency_id) REFERENCES constituency (id)
 );
 
 -- party tables
 
-create table election_vote_party
+CREATE TABLE election_vote_party
 (
-    id                        integer not null,
-    election_year             integer not null,
-    party_id                  integer not null,
+    id                        INTEGER NOT NULL,
+    election_year             INTEGER NOT NULL,
+    party_id                  INTEGER NOT NULL,
 
-    primaryvote_ppreliminary  integer not null,
-    primaryvote_definitiv     integer not null,
+    primaryvote_ppreliminary  INTEGER NOT NULL,
+    primaryvote_definitiv     INTEGER NOT NULL,
 
-    secondaryvote_preliminary integer not null,
-    secondaryvote_definitiv   integer not null,
+    secondaryvote_preliminary INTEGER NOT NULL,
+    secondaryvote_definitiv   INTEGER NOT NULL,
 
-    constraint election_vote_party_pkey primary key (id),
-    constraint election_vote_party_election_year_fkey foreign key (election_year) references election (year),
-    constraint election_vote_party_party_id_fkey foreign key (party_id) references party (id)
+    PRIMARY KEY (id),
+    FOREIGN KEY (election_year) REFERENCES election (year),
+    FOREIGN KEY (party_id) REFERENCES party (id)
 );
 
-create table state_vote_party
+CREATE TABLE state_vote_party
 (
-    id                        integer not null,
-    election_year             integer not null,
-    party_id                  integer not null,
-    state_id                  integer not null,
+    id                        INTEGER NOT NULL,
+    election_year             INTEGER NOT NULL,
+    party_id                  INTEGER NOT NULL,
+    state_id                  INTEGER NOT NULL,
 
-    primaryvote_ppreliminary  integer not null,
-    primaryvote_definitiv     integer not null,
+    primaryvote_ppreliminary  INTEGER NOT NULL,
+    primaryvote_definitiv     INTEGER NOT NULL,
 
-    secondaryvote_preliminary integer not null,
-    secondaryvote_definitiv   integer not null,
+    secondaryvote_preliminary INTEGER NOT NULL,
+    secondaryvote_definitiv   INTEGER NOT NULL,
 
-    constraint state_vote_party_pkey primary key (id),
-    constraint state_vote_party_election_year_fkey foreign key (election_year) references election (year),
-    constraint state_vote_party_party_id_fkey foreign key (party_id) references party (id),
-    constraint state_vote_party_state_id_fkey foreign key (state_id) references state (id)
+    PRIMARY KEY (id),
+    FOREIGN KEY (election_year) REFERENCES election (year),
+    FOREIGN KEY (party_id) REFERENCES party (id),
+    FOREIGN KEY (state_id) REFERENCES state (id)
 );
 
-create table constituency_vote_party
+CREATE TABLE constituency_vote_party
 (
-    id                        integer not null,
-    election_year             integer not null,
-    party_id                  integer not null,
-    constituency_id           integer not null,
+    id                        INTEGER NOT NULL,
+    election_year             INTEGER NOT NULL,
+    party_id                  INTEGER NOT NULL,
+    constituency_id           INTEGER NOT NULL,
 
-    primaryvote_ppreliminary  integer not null,
-    primaryvote_definitiv     integer not null,
+    primaryvote_ppreliminary  INTEGER NOT NULL,
+    primaryvote_definitiv     INTEGER NOT NULL,
 
-    secondaryvote_preliminary integer not null,
-    secondaryvote_definitiv   integer not null,
+    secondaryvote_preliminary INTEGER NOT NULL,
+    secondaryvote_definitiv   INTEGER NOT NULL,
 
-    constraint constituency_vote_party_pkey primary key (id),
-    constraint constituency_vote_party_election_year_fkey foreign key (election_year) references election (year),
-    constraint constituency_vote_party_party_id_fkey foreign key (party_id) references party (id),
-    constraint constituency_vote_party_constituency_id_fkey foreign key (constituency_id) references constituency (id)
+    PRIMARY KEY (id),
+    FOREIGN KEY (election_year) REFERENCES election (year),
+    FOREIGN KEY (party_id) REFERENCES party (id),
+    FOREIGN KEY (constituency_id) REFERENCES constituency (id)
 );

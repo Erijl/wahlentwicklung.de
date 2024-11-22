@@ -1,19 +1,18 @@
 ﻿# [Wahlentwicklung.de](https://wahlentwicklung.de)
 (engl. Election development) is a website that visualizes the development of the German elections 
 (the "Bundestagswahlen") over the years.
-It's a small project I started to to get the gist of Angular & Spring Boot, so it's no where near utilizing the full potential of the data set.
-
 
 The website itself is built with Angular, the backend using Spring Boot, and the data is stored in a PostgreSQL database.
 To be more specific, [Supabase](https://supabase.com/).
 
+# Maintenance
+The project will be put into maintenance starting December 2024, for me to revisit the project in preparation for the
+election that is coming up in February 2025. There's a lot to come, so stay tuned!
+
 ## Contributing
-As mentioned above, the website is nowhere near its full potential, 
-and I might revisit the project, but for now that's all.
+The project is still maintained, and I will continue to push security updates and keep the website running.
 
-Regardless, the project is still maintained, and I will continue to push security updates and keep the website running.
-
-If you still want to contribute, feel free to open an issue/pull request and I'll take a look!
+If you want to contribute, feel free to open an issue/pull request and I'll take a look!
 
 ## Project Structure
 The project is divided into four parts:

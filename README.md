@@ -27,10 +27,7 @@ The project is divided into four parts:
 ## TODO
 Some ToDo items that, if I get back to this, definitely need to be done.
 
-- [ ] Add cache manager to speed up queries
-- [ ] Rework Frontend
-- [ ] Add more content
-- [ ] streamline publishing process
+- [ ] Rework everthing...
 
 ## Dictionary
 Since it's about the German elections, and the .csv files with the data are in german,

@@ -30,6 +30,7 @@ import { MatRadioModule } from "@angular/material/radio";
 import { BellwetherStateSectionComponent } from './sections/bellwether-state-section/bellwether-state-section.component';
 import {MatTooltipModule} from "@angular/material/tooltip";
 import {provideRouter} from "@angular/router";
+import { MaintenanceModalComponent } from './components/maintenance-modal/maintenance-modal.component';
 
 @NgModule({
   declarations: [
@@ -41,6 +42,7 @@ import {provideRouter} from "@angular/router";
     HeroSectionComponent,
     GeneralStatisticSection,
     BellwetherStateSectionComponent,
+    MaintenanceModalComponent,
   ],
     imports: [
         BrowserModule,

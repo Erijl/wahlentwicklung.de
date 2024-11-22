@@ -1,0 +1,29 @@
+.maintenance-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.maintenance-container h1 {
+  font-size: 2em;
+  margin-bottom: 20px;
+}
+
+.maintenance-container p {
+  font-size: 1.2em;
+}
+
+@media (max-width: 600px) {
+  .maintenance-container h1 {
+    font-size: 1.5em;
+  }
+
+  .maintenance-container p {
+    font-size: 1em;
+  }
+}

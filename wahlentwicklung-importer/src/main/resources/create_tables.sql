@@ -144,7 +144,7 @@ CREATE TABLE election_vote_party
     election_year             INTEGER NOT NULL,
     party_id                  INTEGER NOT NULL,
 
-    primaryvote_ppreliminary  INTEGER NOT NULL,
+    primaryvote_preliminary  INTEGER NOT NULL,
     primaryvote_definitiv     INTEGER NOT NULL,
 
     secondaryvote_preliminary INTEGER NOT NULL,
@@ -162,7 +162,7 @@ CREATE TABLE state_vote_party
     party_id                  INTEGER NOT NULL,
     state_id                  INTEGER NOT NULL,
 
-    primaryvote_ppreliminary  INTEGER NOT NULL,
+    primaryvote_preliminary  INTEGER NOT NULL,
     primaryvote_definitiv     INTEGER NOT NULL,
 
     secondaryvote_preliminary INTEGER NOT NULL,
@@ -181,7 +181,7 @@ CREATE TABLE constituency_vote_party
     party_id                  INTEGER NOT NULL,
     constituency_id           INTEGER NOT NULL,
 
-    primaryvote_ppreliminary  INTEGER NOT NULL,
+    primaryvote_preliminary  INTEGER NOT NULL,
     primaryvote_definitiv     INTEGER NOT NULL,
 
     secondaryvote_preliminary INTEGER NOT NULL,

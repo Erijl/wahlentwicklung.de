@@ -1,0 +1,125 @@
+syntax = "proto3";
+package proto.objects;
+
+option java_multiple_files = true;
+option java_package = "org.erijl.wahlentwicklung.protocol_buffers.objects";
+option java_outer_classname = "ElectionProto";
+
+message Election {
+  int64 year = 1;
+}
+
+message State {
+  int64 id = 1;
+  string name = 2;
+}
+
+message Constituency {
+  int64 id = 1;
+  int64 state_id = 2;
+  string name = 3;
+}
+
+message Party {
+  int64 id = 1;
+  string name = 2;
+  string abbreviation = 3;
+  string color = 4;
+}
+
+message ElectionVoteBase {
+  int64 id = 1;
+  int64 election_year = 2;
+  int64 eligiblevoters_primaryvote_preliminary = 3;
+  int64 eligiblevoters_primaryvote_definitiv = 4;
+  int64 eligiblevoters_secondaryvote_preliminary = 5;
+  int64 eligiblevoters_secondarybote_definitive = 6;
+  int64 actualvoters_primaryvote_preliminary = 7;
+  int64 actualvoters_primaryvote_definitiv = 8;
+  int64 actualvoters_secondaryvote_preliminary = 9;
+  int64 actualvoters_secondarybote_definitive = 10;
+  int64 validvoters_primaryvote_preliminary = 11;
+  int64 validvoters_primaryvote_definitiv = 12;
+  int64 validvoters_secondaryvote_preliminary = 13;
+  int64 validvoters_secondarybote_definitive = 14;
+  int64 invalidvoters_primaryvote_preliminary = 15;
+  int64 invalidvoters_primaryvote_definitiv = 16;
+  int64 invalidvoters_secondaryvote_preliminary = 17;
+  int64 invalidvoters_secondarybote_definitive = 18;
+}
+
+message StateVoteBase {
+  int64 id = 1;
+  int64 election_year = 2;
+  int64 state_id = 3;
+  int64 eligiblevoters_primaryvote_preliminary = 4;
+  int64 eligiblevoters_primaryvote_definitiv = 5;
+  int64 eligiblevoters_secondaryvote_preliminary = 6;
+  int64 eligiblevoters_secondarybote_definitive = 7;
+  int64 actualvoters_primaryvote_preliminary = 8;
+  int64 actualvoters_primaryvote_definitiv = 9;
+  int64 actualvoters_secondaryvote_preliminary = 10;
+  int64 actualvoters_secondarybote_definitive = 11;
+  int64 validvoters_primaryvote_preliminary = 12;
+  int64 validvoters_primaryvote_definitiv = 13;
+  int64 validvoters_secondaryvote_preliminary = 14;
+  int64 validvoters_secondarybote_definitive = 15;
+  int64 invalidvoters_primaryvote_preliminary = 16;
+  int64 invalidvoters_primaryvote_definitiv = 17;
+  int64 invalidvoters_secondaryvote_preliminary = 18;
+  int64 invalidvoters_secondarybote_definitive = 19;
+}
+
+message ConstituencyVoteBase {
+  int64 id = 1;
+  int64 election_year = 2;
+  int64 constituency_id = 3;
+  int64 eligiblevoters_primaryvote_preliminary = 4;
+  int64 eligiblevoters_primaryvote_definitiv = 5;
+  int64 eligiblevoters_secondaryvote_preliminary = 6;
+  int64 eligiblevoters_secondarybote_definitive = 7;
+  int64 actualvoters_primaryvote_preliminary = 8;
+  int64 actualvoters_primaryvote_definitiv = 9;
+  int64 actualvoters_secondaryvote_preliminary = 10;
+  int64 actualvoters_secondarybote_definitive = 11;
+  int64 validvoters_primaryvote_preliminary = 12;
+  int64 validvoters_primaryvote_definitiv = 13;
+  int64 validvoters_secondaryvote_preliminary = 14;
+  int64 validvoters_secondarybote_definitive = 15;
+  int64 invalidvoters_primaryvote_preliminary = 16;
+  int64 invalidvoters_primaryvote_definitiv = 17;
+  int64 invalidvoters_secondaryvote_preliminary = 18;
+  int64 invalidvoters_secondarybote_definitive = 19;
+}
+
+message ElectionVoteParty {
+  int64 id = 1;
+  int64 election_year = 2;
+  int64 party_id = 3;
+  int64 primaryvote_preliminary = 4;
+  int64 primaryvote_definitiv = 5;
+  int64 secondaryvote_preliminary = 6;
+  int64 secondaryvote_definitiv = 7;
+}
+
+message StateVoteParty {
+  int64 id = 1;
+  int64 election_year = 2;
+  int64 party_id = 3;
+  int64 state_id = 4;
+  int64 primaryvote_preliminary = 5;
+  int64 primaryvote_definitiv = 6;
+  int64 secondaryvote_preliminary = 7;
+  int64 secondaryvote_definitiv = 8;
+}
+
+message ConstituencyVoteParty {
+  int64 id = 1;
+  int64 election_year = 2;
+  int64 party_id = 3;
+  int64 constituency_id = 4;
+  int64 primaryvote_preliminary = 5;
+  int64 primaryvote_definitiv = 6;
+  int64 secondaryvote_preliminary = 7;
+  int64 secondaryvote_definitiv = 8;
+}

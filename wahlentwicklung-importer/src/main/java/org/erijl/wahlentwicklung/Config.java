@@ -5,6 +5,7 @@ import org.erijl.wahlentwicklung.errors.ConfigFileMissingRequiredKeysError;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.sql.Array;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -28,7 +29,7 @@ public class Config {
 
     private void verifyConfigIntegrity() {
         List<String> missingRequiredConfigKeys = Arrays.stream(ConfigKeys.values())
-                .filter(key -> this.getProperty(key) == null && key.isRequired())
+                .filter(key -> this.getRawPropertyValue(key) == null && key.isRequired())
                 .map(ConfigKeys::name)
                 .toList();
 
@@ -48,12 +49,22 @@ public class Config {
         return InstanceHolder.instance;
     }
 
-    public String getProperty(ConfigKeys key) {
+    public String getStringProperty(ConfigKeys key) {
+        assert String.class == key.getType();
         return this.properties.getProperty(key.name());
+    }
+
+    public String[] getArrayProperty(ConfigKeys key) {
+        assert Array.class == key.getType();
+        return this.properties.getProperty(key.name()).split(",");
     }
 
     public static void verifyIntegrity() {
         getInstance();
+    }
+
+    private String getRawPropertyValue(ConfigKeys key) {
+        return this.properties.getProperty(key.name());
     }
 
 }

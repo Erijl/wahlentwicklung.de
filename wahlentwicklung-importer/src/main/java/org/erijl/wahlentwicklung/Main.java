@@ -17,11 +17,12 @@ public class Main {
     public static void main(String[] args) {
         ensureAssertionsAreEnabled();
         Config.verifyIntegrity();
-
         Config config = Config.getInstance();
 
-        String url = "jdbc:sqlite:" + config.getProperty(ConfigKeys.DB_FILE_NAME);
+        File existingDbFile = new File(System.getProperty("user.dir") + "\\" + config.getProperty(ConfigKeys.DB_FILE_NAME));
+        assert !existingDbFile.exists() || existingDbFile.delete();
 
+        String url = "jdbc:sqlite:" + config.getProperty(ConfigKeys.DB_FILE_NAME);
         try (Connection connection = DriverManager.getConnection(url)) {
             assert connection != null;
 
@@ -31,8 +32,6 @@ public class Main {
             Statement createTableStatement = connection.createStatement();
 
             String sql = readSqlFile(databaseFile.getPath());
-            System.out.println(sql);
-
             createTableStatement.executeUpdate(sql);
         } catch (SQLException | IOException e) {
             e.printStackTrace();
@@ -49,24 +48,6 @@ public class Main {
             }
         }
         return sql.toString();
-    }
-
-
-    /**
-     * Deletes old database files, and creates a new one.
-     * Throws {@link Error} when file could not be created
-     */
-    public static void prepareFile() {
-        Config config = Config.getInstance();
-
-        URL sqliteFile = Main.class.getClassLoader().getResource(config.getProperty(ConfigKeys.DB_FILE_NAME));
-
-        if(sqliteFile != null) {
-            // TODO nuke file
-        }
-        File sqliteDatabase = new File(config.getProperty(ConfigKeys.DB_FILE_NAME));
-
-        //TODO check if it exists
     }
 
     /**

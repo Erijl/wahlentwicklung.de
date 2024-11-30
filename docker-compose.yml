@@ -3,15 +3,15 @@ services:
   wahlentwicklung-backend:
     container_name: wahlentwicklung-backend
     build:
-        context: ./wahlentwicklung-backend
-        dockerfile: Dockerfile
+      context: ./wahlentwicklung-backend
+      dockerfile: Dockerfile
     environment:
       - SUPABASE_URL=${_SUPABASE_URL}
       - SUPABASE_SERVICE_KEY=${_SUPABASE_SERVICE_KEY}
     ports:
       - "8080:8080"
     networks:
-        - traefik
+      - traefik
     labels:
       - traefik.http.routers.wahlentwicklung-backend.rule=Host(`api.wahlentwicklung.de`)
       - traefik.http.routers.wahlentwicklung-backend.entrypoints=websecure

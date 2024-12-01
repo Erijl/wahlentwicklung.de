@@ -5,6 +5,7 @@ import org.erijl.wahlentwicklung.errors.AssertionsNotEnabledError;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws SQLException, IOException { //TODO proper error handling to
@@ -15,8 +16,11 @@ public class Main {
         DatabaseManager dbManager = new DatabaseManager();
 
         for (String electionYear : config.getArrayProperty(ConfigKeys.YEARS_TO_IMPORT)) {
-            System.out.println(electionYear);
-            CsvParser parser = new CsvParser(electionYear);
+            ElectionParser parser = new ElectionParser(electionYear);
+
+            List<String> parties = parser.getParties();
+
+            parties.stream().forEach(System.out::println);
         }
     }
 

@@ -1,6 +1,6 @@
 package org.erijl.wahlentwicklung;
 
-import org.erijl.wahlentwicklung.enums.ConfigKeys;
+import org.erijl.wahlentwicklung.enums.ConfigKeyEnum;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,7 +11,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 
 public class DatabaseManager {
     private static final String JDBC_CONNECTION_PATTERN = "jdbc:sqlite:";
@@ -22,7 +21,7 @@ public class DatabaseManager {
     public DatabaseManager() throws SQLException, IOException {
         this.config = Config.getInstance();
         this.dropOldDatabase();
-        this.sqliteConnection = DriverManager.getConnection(JDBC_CONNECTION_PATTERN + config.getStringProperty(ConfigKeys.DB_FILE_NAME));
+        this.sqliteConnection = DriverManager.getConnection(JDBC_CONNECTION_PATTERN + config.getStringProperty(ConfigKeyEnum.DB_FILE_NAME));
 
         assert sqliteConnection != null;
         this.createTables();
@@ -40,7 +39,7 @@ public class DatabaseManager {
     }
 
     private void dropOldDatabase() {
-        File existingDbFile = new File(System.getProperty("user.dir") + "\\" + config.getStringProperty(ConfigKeys.DB_FILE_NAME));
+        File existingDbFile = new File(System.getProperty("user.dir") + "\\" + config.getStringProperty(ConfigKeyEnum.DB_FILE_NAME));
         assert !existingDbFile.exists() || existingDbFile.delete();
     }
 

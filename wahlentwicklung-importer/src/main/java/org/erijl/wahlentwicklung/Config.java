@@ -1,6 +1,6 @@
 package org.erijl.wahlentwicklung;
 
-import org.erijl.wahlentwicklung.enums.ConfigKeys;
+import org.erijl.wahlentwicklung.enums.ConfigKeyEnum;
 import org.erijl.wahlentwicklung.errors.ConfigFileMissingRequiredKeysError;
 
 import java.io.IOException;
@@ -28,9 +28,9 @@ public class Config {
     }
 
     private void verifyConfigIntegrity() {
-        List<String> missingRequiredConfigKeys = Arrays.stream(ConfigKeys.values())
+        List<String> missingRequiredConfigKeys = Arrays.stream(ConfigKeyEnum.values())
                 .filter(key -> this.getRawPropertyValue(key) == null && key.isRequired())
-                .map(ConfigKeys::name)
+                .map(ConfigKeyEnum::name)
                 .toList();
 
         if (!missingRequiredConfigKeys.isEmpty()) {
@@ -49,12 +49,12 @@ public class Config {
         return InstanceHolder.instance;
     }
 
-    public String getStringProperty(ConfigKeys key) {
+    public String getStringProperty(ConfigKeyEnum key) {
         assert String.class == key.getType();
         return this.properties.getProperty(key.name());
     }
 
-    public String[] getArrayProperty(ConfigKeys key) {
+    public String[] getArrayProperty(ConfigKeyEnum key) {
         assert Array.class == key.getType();
         return this.properties.getProperty(key.name()).split(",");
     }
@@ -63,7 +63,7 @@ public class Config {
         getInstance();
     }
 
-    private String getRawPropertyValue(ConfigKeys key) {
+    private String getRawPropertyValue(ConfigKeyEnum key) {
         return this.properties.getProperty(key.name());
     }
 

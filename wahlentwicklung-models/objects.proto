@@ -2,7 +2,7 @@ syntax = "proto3";
 package proto.objects;
 
 option java_multiple_files = true;
-option java_package = "org.erijl.wahlentwicklung.protocol_buffers.objects";
+option java_package = "org.erijl.wahlentwicklung.protos.objects";
 option java_outer_classname = "ElectionProto";
 
 message Election {

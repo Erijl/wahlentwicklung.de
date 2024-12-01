@@ -1,7 +1,9 @@
 package org.erijl.wahlentwicklung;
 
-import org.erijl.wahlentwicklung.enums.ConfigKeys;
+import org.erijl.wahlentwicklung.enums.ConfigKeyEnum;
+import org.erijl.wahlentwicklung.enums.ElectionEnum;
 import org.erijl.wahlentwicklung.errors.AssertionsNotEnabledError;
+import org.erijl.wahlentwicklung.protos.objects.ElectionParty;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -15,12 +17,12 @@ public class Main {
         Config config = Config.getInstance();
         DatabaseManager dbManager = new DatabaseManager();
 
-        for (String electionYear : config.getArrayProperty(ConfigKeys.YEARS_TO_IMPORT)) {
-            ElectionParser parser = new ElectionParser(electionYear);
+        for (ElectionEnum election : ElectionEnum.getElectionsInArray(config.getArrayProperty(ConfigKeyEnum.YEARS_TO_IMPORT))) {
+            ElectionParser parser = new ElectionParser(election);
 
-            List<String> parties = parser.getParties();
+            List<ElectionParty> parties = parser.getParties();
 
-            parties.stream().forEach(System.out::println);
+            parties.forEach(System.out::println);
         }
     }
 

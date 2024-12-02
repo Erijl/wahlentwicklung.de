@@ -6,12 +6,8 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 import org.erijl.wahlentwicklung.enums.ElectionEnum;
-import org.erijl.wahlentwicklung.protos.builder.ElectionConstituencyBuilder;
-import org.erijl.wahlentwicklung.protos.builder.ElectionPartyBuilder;
-import org.erijl.wahlentwicklung.protos.builder.ElectionStateBuilder;
-import org.erijl.wahlentwicklung.protos.objects.ElectionConstituency;
-import org.erijl.wahlentwicklung.protos.objects.ElectionParty;
-import org.erijl.wahlentwicklung.protos.objects.ElectionState;
+import org.erijl.wahlentwicklung.protos.builder.*;
+import org.erijl.wahlentwicklung.protos.objects.*;
 
 import java.io.File;
 import java.io.FileReader;
@@ -74,7 +70,7 @@ public class ElectionParser {
 
         this.csvRecords.forEach(record -> {
             String entry = record.getFirst();
-            if (entry.startsWith("9") && Integer.parseInt(record.get(2)) == 999) {
+            if (entry.startsWith("9") && !entry.equals("999") && Integer.parseInt(entry) >= 900) {
                 states.add(ElectionStateBuilder.buildElectionState(this.election.getYear(), Integer.parseInt(entry), record.get(1)));
             }
         });
@@ -93,6 +89,101 @@ public class ElectionParser {
         });
 
         return constituencies;
+    }
+
+    public List<ElectionVoteBase> getElectionVotesBase() { //TODO refactor this to use one method for all three (or one object)
+        List<ElectionVoteBase> baseVotes = new ArrayList<>();
+
+        this.csvRecords.forEach(record -> {
+            String entry = record.getFirst();
+            if (entry.startsWith("999") && Integer.parseInt(entry) == 999) {
+                baseVotes.add(ElectionVoteBaseBuilder.buildElectionVoteBase(
+                        this.election.getYear(),
+                        Integer.parseInt(record.get(3)),
+                        Integer.parseInt(record.get(4)),
+                        Integer.parseInt(record.get(5)),
+                        Integer.parseInt(record.get(6)),
+                        Integer.parseInt(record.get(7)),
+                        Integer.parseInt(record.get(8)),
+                        Integer.parseInt(record.get(9)),
+                        Integer.parseInt(record.get(10)),
+                        Integer.parseInt(record.get(11)),
+                        Integer.parseInt(record.get(12)),
+                        Integer.parseInt(record.get(13)),
+                        Integer.parseInt(record.get(14)),
+                        Integer.parseInt(record.get(15)),
+                        Integer.parseInt(record.get(16)),
+                        Integer.parseInt(record.get(17)),
+                        Integer.parseInt(record.get(18))
+                ));
+            }
+        });
+
+        return baseVotes;
+    }
+
+    public List<StateVoteBase> getStateVotesBase() {
+        List<StateVoteBase> stateVotes = new ArrayList<>();
+
+        this.csvRecords.forEach(record -> {
+            String entry = record.getFirst();
+            if (entry.startsWith("9") && !entry.equals("999") && Integer.parseInt(entry) >= 900) {
+                stateVotes.add(StateVoteBaseBuilder.buildStateVoteBase(
+                        this.election.getYear(),
+                        Integer.parseInt(entry),
+                        Integer.parseInt(record.get(3)),
+                        Integer.parseInt(record.get(4)),
+                        Integer.parseInt(record.get(5)),
+                        Integer.parseInt(record.get(6)),
+                        Integer.parseInt(record.get(7)),
+                        Integer.parseInt(record.get(8)),
+                        Integer.parseInt(record.get(9)),
+                        Integer.parseInt(record.get(10)),
+                        Integer.parseInt(record.get(11)),
+                        Integer.parseInt(record.get(12)),
+                        Integer.parseInt(record.get(13)),
+                        Integer.parseInt(record.get(14)),
+                        Integer.parseInt(record.get(15)),
+                        Integer.parseInt(record.get(16)),
+                        Integer.parseInt(record.get(17)),
+                        Integer.parseInt(record.get(18))
+                ));
+            }
+        });
+
+        return stateVotes;
+    }
+
+    public List<ConstituencyVoteBase> getConstituencyVotesBase() {
+        List<ConstituencyVoteBase> constituencyVotes = new ArrayList<>();
+
+        this.csvRecords.forEach(record -> {
+            String entry = record.getFirst();
+            if (!entry.isBlank() && !entry.startsWith("N") && !entry.startsWith("9") && Integer.parseInt(entry) < 900) {
+                constituencyVotes.add(ConstituencyVoteBaseBuilder.buildConstituencyVoteBase(
+                        this.election.getYear(),
+                        Integer.parseInt(entry),
+                        Integer.parseInt(record.get(3)),
+                        Integer.parseInt(record.get(4)),
+                        Integer.parseInt(record.get(5)),
+                        Integer.parseInt(record.get(6)),
+                        Integer.parseInt(record.get(7)),
+                        Integer.parseInt(record.get(8)),
+                        Integer.parseInt(record.get(9)),
+                        Integer.parseInt(record.get(10)),
+                        Integer.parseInt(record.get(11)),
+                        Integer.parseInt(record.get(12)),
+                        Integer.parseInt(record.get(13)),
+                        Integer.parseInt(record.get(14)),
+                        Integer.parseInt(record.get(15)),
+                        Integer.parseInt(record.get(16)),
+                        Integer.parseInt(record.get(17)),
+                        Integer.parseInt(record.get(18))
+                ));
+            }
+        });
+
+        return constituencyVotes;
     }
 
 }

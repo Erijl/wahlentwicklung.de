@@ -3,7 +3,7 @@ package org.erijl.wahlentwicklung.protos.builder;
 import org.erijl.wahlentwicklung.protos.objects.StateVoteBase;
 
 public class StateVoteBaseBuilder {
-    public static StateVoteBase buildStateVoteBase(long id, long electionYear, long stateId,
+    public static StateVoteBase buildStateVoteBase(long electionYear, long stateId,
                                                    long eligibleVotersPrimaryVotePreliminary,
                                                    long eligibleVotersPrimaryVoteDefinitiv,
                                                    long eligibleVotersSecondaryVotePreliminary,
@@ -21,7 +21,6 @@ public class StateVoteBaseBuilder {
                                                    long invalidVotersSecondaryVotePreliminary,
                                                    long invalidVotersSecondaryVoteDefinitive) {
         return StateVoteBase.newBuilder()
-                .setId(id)
                 .setElectionYear(electionYear)
                 .setStateId(stateId)
                 .setEligiblevotersPrimaryvotePreliminary(eligibleVotersPrimaryVotePreliminary)

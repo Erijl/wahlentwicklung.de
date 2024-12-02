@@ -4,7 +4,7 @@ package org.erijl.wahlentwicklung.protos.builder;
 import org.erijl.wahlentwicklung.protos.objects.ElectionVoteBase;
 
 public class ElectionVoteBaseBuilder {
-    public static ElectionVoteBase buildElectionVoteBase(long id, long electionYear,
+    public static ElectionVoteBase buildElectionVoteBase(long electionYear,
                                                          long eligibleVotersPrimaryVotePreliminary,
                                                          long eligibleVotersPrimaryVoteDefinitiv,
                                                          long eligibleVotersSecondaryVotePreliminary,
@@ -22,7 +22,6 @@ public class ElectionVoteBaseBuilder {
                                                          long invalidVotersSecondaryVotePreliminary,
                                                          long invalidVotersSecondaryVoteDefinitive) {
         return ElectionVoteBase.newBuilder()
-                .setId(id)
                 .setElectionYear(electionYear)
                 .setEligiblevotersPrimaryvotePreliminary(eligibleVotersPrimaryVotePreliminary)
                 .setEligiblevotersPrimaryvoteDefinitiv(eligibleVotersPrimaryVoteDefinitiv)

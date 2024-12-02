@@ -3,9 +3,7 @@ package org.erijl.wahlentwicklung;
 import org.erijl.wahlentwicklung.enums.ConfigKeyEnum;
 import org.erijl.wahlentwicklung.enums.ElectionEnum;
 import org.erijl.wahlentwicklung.errors.AssertionsNotEnabledError;
-import org.erijl.wahlentwicklung.protos.objects.ElectionConstituency;
-import org.erijl.wahlentwicklung.protos.objects.ElectionParty;
-import org.erijl.wahlentwicklung.protos.objects.ElectionState;
+import org.erijl.wahlentwicklung.protos.objects.*;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -26,10 +24,12 @@ public class Main {
             List<ElectionState> states = parser.getStates();
             List<ElectionConstituency> constituencies = parser.getConstituencies();
 
+            List<ElectionVoteBase> electionBaseVotes = parser.getElectionVotesBase();
+            List<StateVoteBase> stateVaseVotes = parser.getStateVotesBase();
+            List<ConstituencyVoteBase> constituencyVotesBase = parser.getConstituencyVotesBase();
 
 
-            constituencies.forEach(System.out::println);
-            System.out.println(states.size());
+            System.out.println(constituencyVotesBase.size());
         }
     }
 

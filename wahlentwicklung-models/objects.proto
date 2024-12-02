@@ -27,6 +27,21 @@ message Party {
   string color = 4;
 }
 
+message ElectionState {
+  int64 id = 1;
+  int64 election_year = 2;
+  int64 row_id = 3;
+  string name = 4;
+}
+
+message ElectionConstituency {
+  int64 id = 1;
+  int64 state_id = 2;
+  int64 election_year = 3;
+  int64 row_id = 4;
+  string name = 5;
+}
+
 message ElectionParty {
   int64 id = 1;
   int64 election_year = 2;

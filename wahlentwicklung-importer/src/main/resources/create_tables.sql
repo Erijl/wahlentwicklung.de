@@ -33,6 +33,32 @@ CREATE TABLE party
 
 -- base data tables
 
+CREATE TABLE election_state
+(
+    id            INTEGER      NOT NULL,
+    election_year INTEGER      NOT NULL,
+    row_id        INTEGER      NOT NULL, -- this will be used for future mapping of parties cross-election
+
+    name          VARCHAR(255) NOT NULL,
+
+    PRIMARY KEY (id),
+    FOREIGN KEY (election_year) REFERENCES election (year)
+);
+
+CREATE TABLE election_constituency
+(
+    id            INTEGER      NOT NULL,
+    state_id      INTEGER      NOT NULL,
+    election_year INTEGER      NOT NULL,
+    row_id        INTEGER      NOT NULL, -- this will be used for future mapping of parties cross-election
+
+    name          VARCHAR(255) NOT NULL,
+
+    PRIMARY KEY (id),
+    FOREIGN KEY (state_id) REFERENCES state (id),
+    FOREIGN KEY (election_year) REFERENCES election (year)
+);
+
 CREATE TABLE election_party
 (
     id            INTEGER      NOT NULL,

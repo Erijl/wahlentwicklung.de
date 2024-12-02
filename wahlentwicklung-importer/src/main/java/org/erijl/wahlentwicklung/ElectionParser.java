@@ -6,14 +6,17 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 import org.erijl.wahlentwicklung.enums.ElectionEnum;
+import org.erijl.wahlentwicklung.protos.builder.ElectionConstituencyBuilder;
 import org.erijl.wahlentwicklung.protos.builder.ElectionPartyBuilder;
+import org.erijl.wahlentwicklung.protos.builder.ElectionStateBuilder;
+import org.erijl.wahlentwicklung.protos.objects.ElectionConstituency;
 import org.erijl.wahlentwicklung.protos.objects.ElectionParty;
+import org.erijl.wahlentwicklung.protos.objects.ElectionState;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,6 +67,32 @@ public class ElectionParser {
         }
 
         return parties;
+    }
+
+    public List<ElectionState> getStates() {
+        List<ElectionState> states = new ArrayList<>();
+
+        this.csvRecords.forEach(record -> {
+            String entry = record.getFirst();
+            if (entry.startsWith("9") && Integer.parseInt(record.get(2)) == 999) {
+                states.add(ElectionStateBuilder.buildElectionState(this.election.getYear(), Integer.parseInt(entry), record.get(1)));
+            }
+        });
+
+        return states;
+    }
+
+    public List<ElectionConstituency> getConstituencies() {
+        List<ElectionConstituency> constituencies = new ArrayList<>();
+
+        this.csvRecords.forEach(record -> {
+            String entry = record.getFirst();
+            if (!entry.startsWith("N") && !entry.isBlank() && Integer.parseInt(entry) <= 900) {
+                constituencies.add(ElectionConstituencyBuilder.buildElectionState(Integer.parseInt(record.get(2)), this.election.getYear(), Integer.parseInt(entry), record.get(1)));
+            }
+        });
+
+        return constituencies;
     }
 
 }

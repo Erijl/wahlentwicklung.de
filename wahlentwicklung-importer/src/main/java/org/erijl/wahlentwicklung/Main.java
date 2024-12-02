@@ -3,7 +3,9 @@ package org.erijl.wahlentwicklung;
 import org.erijl.wahlentwicklung.enums.ConfigKeyEnum;
 import org.erijl.wahlentwicklung.enums.ElectionEnum;
 import org.erijl.wahlentwicklung.errors.AssertionsNotEnabledError;
+import org.erijl.wahlentwicklung.protos.objects.ElectionConstituency;
 import org.erijl.wahlentwicklung.protos.objects.ElectionParty;
+import org.erijl.wahlentwicklung.protos.objects.ElectionState;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -21,8 +23,13 @@ public class Main {
             ElectionParser parser = new ElectionParser(election);
 
             List<ElectionParty> parties = parser.getParties();
+            List<ElectionState> states = parser.getStates();
+            List<ElectionConstituency> constituencies = parser.getConstituencies();
 
-            parties.forEach(System.out::println);
+
+
+            constituencies.forEach(System.out::println);
+            System.out.println(states.size());
         }
     }
 

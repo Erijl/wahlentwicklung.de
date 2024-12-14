@@ -20,7 +20,7 @@ public class Main {
         for (ElectionEnum election : ElectionEnum.getElectionsInArray(config.getArrayProperty(ConfigKeyEnum.YEARS_TO_IMPORT))) {
             ElectionParser parser = new ElectionParser(election);
 
-            List<ElectionParty> parties = parser.getParties();
+            List<ElectionParty> parties = parser.getParties(); //TODO fix all the ifs and elses replace with an enum that determines whether the row is header, state, election or constituency or categorize them before hand into different arrays
             List<ElectionState> states = parser.getStates();
             List<ElectionConstituency> constituencies = parser.getConstituencies();
 
@@ -28,7 +28,9 @@ public class Main {
             List<StateVoteBase> stateVaseVotes = parser.getStateVotesBase();
             List<ConstituencyVoteBase> constituencyVotesBase = parser.getConstituencyVotesBase();
 
+            List<ElectionVoteParty> electionPartyVotes = parser.getElectionVoteParty(parties);
 
+            electionPartyVotes.forEach(System.out::println);
             System.out.println(constituencyVotesBase.size());
         }
     }

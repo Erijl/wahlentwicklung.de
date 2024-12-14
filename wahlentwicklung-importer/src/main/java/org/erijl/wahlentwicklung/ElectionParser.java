@@ -186,4 +186,37 @@ public class ElectionParser {
         return constituencyVotes;
     }
 
+    public List<ElectionVoteParty> getElectionVoteParty(List<ElectionParty> parties) {
+        ArrayList<ElectionVoteParty> electionVoteParties = new ArrayList<>();
+
+        this.csvRecords.forEach(record -> {
+            String entry = record.getFirst();
+            if (entry.startsWith("999") && Integer.parseInt(entry) == 999) {
+                parties.forEach(party -> {
+                    electionVoteParties.add(ElectionVotePartyBuilder.buildElectionVoteParty(
+                            this.election.getYear(),
+                            party.getId(), //TODO fix
+                            parseVoteCount(record.get((int) (party.getColumnIndex() + 1))),
+                            parseVoteCount(record.get((int) (party.getColumnIndex()))),
+                            parseVoteCount(record.get((int) (party.getColumnIndex() + 3))),
+                            parseVoteCount(record.get((int) (party.getColumnIndex() + 2)))
+                    ));
+                });
+            }
+        });
+
+
+
+        return electionVoteParties;
+    }
+
+
+    private long parseVoteCount(String voteCount) {
+        if (voteCount == null || voteCount.isEmpty()) {
+            return 0L;
+        }
+
+        return Long.parseLong(voteCount);
+    }
+
 }

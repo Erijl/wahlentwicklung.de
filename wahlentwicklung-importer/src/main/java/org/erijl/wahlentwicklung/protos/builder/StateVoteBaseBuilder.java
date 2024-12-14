@@ -12,14 +12,14 @@ public class StateVoteBaseBuilder {
                                                    long actualVotersPrimaryVotePreliminary,
                                                    long actualVotersSecondaryVoteDefinitive,
                                                    long actualVotersSecondaryVotePreliminary,
-                                                   long validVotersPrimaryVoteDefinitiv,
-                                                   long validVotersSecondaryVotePreliminary,
-                                                   long validVotersSecondaryVoteDefinitive,
-                                                   long validVotersPrimaryVotePreliminary,
                                                    long invalidVotersPrimaryVoteDefinitiv,
                                                    long invalidVotersPrimaryVotePreliminary,
                                                    long invalidVotersSecondaryVoteDefinitive,
-                                                   long invalidVotersSecondaryVotePreliminary) {
+                                                   long invalidVotersSecondaryVotePreliminary,
+                                                   long validVotersPrimaryVoteDefinitiv,
+                                                   long validVotersSecondaryVotePreliminary,
+                                                   long validVotersSecondaryVoteDefinitive,
+                                                   long validVotersPrimaryVotePreliminary) {
         return StateVoteBase.newBuilder()
                 .setElectionYear(electionYear)
                 .setStateId(stateId)

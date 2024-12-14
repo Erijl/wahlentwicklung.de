@@ -22,8 +22,17 @@ public class ElectionParser {
     private final ElectionEnum election;
     private File fileToRead;
     private final List<List<String>> csvRecords;
+    List<ElectionParty> parties;
+    List<ElectionState> states;
+    List<ElectionConstituency> constituencies;
+    ElectionVoteBase electionBaseVotes;
+    List<StateVoteBase> stateBaseVotes;
+    List<ConstituencyVoteBase> constituencyVotesBase;
+    List<ElectionVoteParty> electionPartyVotes;
+    List<StateVoteParty> statePartyVotes;
+    List<ConstituencyVoteParty> constituencyPartyVotes;
 
-    public ElectionParser(ElectionEnum election) {
+    public ElectionParser(ElectionEnum election) {//TODO fix all the ifs and elses replace with an enum that determines whether the row is header, state, election or constituency or categorize them before hand into different arrays
         this.election = election;
         this.ensureFileExists();
         this.csvRecords = new ArrayList<>();
@@ -47,6 +56,24 @@ public class ElectionParser {
         }
     }
 
+    public void parse() {
+        this.parties = this.readParties();
+        this.states = this.readStates();
+        this.constituencies = this.readConstituencies();
+
+        this.electionBaseVotes = this.readElectionVotesBase();
+        this.stateBaseVotes = this.readStateVotesBase();
+        this.constituencyVotesBase = this.readConstituencyVotesBase();
+
+        this.electionPartyVotes = this.readElectionVotesParty(this.parties);
+        this.statePartyVotes = this.readStateVotesParty(this.parties);
+        this.constituencyPartyVotes = this.readConstituencyVotesParty(this.parties);
+    }
+
+    public ElectionEnum getElection() {
+        return this.election;
+    }
+
     private void ensureFileExists() {
         URL electionFilePath = getClass().getClassLoader().getResource("raw-election-data/btw" + this.election.getYear() + "_kerg.csv");
         assert electionFilePath != null;
@@ -55,7 +82,7 @@ public class ElectionParser {
         assert this.fileToRead.exists();
     }
 
-    public List<ElectionParty> getParties() {
+    private List<ElectionParty> readParties() {
         List<ElectionParty> parties = new ArrayList<>();
 
         for (int i = 19; i < this.csvRecords.getFirst().size(); i += 4) {
@@ -65,7 +92,7 @@ public class ElectionParser {
         return parties;
     }
 
-    public List<ElectionState> getStates() {
+    private List<ElectionState> readStates() {
         List<ElectionState> states = new ArrayList<>();
 
         this.csvRecords.forEach(record -> {
@@ -78,7 +105,7 @@ public class ElectionParser {
         return states;
     }
 
-    public List<ElectionConstituency> getConstituencies() {
+    private List<ElectionConstituency> readConstituencies() {
         List<ElectionConstituency> constituencies = new ArrayList<>();
 
         this.csvRecords.forEach(record -> {
@@ -91,7 +118,7 @@ public class ElectionParser {
         return constituencies;
     }
 
-    public ElectionVoteBase getElectionVotesBase() { //TODO refactor this to use one method for all three (or one object)
+    private ElectionVoteBase readElectionVotesBase() { //TODO refactor this to use one method for all three (or one object)
         List<ElectionVoteBase> baseVotes = new ArrayList<>();
 
         this.csvRecords.forEach(record -> {
@@ -123,7 +150,7 @@ public class ElectionParser {
         return baseVotes.getFirst();
     }
 
-    public List<StateVoteBase> getStateVotesBase() {
+    private List<StateVoteBase> readStateVotesBase() {
         List<StateVoteBase> stateVotes = new ArrayList<>();
 
         this.csvRecords.forEach(record -> {
@@ -155,7 +182,7 @@ public class ElectionParser {
         return stateVotes;
     }
 
-    public List<ConstituencyVoteBase> getConstituencyVotesBase() {
+    private List<ConstituencyVoteBase> readConstituencyVotesBase() {
         List<ConstituencyVoteBase> constituencyVotes = new ArrayList<>();
 
         this.csvRecords.forEach(record -> {
@@ -188,7 +215,7 @@ public class ElectionParser {
         return constituencyVotes;
     }
 
-    public List<ElectionVoteParty> getElectionVotesParty(List<ElectionParty> parties) {
+    private List<ElectionVoteParty> readElectionVotesParty(List<ElectionParty> parties) {
         ArrayList<ElectionVoteParty> electionVoteParties = new ArrayList<>();
 
         this.csvRecords.forEach(record -> {
@@ -210,7 +237,7 @@ public class ElectionParser {
         return electionVoteParties;
     }
 
-    public List<StateVoteParty> getStateVotesParty(List<ElectionParty> parties) {
+    private List<StateVoteParty> readStateVotesParty(List<ElectionParty> parties) {
         ArrayList<StateVoteParty> stateVoteParties = new ArrayList<>();
 
         this.csvRecords.forEach(record -> {
@@ -233,7 +260,7 @@ public class ElectionParser {
         return stateVoteParties;
     }
 
-    public List<ConstituencyVoteParty> getConstituencyVotesParty(List<ElectionParty> parties) {
+    private List<ConstituencyVoteParty> readConstituencyVotesParty(List<ElectionParty> parties) {
         ArrayList<ConstituencyVoteParty> constituencyVoteParties = new ArrayList<>();
 
         this.csvRecords.forEach(record -> {
@@ -266,4 +293,39 @@ public class ElectionParser {
         return Long.parseLong(voteCount);
     }
 
+    public List<ElectionParty> getParties() {
+        return parties;
+    }
+
+    public List<ElectionState> getStates() {
+        return states;
+    }
+
+    public List<ElectionConstituency> getConstituencies() {
+        return constituencies;
+    }
+
+    public ElectionVoteBase getElectionBaseVotes() {
+        return electionBaseVotes;
+    }
+
+    public List<StateVoteBase> getStateBaseVotes() {
+        return stateBaseVotes;
+    }
+
+    public List<ConstituencyVoteBase> getConstituencyVotesBase() {
+        return constituencyVotesBase;
+    }
+
+    public List<ElectionVoteParty> getElectionPartyVotes() {
+        return electionPartyVotes;
+    }
+
+    public List<StateVoteParty> getStatePartyVotes() {
+        return statePartyVotes;
+    }
+
+    public List<ConstituencyVoteParty> getConstituencyPartyVotes() {
+        return constituencyPartyVotes;
+    }
 }

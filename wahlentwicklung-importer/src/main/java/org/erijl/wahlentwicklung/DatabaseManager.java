@@ -53,6 +53,7 @@ public class DatabaseManager {
     private void insertStates(List<ElectionState> states) throws SQLException {
         String sql = "INSERT INTO election_state (election_year, row_id, name) VALUES (?, ?, ?)";
         try (PreparedStatement stmt = sqliteConnection.prepareStatement(sql)) {
+            sqliteConnection.setAutoCommit(false);
             for (ElectionState state : states) {
                 stmt.setLong(1, state.getElectionYear());
                 stmt.setLong(2, state.getRowId());
@@ -60,12 +61,16 @@ public class DatabaseManager {
                 stmt.addBatch();
             }
             stmt.executeBatch();
+            sqliteConnection.commit();
+        } finally {
+            sqliteConnection.setAutoCommit(true);
         }
     }
 
     private void insertConstituencies(List<ElectionConstituency> constituencies) throws SQLException {
         String sql = "INSERT INTO election_constituency (election_year, state_id, row_id, name) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = sqliteConnection.prepareStatement(sql)) {
+            sqliteConnection.setAutoCommit(false);
             for (ElectionConstituency constituency : constituencies) {
                 stmt.setLong(1, constituency.getElectionYear());
                 stmt.setLong(2, constituency.getStateId());
@@ -74,12 +79,16 @@ public class DatabaseManager {
                 stmt.addBatch();
             }
             stmt.executeBatch();
+            sqliteConnection.commit();
+        } finally {
+            sqliteConnection.setAutoCommit(true);
         }
     }
 
     private void insertParties(List<ElectionParty> parties) throws SQLException {
         String sql = "INSERT INTO election_party (election_year, column_index, name) VALUES (?, ?, ?)";
         try (PreparedStatement stmt = sqliteConnection.prepareStatement(sql)) {
+            sqliteConnection.setAutoCommit(false);
             for (ElectionParty party : parties) {
                 stmt.setLong(1, party.getElectionYear());
                 stmt.setLong(2, party.getColumnIndex());
@@ -87,6 +96,9 @@ public class DatabaseManager {
                 stmt.addBatch();
             }
             stmt.executeBatch();
+            sqliteConnection.commit();
+        } finally {
+            sqliteConnection.setAutoCommit(true);
         }
     }
 
@@ -117,6 +129,7 @@ public class DatabaseManager {
     private void insertStateBaseVotes(List<StateVoteBase> stateBaseVotes) throws SQLException {
         String sql = "INSERT INTO state_vote_base (election_year, state_id, eligiblevoters_primaryvote_preliminary, eligiblevoters_primaryvote_definitiv, eligiblevoters_secondaryvote_preliminary, eligiblevoters_secondarybote_definitive, actualvoters_primaryvote_preliminary, actualvoters_primaryvote_definitiv, actualvoters_secondaryvote_preliminary, actualvoters_secondarybote_definitive, validvoters_primaryvote_preliminary, validvoters_primaryvote_definitiv, validvoters_secondaryvote_preliminary, validvoters_secondarybote_definitive, invalidvoters_primaryvote_preliminary, invalidvoters_primaryvote_definitiv, invalidvoters_secondaryvote_preliminary, invalidvoters_secondarybote_definitive) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = sqliteConnection.prepareStatement(sql)) {
+            sqliteConnection.setAutoCommit(false);
             for (StateVoteBase stateVoteBase : stateBaseVotes) {
                 stmt.setLong(1, stateVoteBase.getElectionYear());
                 stmt.setLong(2, stateVoteBase.getStateId());
@@ -139,12 +152,16 @@ public class DatabaseManager {
                 stmt.addBatch();
             }
             stmt.executeBatch();
+            sqliteConnection.commit();
+        } finally {
+            sqliteConnection.setAutoCommit(true);
         }
     }
 
     private void insertConstituencyVotesBase(List<ConstituencyVoteBase> constituencyVotesBase) throws SQLException {
         String sql = "INSERT INTO constituency_vote_base (election_year, state_id, constituency_id, eligiblevoters_primaryvote_preliminary, eligiblevoters_primaryvote_definitiv, eligiblevoters_secondaryvote_preliminary, eligiblevoters_secondarybote_definitive, actualvoters_primaryvote_preliminary, actualvoters_primaryvote_definitiv, actualvoters_secondaryvote_preliminary, actualvoters_secondarybote_definitive, validvoters_primaryvote_preliminary, validvoters_primaryvote_definitiv, validvoters_secondaryvote_preliminary, validvoters_secondarybote_definitive, invalidvoters_primaryvote_preliminary, invalidvoters_primaryvote_definitiv, invalidvoters_secondaryvote_preliminary, invalidvoters_secondarybote_definitive) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = sqliteConnection.prepareStatement(sql)) {
+            sqliteConnection.setAutoCommit(false);
             for (ConstituencyVoteBase constituencyVoteBase : constituencyVotesBase) {
                 stmt.setLong(1, constituencyVoteBase.getElectionYear());
                 stmt.setLong(2, constituencyVoteBase.getStateId());
@@ -168,12 +185,16 @@ public class DatabaseManager {
                 stmt.addBatch();
             }
             stmt.executeBatch();
+            sqliteConnection.commit();
+        } finally {
+            sqliteConnection.setAutoCommit(false);
         }
     }
 
     private void insertElectionPartyVotes(List<ElectionVoteParty> electionPartyVotes) throws SQLException {
         String sql = "INSERT INTO election_vote_party (election_year, party_id, primaryvote_preliminary, primaryvote_definitiv, secondaryvote_preliminary, secondaryvote_definitiv) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = sqliteConnection.prepareStatement(sql)) {
+            sqliteConnection.setAutoCommit(false);
             for (ElectionVoteParty electionVoteParty : electionPartyVotes) {
                 stmt.setLong(1, electionVoteParty.getElectionYear());
                 stmt.setLong(2, electionVoteParty.getPartyId());
@@ -184,12 +205,16 @@ public class DatabaseManager {
                 stmt.addBatch();
             }
             stmt.executeBatch();
+            sqliteConnection.commit();
+        } finally {
+            sqliteConnection.setAutoCommit(true);
         }
     }
 
     private void insertStatePartyVotes(List<StateVoteParty> statePartyVotes) throws SQLException {
         String sql = "INSERT INTO state_vote_party (election_year, party_id, state_id, primaryvote_preliminary, primaryvote_definitiv, secondaryvote_preliminary, secondaryvote_definitiv) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = sqliteConnection.prepareStatement(sql)) {
+            sqliteConnection.setAutoCommit(false);
             for (StateVoteParty stateVoteParty : statePartyVotes) {
                 stmt.setLong(1, stateVoteParty.getElectionYear());
                 stmt.setLong(2, stateVoteParty.getPartyId());
@@ -201,12 +226,17 @@ public class DatabaseManager {
                 stmt.addBatch();
             }
             stmt.executeBatch();
+            sqliteConnection.commit();
+        } finally {
+            sqliteConnection.setAutoCommit(true);
         }
     }
 
     private void insertConstituencyPartyVotes(List<ConstituencyVoteParty> constituencyPartyVotes) throws SQLException {
         String sql = "INSERT INTO constituency_vote_party (election_year, party_id, state_id, constituency_id, primaryvote_preliminary, primaryvote_definitiv, secondaryvote_preliminary, secondaryvote_definitiv) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+
         try (PreparedStatement stmt = sqliteConnection.prepareStatement(sql)) {
+            sqliteConnection.setAutoCommit(false);
             for (ConstituencyVoteParty constituencyVoteParty : constituencyPartyVotes) {
                 stmt.setLong(1, constituencyVoteParty.getElectionYear());
                 stmt.setLong(2, constituencyVoteParty.getPartyId());
@@ -219,6 +249,9 @@ public class DatabaseManager {
                 stmt.addBatch();
             }
             stmt.executeBatch();
+            sqliteConnection.commit();
+        } finally {
+            sqliteConnection.setAutoCommit(true);
         }
     }
 

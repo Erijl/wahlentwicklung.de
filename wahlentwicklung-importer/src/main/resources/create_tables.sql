@@ -31,49 +31,46 @@ CREATE TABLE party
     PRIMARY KEY (id)
 );
 
--- base data tables
+
+-- data tables based on each election
 
 CREATE TABLE election_state
 (
-    id            INTEGER      NOT NULL,
     election_year INTEGER      NOT NULL,
-    row_id        INTEGER      NOT NULL, -- this will be used for future mapping of parties cross-election
+    row_id        INTEGER      NOT NULL,
 
     name          VARCHAR(255) NOT NULL,
 
-    PRIMARY KEY (id),
+    PRIMARY KEY (election_year, row_id),
     FOREIGN KEY (election_year) REFERENCES election (year)
 );
 
 CREATE TABLE election_constituency
 (
-    id            INTEGER      NOT NULL,
     state_id      INTEGER      NOT NULL,
     election_year INTEGER      NOT NULL,
-    row_id        INTEGER      NOT NULL, -- this will be used for future mapping of parties cross-election
+    row_id        INTEGER      NOT NULL,
 
     name          VARCHAR(255) NOT NULL,
 
-    PRIMARY KEY (id),
-    FOREIGN KEY (state_id) REFERENCES state (id),
+    PRIMARY KEY (election_year, state_id, row_id),
+    FOREIGN KEY (election_year, state_id) REFERENCES election_state (election_year, row_id),
     FOREIGN KEY (election_year) REFERENCES election (year)
 );
 
 CREATE TABLE election_party
 (
-    id            INTEGER      NOT NULL,
     election_year INTEGER      NOT NULL,
-    column_index  INTEGER      NOT NULL, -- this will be used for future mapping of parties cross-election
+    column_index  INTEGER      NOT NULL,
 
     name          VARCHAR(255) NOT NULL,
 
-    PRIMARY KEY (id),
+    PRIMARY KEY (election_year, column_index),
     FOREIGN KEY (election_year) REFERENCES election (year)
 );
 
 CREATE TABLE election_vote_base
 (
-    id                                       INTEGER NOT NULL,
     election_year                            INTEGER NOT NULL,
 
     eligiblevoters_primaryvote_preliminary   INTEGER NOT NULL,
@@ -100,13 +97,12 @@ CREATE TABLE election_vote_base
     invalidvoters_secondaryvote_preliminary  INTEGER NOT NULL,
     invalidvoters_secondarybote_definitive   INTEGER NOT NULL,
 
-    PRIMARY KEY (id),
+    PRIMARY KEY (election_year),
     FOREIGN KEY (election_year) REFERENCES election (year)
 );
 
 CREATE TABLE state_vote_base
 (
-    id                                       INTEGER NOT NULL,
     election_year                            INTEGER NOT NULL,
     state_id                                 INTEGER NOT NULL,
 
@@ -134,15 +130,15 @@ CREATE TABLE state_vote_base
     invalidvoters_secondaryvote_preliminary  INTEGER NOT NULL,
     invalidvoters_secondarybote_definitive   INTEGER NOT NULL,
 
-    PRIMARY KEY (id),
+    PRIMARY KEY (election_year, state_id),
     FOREIGN KEY (election_year) REFERENCES election (year),
-    FOREIGN KEY (state_id) REFERENCES state (id)
+    FOREIGN KEY (election_year, state_id) REFERENCES election_state (election_year, row_id)
 );
 
 CREATE TABLE constituency_vote_base
 (
-    id                                       INTEGER NOT NULL,
     election_year                            INTEGER NOT NULL,
+    state_id                                 INTEGER NOT NULL,
     constituency_id                          INTEGER NOT NULL,
 
     eligiblevoters_primaryvote_preliminary   INTEGER NOT NULL,
@@ -169,16 +165,15 @@ CREATE TABLE constituency_vote_base
     invalidvoters_secondaryvote_preliminary  INTEGER NOT NULL,
     invalidvoters_secondarybote_definitive   INTEGER NOT NULL,
 
-    PRIMARY KEY (id),
+    PRIMARY KEY (election_year, constituency_id),
     FOREIGN KEY (election_year) REFERENCES election (year),
-    FOREIGN KEY (constituency_id) REFERENCES constituency (id)
+    FOREIGN KEY (election_year, state_id, constituency_id) REFERENCES election_constituency (election_year, state_id, row_id)
 );
 
 -- party tables
 
 CREATE TABLE election_vote_party
 (
-    id                        INTEGER NOT NULL,
     election_year             INTEGER NOT NULL,
     party_id                  INTEGER NOT NULL,
 
@@ -188,14 +183,13 @@ CREATE TABLE election_vote_party
     secondaryvote_preliminary INTEGER NOT NULL,
     secondaryvote_definitiv   INTEGER NOT NULL,
 
-    PRIMARY KEY (id),
+    PRIMARY KEY (election_year, party_id),
     FOREIGN KEY (election_year) REFERENCES election (year),
-    FOREIGN KEY (party_id) REFERENCES party (id)
+    FOREIGN KEY (election_year, party_id) REFERENCES election_party (election_year, column_index)
 );
 
 CREATE TABLE state_vote_party
 (
-    id                        INTEGER NOT NULL,
     election_year             INTEGER NOT NULL,
     party_id                  INTEGER NOT NULL,
     state_id                  INTEGER NOT NULL,
@@ -206,17 +200,17 @@ CREATE TABLE state_vote_party
     secondaryvote_preliminary INTEGER NOT NULL,
     secondaryvote_definitiv   INTEGER NOT NULL,
 
-    PRIMARY KEY (id),
+    PRIMARY KEY (election_year, party_id, state_id),
     FOREIGN KEY (election_year) REFERENCES election (year),
-    FOREIGN KEY (party_id) REFERENCES party (id),
-    FOREIGN KEY (state_id) REFERENCES state (id)
+    FOREIGN KEY (election_year, party_id) REFERENCES election_party (election_year, column_index),
+    FOREIGN KEY (election_year, state_id) REFERENCES election_state (election_year, row_id)
 );
 
 CREATE TABLE constituency_vote_party
 (
-    id                        INTEGER NOT NULL,
     election_year             INTEGER NOT NULL,
     party_id                  INTEGER NOT NULL,
+    state_id                  INTEGER NOT NULL,
     constituency_id           INTEGER NOT NULL,
 
     primaryvote_preliminary   INTEGER NOT NULL,
@@ -225,8 +219,8 @@ CREATE TABLE constituency_vote_party
     secondaryvote_preliminary INTEGER NOT NULL,
     secondaryvote_definitiv   INTEGER NOT NULL,
 
-    PRIMARY KEY (id),
+    PRIMARY KEY (election_year, party_id, constituency_id),
     FOREIGN KEY (election_year) REFERENCES election (year),
-    FOREIGN KEY (party_id) REFERENCES party (id),
-    FOREIGN KEY (constituency_id) REFERENCES constituency (id)
+    FOREIGN KEY (election_year, party_id) REFERENCES election_party (election_year, column_index),
+    FOREIGN KEY (election_year, state_id, party_id) REFERENCES election_constituency (election_year, state_id, row_id)
 );

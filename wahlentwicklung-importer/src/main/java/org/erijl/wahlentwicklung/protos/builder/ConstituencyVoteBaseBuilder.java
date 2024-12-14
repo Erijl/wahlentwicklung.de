@@ -3,7 +3,7 @@ package org.erijl.wahlentwicklung.protos.builder;
 import org.erijl.wahlentwicklung.protos.objects.ConstituencyVoteBase;
 
 public class ConstituencyVoteBaseBuilder {
-    public static ConstituencyVoteBase buildConstituencyVoteBase(long electionYear, long constituencyId,
+    public static ConstituencyVoteBase buildConstituencyVoteBase(long electionYear, long stateId, long constituencyId,
                                                                  long eligibleVotersPrimaryVotePreliminary,
                                                                  long eligibleVotersPrimaryVoteDefinitiv,
                                                                  long eligibleVotersSecondaryVotePreliminary,
@@ -22,6 +22,7 @@ public class ConstituencyVoteBaseBuilder {
                                                                  long invalidVotersSecondaryVoteDefinitive) {
         return ConstituencyVoteBase.newBuilder()
                 .setElectionYear(electionYear)
+                .setStateId(stateId)
                 .setConstituencyId(constituencyId)
                 .setEligiblevotersPrimaryvotePreliminary(eligibleVotersPrimaryVotePreliminary)
                 .setEligiblevotersPrimaryvoteDefinitiv(eligibleVotersPrimaryVoteDefinitiv)

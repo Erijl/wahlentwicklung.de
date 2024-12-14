@@ -99,22 +99,22 @@ public class ElectionParser {
             if (entry.startsWith("999") && Integer.parseInt(entry) == 999) {
                 baseVotes.add(ElectionVoteBaseBuilder.buildElectionVoteBase(
                         this.election.getYear(),
-                        Integer.parseInt(record.get(3)),
-                        Integer.parseInt(record.get(4)),
-                        Integer.parseInt(record.get(5)),
-                        Integer.parseInt(record.get(6)),
-                        Integer.parseInt(record.get(7)),
-                        Integer.parseInt(record.get(8)),
-                        Integer.parseInt(record.get(9)),
-                        Integer.parseInt(record.get(10)),
-                        Integer.parseInt(record.get(11)),
-                        Integer.parseInt(record.get(12)),
-                        Integer.parseInt(record.get(13)),
-                        Integer.parseInt(record.get(14)),
-                        Integer.parseInt(record.get(15)),
-                        Integer.parseInt(record.get(16)),
-                        Integer.parseInt(record.get(17)),
-                        Integer.parseInt(record.get(18))
+                        parseVoteCount(record.get(3)),
+                        parseVoteCount(record.get(4)),
+                        parseVoteCount(record.get(5)),
+                        parseVoteCount(record.get(6)),
+                        parseVoteCount(record.get(7)),
+                        parseVoteCount(record.get(8)),
+                        parseVoteCount(record.get(9)),
+                        parseVoteCount(record.get(10)),
+                        parseVoteCount(record.get(11)),
+                        parseVoteCount(record.get(12)),
+                        parseVoteCount(record.get(13)),
+                        parseVoteCount(record.get(14)),
+                        parseVoteCount(record.get(15)),
+                        parseVoteCount(record.get(16)),
+                        parseVoteCount(record.get(17)),
+                        parseVoteCount(record.get(18))
                 ));
             }
         });
@@ -130,23 +130,23 @@ public class ElectionParser {
             if (entry.startsWith("9") && !entry.equals("999") && Integer.parseInt(entry) >= 900) {
                 stateVotes.add(StateVoteBaseBuilder.buildStateVoteBase(
                         this.election.getYear(),
-                        Integer.parseInt(entry),
-                        Integer.parseInt(record.get(3)),
-                        Integer.parseInt(record.get(4)),
-                        Integer.parseInt(record.get(5)),
-                        Integer.parseInt(record.get(6)),
-                        Integer.parseInt(record.get(7)),
-                        Integer.parseInt(record.get(8)),
-                        Integer.parseInt(record.get(9)),
-                        Integer.parseInt(record.get(10)),
-                        Integer.parseInt(record.get(11)),
-                        Integer.parseInt(record.get(12)),
-                        Integer.parseInt(record.get(13)),
-                        Integer.parseInt(record.get(14)),
-                        Integer.parseInt(record.get(15)),
-                        Integer.parseInt(record.get(16)),
-                        Integer.parseInt(record.get(17)),
-                        Integer.parseInt(record.get(18))
+                        parseVoteCount(entry),
+                        parseVoteCount(record.get(3)),
+                        parseVoteCount(record.get(4)),
+                        parseVoteCount(record.get(5)),
+                        parseVoteCount(record.get(6)),
+                        parseVoteCount(record.get(7)),
+                        parseVoteCount(record.get(8)),
+                        parseVoteCount(record.get(9)),
+                        parseVoteCount(record.get(10)),
+                        parseVoteCount(record.get(11)),
+                        parseVoteCount(record.get(12)),
+                        parseVoteCount(record.get(13)),
+                        parseVoteCount(record.get(14)),
+                        parseVoteCount(record.get(15)),
+                        parseVoteCount(record.get(16)),
+                        parseVoteCount(record.get(17)),
+                        parseVoteCount(record.get(18))
                 ));
             }
         });
@@ -162,23 +162,24 @@ public class ElectionParser {
             if (!entry.isBlank() && !entry.startsWith("N") && !entry.startsWith("9") && Integer.parseInt(entry) < 900) {
                 constituencyVotes.add(ConstituencyVoteBaseBuilder.buildConstituencyVoteBase(
                         this.election.getYear(),
-                        Integer.parseInt(entry),
-                        Integer.parseInt(record.get(3)),
-                        Integer.parseInt(record.get(4)),
-                        Integer.parseInt(record.get(5)),
-                        Integer.parseInt(record.get(6)),
-                        Integer.parseInt(record.get(7)),
-                        Integer.parseInt(record.get(8)),
-                        Integer.parseInt(record.get(9)),
-                        Integer.parseInt(record.get(10)),
-                        Integer.parseInt(record.get(11)),
-                        Integer.parseInt(record.get(12)),
-                        Integer.parseInt(record.get(13)),
-                        Integer.parseInt(record.get(14)),
-                        Integer.parseInt(record.get(15)),
-                        Integer.parseInt(record.get(16)),
-                        Integer.parseInt(record.get(17)),
-                        Integer.parseInt(record.get(18))
+                        parseVoteCount(record.get(2)),
+                        parseVoteCount(entry),
+                        parseVoteCount(record.get(3)),
+                        parseVoteCount(record.get(4)),
+                        parseVoteCount(record.get(5)),
+                        parseVoteCount(record.get(6)),
+                        parseVoteCount(record.get(7)),
+                        parseVoteCount(record.get(8)),
+                        parseVoteCount(record.get(9)),
+                        parseVoteCount(record.get(10)),
+                        parseVoteCount(record.get(11)),
+                        parseVoteCount(record.get(12)),
+                        parseVoteCount(record.get(13)),
+                        parseVoteCount(record.get(14)),
+                        parseVoteCount(record.get(15)),
+                        parseVoteCount(record.get(16)),
+                        parseVoteCount(record.get(17)),
+                        parseVoteCount(record.get(18))
                 ));
             }
         });
@@ -186,7 +187,7 @@ public class ElectionParser {
         return constituencyVotes;
     }
 
-    public List<ElectionVoteParty> getElectionVoteParty(List<ElectionParty> parties) {
+    public List<ElectionVoteParty> getElectionVotesParty(List<ElectionParty> parties) {
         ArrayList<ElectionVoteParty> electionVoteParties = new ArrayList<>();
 
         this.csvRecords.forEach(record -> {
@@ -195,7 +196,7 @@ public class ElectionParser {
                 parties.forEach(party -> {
                     electionVoteParties.add(ElectionVotePartyBuilder.buildElectionVoteParty(
                             this.election.getYear(),
-                            party.getId(), //TODO fix
+                            party.getColumnIndex(),
                             parseVoteCount(record.get((int) (party.getColumnIndex() + 1))),
                             parseVoteCount(record.get((int) (party.getColumnIndex()))),
                             parseVoteCount(record.get((int) (party.getColumnIndex() + 3))),
@@ -205,9 +206,54 @@ public class ElectionParser {
             }
         });
 
-
-
         return electionVoteParties;
+    }
+
+    public List<StateVoteParty> getStateVotesParty(List<ElectionParty> parties) {
+        ArrayList<StateVoteParty> stateVoteParties = new ArrayList<>();
+
+        this.csvRecords.forEach(record -> {
+            String entry = record.getFirst();
+            if (entry.startsWith("9") && !entry.equals("999") && Integer.parseInt(entry) >= 900) {
+                parties.forEach(party -> {
+                    stateVoteParties.add(StateVotePartyBuilder.buildStateVoteParty(
+                            this.election.getYear(),
+                            party.getColumnIndex(),
+                            Integer.parseInt(record.getFirst()),
+                            parseVoteCount(record.get((int) (party.getColumnIndex() + 1))),
+                            parseVoteCount(record.get((int) (party.getColumnIndex()))),
+                            parseVoteCount(record.get((int) (party.getColumnIndex() + 3))),
+                            parseVoteCount(record.get((int) (party.getColumnIndex() + 2)))
+                    ));
+                });
+            }
+        });
+
+        return stateVoteParties;
+    }
+
+    public List<ConstituencyVoteParty> getConstituencyVotesParty(List<ElectionParty> parties) {
+        ArrayList<ConstituencyVoteParty> constituencyVoteParties = new ArrayList<>();
+
+        this.csvRecords.forEach(record -> {
+            String entry = record.getFirst();
+            if (!entry.isBlank() && !entry.startsWith("N") && !entry.startsWith("9") && Integer.parseInt(entry) < 900) {
+                parties.forEach(party -> {
+                    constituencyVoteParties.add(ConstituencyVotePartyBuilder.buildConstituencyVoteParty(
+                            this.election.getYear(),
+                            Integer.parseInt(record.get(2)),
+                            party.getColumnIndex(),
+                            Integer.parseInt(record.getFirst()),
+                            parseVoteCount(record.get((int) (party.getColumnIndex() + 1))),
+                            parseVoteCount(record.get((int) (party.getColumnIndex()))),
+                            parseVoteCount(record.get((int) (party.getColumnIndex() + 3))),
+                            parseVoteCount(record.get((int) (party.getColumnIndex() + 2)))
+                    ));
+                });
+            }
+        });
+
+        return constituencyVoteParties;
     }
 
 

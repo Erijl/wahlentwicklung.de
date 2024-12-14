@@ -25,13 +25,14 @@ public class Main {
             List<ElectionConstituency> constituencies = parser.getConstituencies();
 
             List<ElectionVoteBase> electionBaseVotes = parser.getElectionVotesBase();
-            List<StateVoteBase> stateVaseVotes = parser.getStateVotesBase();
+            List<StateVoteBase> stateBaseVotes = parser.getStateVotesBase();
             List<ConstituencyVoteBase> constituencyVotesBase = parser.getConstituencyVotesBase();
 
-            List<ElectionVoteParty> electionPartyVotes = parser.getElectionVoteParty(parties);
+            List<ElectionVoteParty> electionPartyVotes = parser.getElectionVotesParty(parties);
+            List<StateVoteParty> statePartyVotes = parser.getStateVotesParty(parties);
+            List<ConstituencyVoteParty> constituencyPartyVotes = parser.getConstituencyVotesParty(parties);
 
-            electionPartyVotes.forEach(System.out::println);
-            System.out.println(constituencyVotesBase.size());
+            constituencyPartyVotes.forEach(System.out::println);
         }
     }
 

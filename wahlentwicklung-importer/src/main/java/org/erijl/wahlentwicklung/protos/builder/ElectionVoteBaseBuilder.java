@@ -5,22 +5,22 @@ import org.erijl.wahlentwicklung.protos.objects.ElectionVoteBase;
 
 public class ElectionVoteBaseBuilder {
     public static ElectionVoteBase buildElectionVoteBase(long electionYear,
-                                                         long eligibleVotersPrimaryVotePreliminary,
                                                          long eligibleVotersPrimaryVoteDefinitiv,
-                                                         long eligibleVotersSecondaryVotePreliminary,
+                                                         long eligibleVotersPrimaryVotePreliminary,
                                                          long eligibleVotersSecondaryVoteDefinitive,
-                                                         long actualVotersPrimaryVotePreliminary,
+                                                         long eligibleVotersSecondaryVotePreliminary,
                                                          long actualVotersPrimaryVoteDefinitiv,
-                                                         long actualVotersSecondaryVotePreliminary,
+                                                         long actualVotersPrimaryVotePreliminary,
                                                          long actualVotersSecondaryVoteDefinitive,
-                                                         long validVotersPrimaryVotePreliminary,
+                                                         long actualVotersSecondaryVotePreliminary,
+                                                         long invalidVotersPrimaryVoteDefinitiv,
+                                                         long invalidVotersPrimaryVotePreliminary,
+                                                         long invalidVotersSecondaryVoteDefinitive,
+                                                         long invalidVotersSecondaryVotePreliminary,
                                                          long validVotersPrimaryVoteDefinitiv,
                                                          long validVotersSecondaryVotePreliminary,
                                                          long validVotersSecondaryVoteDefinitive,
-                                                         long invalidVotersPrimaryVotePreliminary,
-                                                         long invalidVotersPrimaryVoteDefinitiv,
-                                                         long invalidVotersSecondaryVotePreliminary,
-                                                         long invalidVotersSecondaryVoteDefinitive) {
+                                                         long validVotersPrimaryVotePreliminary) {
         return ElectionVoteBase.newBuilder()
                 .setElectionYear(electionYear)
                 .setEligiblevotersPrimaryvotePreliminary(eligibleVotersPrimaryVotePreliminary)

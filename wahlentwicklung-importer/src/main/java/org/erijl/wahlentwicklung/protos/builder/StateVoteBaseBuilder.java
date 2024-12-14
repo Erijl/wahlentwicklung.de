@@ -4,22 +4,22 @@ import org.erijl.wahlentwicklung.protos.objects.StateVoteBase;
 
 public class StateVoteBaseBuilder {
     public static StateVoteBase buildStateVoteBase(long electionYear, long stateId,
-                                                   long eligibleVotersPrimaryVotePreliminary,
                                                    long eligibleVotersPrimaryVoteDefinitiv,
-                                                   long eligibleVotersSecondaryVotePreliminary,
+                                                   long eligibleVotersPrimaryVotePreliminary,
                                                    long eligibleVotersSecondaryVoteDefinitive,
-                                                   long actualVotersPrimaryVotePreliminary,
+                                                   long eligibleVotersSecondaryVotePreliminary,
                                                    long actualVotersPrimaryVoteDefinitiv,
-                                                   long actualVotersSecondaryVotePreliminary,
+                                                   long actualVotersPrimaryVotePreliminary,
                                                    long actualVotersSecondaryVoteDefinitive,
-                                                   long validVotersPrimaryVotePreliminary,
+                                                   long actualVotersSecondaryVotePreliminary,
                                                    long validVotersPrimaryVoteDefinitiv,
                                                    long validVotersSecondaryVotePreliminary,
                                                    long validVotersSecondaryVoteDefinitive,
-                                                   long invalidVotersPrimaryVotePreliminary,
+                                                   long validVotersPrimaryVotePreliminary,
                                                    long invalidVotersPrimaryVoteDefinitiv,
-                                                   long invalidVotersSecondaryVotePreliminary,
-                                                   long invalidVotersSecondaryVoteDefinitive) {
+                                                   long invalidVotersPrimaryVotePreliminary,
+                                                   long invalidVotersSecondaryVoteDefinitive,
+                                                   long invalidVotersSecondaryVotePreliminary) {
         return StateVoteBase.newBuilder()
                 .setElectionYear(electionYear)
                 .setStateId(stateId)

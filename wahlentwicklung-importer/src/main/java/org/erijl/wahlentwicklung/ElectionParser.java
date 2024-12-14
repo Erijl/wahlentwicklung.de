@@ -91,7 +91,7 @@ public class ElectionParser {
         return constituencies;
     }
 
-    public List<ElectionVoteBase> getElectionVotesBase() { //TODO refactor this to use one method for all three (or one object)
+    public ElectionVoteBase getElectionVotesBase() { //TODO refactor this to use one method for all three (or one object)
         List<ElectionVoteBase> baseVotes = new ArrayList<>();
 
         this.csvRecords.forEach(record -> {
@@ -119,7 +119,8 @@ public class ElectionParser {
             }
         });
 
-        return baseVotes;
+        assert baseVotes.size() == 1;
+        return baseVotes.getFirst();
     }
 
     public List<StateVoteBase> getStateVotesBase() {
@@ -159,7 +160,7 @@ public class ElectionParser {
 
         this.csvRecords.forEach(record -> {
             String entry = record.getFirst();
-            if (!entry.isBlank() && !entry.startsWith("N") && !entry.startsWith("9") && Integer.parseInt(entry) < 900) {
+            if (!entry.isBlank() && !entry.startsWith("N") && Integer.parseInt(entry) < 900) {
                 constituencyVotes.add(ConstituencyVoteBaseBuilder.buildConstituencyVoteBase(
                         this.election.getYear(),
                         parseVoteCount(record.get(2)),
@@ -237,7 +238,7 @@ public class ElectionParser {
 
         this.csvRecords.forEach(record -> {
             String entry = record.getFirst();
-            if (!entry.isBlank() && !entry.startsWith("N") && !entry.startsWith("9") && Integer.parseInt(entry) < 900) {
+            if (!entry.isBlank() && !entry.startsWith("N") && Integer.parseInt(entry) < 900) {
                 parties.forEach(party -> {
                     constituencyVoteParties.add(ConstituencyVotePartyBuilder.buildConstituencyVoteParty(
                             this.election.getYear(),

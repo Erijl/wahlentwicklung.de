@@ -31,6 +31,20 @@ CREATE TABLE party
     PRIMARY KEY (id)
 );
 
+-- mapping tables
+
+CREATE TABLE party_mapping
+(
+    id INTEGER NOT NULL,
+    party_id INTEGER,
+    election_year INTEGER NOT NULL,
+    column_index INTEGER NOT NULL,
+
+    PRIMARY KEY (id),
+    FOREIGN KEY (election_year, column_index) REFERENCES election_party (election_year, column_index),
+    FOREIGN KEY (party_id) REFERENCES party (id)
+);
+
 
 -- data tables based on each election
 

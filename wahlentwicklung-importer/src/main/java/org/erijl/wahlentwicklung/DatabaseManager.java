@@ -2,6 +2,7 @@ package org.erijl.wahlentwicklung;
 
 import org.erijl.wahlentwicklung.enums.ConfigKeyEnum;
 import org.erijl.wahlentwicklung.enums.ElectionEnum;
+import org.erijl.wahlentwicklung.protos.builder.PartyBuilder;
 import org.erijl.wahlentwicklung.protos.objects.*;
 
 import java.io.BufferedReader;
@@ -10,7 +11,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class DatabaseManager {
     private static final String JDBC_CONNECTION_PATTERN = "jdbc:sqlite:";
@@ -25,6 +28,7 @@ public class DatabaseManager {
 
         assert sqliteConnection != null;
         this.createTables();
+        this.insertDefaultData();
     }
 
     public void insertElectionData(ElectionParser parser, ElectionEnum election) throws SQLException {
@@ -40,6 +44,8 @@ public class DatabaseManager {
         insertElectionPartyVotes(parser.getElectionPartyVotes());
         insertStatePartyVotes(parser.getStatePartyVotes());
         insertConstituencyPartyVotes(parser.getConstituencyPartyVotes());
+
+        insertPartiesForRawMapping(parser.getParties());
     }
 
     public void insertElection(ElectionEnum electionEnum) throws SQLException {
@@ -255,9 +261,69 @@ public class DatabaseManager {
         }
     }
 
+    private void insertPartiesForRawMapping(List<ElectionParty> parties) throws SQLException {
+        String sql = "INSERT INTO party_mapping (party_id, election_year, column_index) VALUES (?, ?, ?)";
+        try (PreparedStatement stmt = sqliteConnection.prepareStatement(sql)) {
+            sqliteConnection.setAutoCommit(false);
+            for (ElectionParty party : parties) {
+                Optional<Long> possibleMapping = this.tryMap(party);
+                if (possibleMapping.isPresent()) {
+                    stmt.setLong(1, possibleMapping.get());
+                } else {
+                    stmt.setNull(1, Types.INTEGER);
+                }
+                stmt.setLong(2, party.getElectionYear());
+                stmt.setLong(3, party.getColumnIndex());
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+            sqliteConnection.commit();
+        } finally {
+            sqliteConnection.setAutoCommit(true);
+        }
+    }
+
+    private Optional<Long> tryMap(ElectionParty electionParty) throws SQLException {
+        this.getAllParties().forEach(System.out::println);
+
+        Optional<Party> possibleParty = this.getAllParties().stream().filter(party ->
+                party.getName().equalsIgnoreCase(electionParty.getName()) ||
+                        party.getAbbreviation().equalsIgnoreCase(electionParty.getName())).findFirst();
+        if (possibleParty.isPresent()) return Optional.of(possibleParty.get().getId());
+        return Optional.empty();
+    }
+
+    public List<Party> getAllParties() throws SQLException {
+        List<Party> parties = new ArrayList<>();
+        String sql = "SELECT id, name, abbreviation, color FROM party";
+        try (Statement stmt = sqliteConnection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                parties.add(PartyBuilder.buildParty(
+                        rs.getInt("id"),
+                        rs.getString("name"),
+                        rs.getString("abbreviation"),
+                        rs.getString("color")
+                ));
+            }
+        }
+        return parties;
+    }
+
 
     private void createTables() throws SQLException, IOException {
         URL databaseFile = Main.class.getClassLoader().getResource("create_tables.sql");
+        assert databaseFile != null;
+
+        Statement createTableStatement = this.sqliteConnection.createStatement();
+
+        String sql = readSqlFile(databaseFile.getPath());
+        createTableStatement.executeUpdate(sql);
+    }
+
+
+    private void insertDefaultData() throws SQLException, IOException {
+        URL databaseFile = Main.class.getClassLoader().getResource("insert_default-data.sql");
         assert databaseFile != null;
 
         Statement createTableStatement = this.sqliteConnection.createStatement();

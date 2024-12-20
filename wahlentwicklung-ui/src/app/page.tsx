@@ -16,6 +16,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart"
+
 const chartData = [
   { date: "Sozialdemokratische Partei Deutschlands", desktop: 11955434, mobile: 150 },
   { date: "Christlich Demokratische Union Deutschlands", desktop: 8775471, mobile: 180 },
@@ -23,7 +24,6 @@ const chartData = [
   { date: "Freie Demokratische Partei", desktop: 5319952, mobile: 260 },
   { date: "Alternative für Deutschland", desktop: 4803902, mobile: 290 },
   { date: "Christlich-Soziale Union in Bayern e.V.", desktop: 2402827, mobile: 340 },
-
 ]
 
 const chartConfig = {
@@ -62,7 +62,7 @@ export default function Component() {
             </CardDescription>
           </div>
           <div className="flex">
-            {["desktop", "mobile"].map((key) => {
+            {["desktop"].map((key) => {
               const chart = key as keyof typeof chartConfig
               return (
                   <button

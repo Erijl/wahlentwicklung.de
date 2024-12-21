@@ -78,7 +78,7 @@ public class ElectionParser {
         URL electionFilePath = getClass().getClassLoader().getResource("raw-election-data/btw" + this.election.getYear() + "_kerg.csv");
         assert electionFilePath != null;
 
-        this.fileToRead = new File(electionFilePath.getPath());
+        this.fileToRead = new File(electionFilePath.getPath().replace("%20", " "));
         assert this.fileToRead.exists();
     }
 

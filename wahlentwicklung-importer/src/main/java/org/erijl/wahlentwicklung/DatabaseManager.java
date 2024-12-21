@@ -27,8 +27,8 @@ public class DatabaseManager {
         this.sqliteConnection = DriverManager.getConnection(JDBC_CONNECTION_PATTERN + config.getStringProperty(ConfigKeyEnum.DB_FILE_NAME));
 
         assert sqliteConnection != null;
-        this.createTables();
-        this.insertDefaultData();
+        this.executeSQLFile("create_tables.sql");
+        this.executeSQLFile("insert_default-data.sql");
     }
 
     public void insertElectionData(ElectionParser parser, ElectionEnum election) throws SQLException {
@@ -310,25 +310,13 @@ public class DatabaseManager {
         return parties;
     }
 
-
-    private void createTables() throws SQLException, IOException {
-        URL databaseFile = Main.class.getClassLoader().getResource("create_tables.sql");
+    private void executeSQLFile(String fileName) throws SQLException, IOException {
+        URL databaseFile = Main.class.getClassLoader().getResource(fileName);
         assert databaseFile != null;
 
         Statement createTableStatement = this.sqliteConnection.createStatement();
 
-        String sql = readSqlFile(databaseFile.getPath());
-        createTableStatement.executeUpdate(sql);
-    }
-
-
-    private void insertDefaultData() throws SQLException, IOException {
-        URL databaseFile = Main.class.getClassLoader().getResource("insert_default-data.sql");
-        assert databaseFile != null;
-
-        Statement createTableStatement = this.sqliteConnection.createStatement();
-
-        String sql = readSqlFile(databaseFile.getPath());
+        String sql = readSqlFile(databaseFile.getPath().replace("%20", " "));
         createTableStatement.executeUpdate(sql);
     }
 

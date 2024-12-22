@@ -33,6 +33,31 @@ CREATE TABLE party
 
 -- mapping tables
 
+CREATE TABLE state_mapping
+(
+    id INTEGER NOT NULL,
+    state_id INTEGER,
+    election_year INTEGER NOT NULL,
+    row_id INTEGER NOT NULL,
+
+    PRIMARY KEY (id),
+    FOREIGN KEY (election_year, row_id) REFERENCES election_state (election_year, row_id),
+    FOREIGN KEY (state_id) REFERENCES state (id)
+);
+
+CREATE TABLE constituency_mapping
+(
+    id INTEGER NOT NULL,
+    state_id INTEGER,
+    election_state_id INTEGER,
+    election_year INTEGER NOT NULL,
+    row_id INTEGER NOT NULL,
+
+    PRIMARY KEY (id),
+    FOREIGN KEY (state_id) REFERENCES state (id),
+    FOREIGN KEY (election_year, election_state_id, row_id) REFERENCES election_constituency (election_year, state_id, row_id)
+);
+
 CREATE TABLE party_mapping
 (
     id INTEGER NOT NULL,

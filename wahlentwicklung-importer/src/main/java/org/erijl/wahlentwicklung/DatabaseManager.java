@@ -2,7 +2,10 @@ package org.erijl.wahlentwicklung;
 
 import org.erijl.wahlentwicklung.enums.ConfigKeyEnum;
 import org.erijl.wahlentwicklung.enums.ElectionEnum;
+import org.erijl.wahlentwicklung.mapper.PartyMapper;
+import org.erijl.wahlentwicklung.mapper.StateMapper;
 import org.erijl.wahlentwicklung.protos.builder.PartyBuilder;
+import org.erijl.wahlentwicklung.protos.builder.StateBuilder;
 import org.erijl.wahlentwicklung.protos.objects.*;
 
 import java.io.BufferedReader;
@@ -13,7 +16,6 @@ import java.net.URL;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class DatabaseManager {
     private static final String JDBC_CONNECTION_PATTERN = "jdbc:sqlite:";
@@ -45,7 +47,8 @@ public class DatabaseManager {
         insertStatePartyVotes(parser.getStatePartyVotes());
         insertConstituencyPartyVotes(parser.getConstituencyPartyVotes());
 
-        insertPartiesForRawMapping(parser.getParties());
+        insertPartyMappings(parser.getParties());
+        insertStateMappings(parser.getStates());
     }
 
     public void insertElection(ElectionEnum electionEnum) throws SQLException {
@@ -261,19 +264,14 @@ public class DatabaseManager {
         }
     }
 
-    private void insertPartiesForRawMapping(List<ElectionParty> parties) throws SQLException {
-        String sql = "INSERT INTO party_mapping (party_id, election_year, column_index) VALUES (?, ?, ?)";
+    private void insertStateMappings(List<ElectionState> states) throws SQLException {
+        String sql = "INSERT INTO state_mapping (state_id, election_year, row_id) VALUES (?, ?, ?)";
         try (PreparedStatement stmt = sqliteConnection.prepareStatement(sql)) {
             sqliteConnection.setAutoCommit(false);
-            for (ElectionParty party : parties) {
-                Optional<Long> possibleMapping = this.tryMap(party);
-                if (possibleMapping.isPresent()) {
-                    stmt.setLong(1, possibleMapping.get());
-                } else {
-                    stmt.setNull(1, Types.INTEGER);
-                }
-                stmt.setLong(2, party.getElectionYear());
-                stmt.setLong(3, party.getColumnIndex());
+            for (ElectionState state : states) {
+                stmt.setObject(1, StateMapper.tryMap(state, this), Types.INTEGER);
+                stmt.setLong(2, state.getElectionYear());
+                stmt.setLong(3, state.getRowId());
                 stmt.addBatch();
             }
             stmt.executeBatch();
@@ -283,14 +281,21 @@ public class DatabaseManager {
         }
     }
 
-    private Optional<Long> tryMap(ElectionParty electionParty) throws SQLException {
-        this.getAllParties().forEach(System.out::println);
-
-        Optional<Party> possibleParty = this.getAllParties().stream().filter(party ->
-                party.getName().equalsIgnoreCase(electionParty.getName()) ||
-                        party.getAbbreviation().equalsIgnoreCase(electionParty.getName())).findFirst();
-        if (possibleParty.isPresent()) return Optional.of(possibleParty.get().getId());
-        return Optional.empty();
+    private void insertPartyMappings(List<ElectionParty> parties) throws SQLException {
+        String sql = "INSERT INTO party_mapping (party_id, election_year, column_index) VALUES (?, ?, ?)";
+        try (PreparedStatement stmt = sqliteConnection.prepareStatement(sql)) {
+            sqliteConnection.setAutoCommit(false);
+            for (ElectionParty party : parties) {
+                stmt.setObject(1, PartyMapper.tryMap(party, this), Types.INTEGER);
+                stmt.setLong(2, party.getElectionYear());
+                stmt.setLong(3, party.getColumnIndex());
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+            sqliteConnection.commit();
+        } finally {
+            sqliteConnection.setAutoCommit(true);
+        }
     }
 
     public List<Party> getAllParties() throws SQLException {
@@ -308,6 +313,21 @@ public class DatabaseManager {
             }
         }
         return parties;
+    }
+
+    public List<State> getAllStates() throws SQLException {
+        List<State> states = new ArrayList<>();
+        String sql = "SELECT id, name FROM state";
+        try (Statement stmt = sqliteConnection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                states.add(StateBuilder.buildState(
+                        rs.getInt("id"),
+                        rs.getString("name")
+                ));
+            }
+        }
+        return states;
     }
 
     private void executeSQLFile(String fileName) throws SQLException, IOException {

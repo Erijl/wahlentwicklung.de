@@ -10,6 +10,7 @@ public class ElectionConstituencyBuilder {
         return ElectionConstituency.newBuilder()
                 .setElectionYear(electionYear)
                 .setRowId(row_id)
+                .setStateId(stateId)
                 .setName(name)
                 .build();
     }

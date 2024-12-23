@@ -2,8 +2,10 @@ package org.erijl.wahlentwicklung;
 
 import org.erijl.wahlentwicklung.enums.ConfigKeyEnum;
 import org.erijl.wahlentwicklung.enums.ElectionEnum;
+import org.erijl.wahlentwicklung.mapper.ConstituencyMapper;
 import org.erijl.wahlentwicklung.mapper.PartyMapper;
 import org.erijl.wahlentwicklung.mapper.StateMapper;
+import org.erijl.wahlentwicklung.protos.builder.ConstituencyBuilder;
 import org.erijl.wahlentwicklung.protos.builder.PartyBuilder;
 import org.erijl.wahlentwicklung.protos.builder.StateBuilder;
 import org.erijl.wahlentwicklung.protos.objects.*;
@@ -49,6 +51,7 @@ public class DatabaseManager {
 
         insertPartyMappings(parser.getParties());
         insertStateMappings(parser.getStates());
+        insertConstituencyMappings(parser.getConstituencies());
     }
 
     public void insertElection(ElectionEnum electionEnum) throws SQLException {
@@ -281,6 +284,24 @@ public class DatabaseManager {
         }
     }
 
+    private void insertConstituencyMappings(List<ElectionConstituency> constituencies) throws SQLException {
+        String sql = "INSERT INTO constituency_mapping (state_id, election_state_id, election_year, row_id) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement stmt = sqliteConnection.prepareStatement(sql)) {
+            sqliteConnection.setAutoCommit(false);
+            for (ElectionConstituency constituency : constituencies) {
+                stmt.setObject(1, ConstituencyMapper.tryMap(constituency, this), Types.INTEGER);
+                stmt.setLong(2, constituency.getStateId());
+                stmt.setLong(3, constituency.getElectionYear());
+                stmt.setLong(4, constituency.getRowId());
+                stmt.addBatch();
+            }
+            stmt.executeBatch();
+            sqliteConnection.commit();
+        } finally {
+            sqliteConnection.setAutoCommit(true);
+        }
+    }
+
     private void insertPartyMappings(List<ElectionParty> parties) throws SQLException {
         String sql = "INSERT INTO party_mapping (party_id, election_year, column_index) VALUES (?, ?, ?)";
         try (PreparedStatement stmt = sqliteConnection.prepareStatement(sql)) {
@@ -328,6 +349,21 @@ public class DatabaseManager {
             }
         }
         return states;
+    }
+
+    public List<Constituency> getAllConstituencies() throws SQLException {
+        List<Constituency> constituencies = new ArrayList<>();
+        String sql = "SELECT id, state_id, name FROM constituency";
+        try (Statement stmt = sqliteConnection.createStatement(); ResultSet rs = stmt.executeQuery(sql)) {
+            while (rs.next()) {
+                constituencies.add(ConstituencyBuilder.buildConstituency(
+                        rs.getInt("id"),
+                        rs.getInt("state_id"),
+                        rs.getString("name")
+                ));
+            }
+        }
+        return constituencies;
     }
 
     private void executeSQLFile(String fileName) throws SQLException, IOException {

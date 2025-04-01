@@ -4,7 +4,6 @@ const path = require('path');
 const dbPath = path.resolve(process.cwd(), 'wahlentwicklung.db');
 
 function getElectionById(id) {
-    console.log(process.cwd())
     return new Promise((resolve, reject) => {
         const db = new sqlite3.Database(dbPath);
         db.get('SELECT * FROM main.election WHERE year = ?', [id], (err, row) => {
@@ -32,4 +31,18 @@ function getAllElectionIds() {
     });
 }
 
-module.exports = { getElectionById, getAllElectionIds };
+function getElectionBaseResultByYear(year) {
+    return new Promise((resolve, reject) => {
+        const db = new sqlite3.Database(dbPath);
+        db.get('SELECT * FROM main.election_vote_base WHERE election_year = ?', [year], (err, row) => {
+            if (err) {
+                reject(err);
+            } else {
+                resolve(row);
+            }
+            db.close();
+        });
+    });
+}
+
+module.exports = { getElectionById, getAllElectionIds, getElectionBaseResultByYear };

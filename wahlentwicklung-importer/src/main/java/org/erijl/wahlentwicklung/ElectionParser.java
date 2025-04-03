@@ -5,6 +5,7 @@ import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
+import org.apache.commons.lang3.StringUtils;
 import org.erijl.wahlentwicklung.enums.ElectionEnum;
 import org.erijl.wahlentwicklung.protos.builder.*;
 import org.erijl.wahlentwicklung.protos.objects.*;
@@ -70,10 +71,6 @@ public class ElectionParser {
         this.constituencyPartyVotes = this.readConstituencyVotesParty(this.parties);
     }
 
-    public ElectionEnum getElection() {
-        return this.election;
-    }
-
     private void ensureFileExists() {
         URL electionFilePath = getClass().getClassLoader().getResource("raw-election-data/btw" + this.election.getYear() + "_kerg.csv");
         assert electionFilePath != null;
@@ -85,7 +82,7 @@ public class ElectionParser {
     private List<ElectionParty> readParties() {
         List<ElectionParty> parties = new ArrayList<>();
 
-        for (int i = 19; i < this.csvRecords.getFirst().size(); i += 4) {
+        for (int i = this.election.getPartyOffset(); i < this.csvRecords.getFirst().size(); i += 4) {
             parties.add(ElectionPartyBuilder.buildElectionParty(this.election.getYear(), i, this.csvRecords.getFirst().get(i)));
         }
 
@@ -110,7 +107,7 @@ public class ElectionParser {
 
         this.csvRecords.forEach(record -> {
             String entry = record.getFirst();
-            if (!entry.startsWith("N") && !entry.isBlank() && Integer.parseInt(entry) <= 900) {
+            if (!StringUtils.isBlank(entry) && !entry.isEmpty() && !entry.isBlank() && !entry.startsWith("N") && Integer.parseInt(entry) <= 900) {
                 constituencies.add(ElectionConstituencyBuilder.buildElectionState(Integer.parseInt(record.get(2)), this.election.getYear(), Integer.parseInt(entry), record.get(1)));
             }
         });

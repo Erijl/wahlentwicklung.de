@@ -5,9 +5,9 @@ import React from "react";
 
 export default async function ElectionPage({params}) {
     await params;
-    const election = await getElectionById(params.id);
+    const election = await getElectionById(params.year);
 
-    const electionBaseResult = await getElectionBaseResultByYear(params.id);
+    const electionBaseResult = await getElectionBaseResultByYear(params.year);
     console.log(electionBaseResult)
     //if (!election) {
     //    return <div>Election not found</div>;
@@ -45,7 +45,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 export async function generateMetadata({params}) {
-    const election = await getElectionById(params.id);
+    const election = await getElectionById(params.year);
 
     return {
         title: "specific title"

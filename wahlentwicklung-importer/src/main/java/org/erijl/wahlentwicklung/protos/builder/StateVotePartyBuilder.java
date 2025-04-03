@@ -4,16 +4,16 @@ import org.erijl.wahlentwicklung.protos.objects.StateVoteParty;
 
 public class StateVotePartyBuilder {
     public static StateVoteParty buildStateVoteParty(long electionYear, long partyId, long stateId,
-                                                     long primaryVotePreliminary, long primaryVoteDefinitiv,
-                                                     long secondaryVotePreliminary, long secondaryVoteDefinitiv) {
+                                                     long primaryVotePreliminary, long primaryVoteDefinitive,
+                                                     long secondaryVotePreliminary, long secondaryVoteDefinitive) {
         return StateVoteParty.newBuilder()
                 .setElectionYear(electionYear)
                 .setPartyId(partyId)
                 .setStateId(stateId)
                 .setPrimaryvotePreliminary(primaryVotePreliminary)
-                .setPrimaryvoteDefinitiv(primaryVoteDefinitiv)
+                .setPrimaryvoteDefinitive(primaryVoteDefinitive)
                 .setSecondaryvotePreliminary(secondaryVotePreliminary)
-                .setSecondaryvoteDefinitiv(secondaryVoteDefinitiv)
+                .setSecondaryvoteDefinitive(secondaryVoteDefinitive)
                 .build();
     }
 }

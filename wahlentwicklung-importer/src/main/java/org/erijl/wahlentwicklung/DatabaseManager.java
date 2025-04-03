@@ -115,52 +115,52 @@ public class DatabaseManager {
     }
 
     private void insertElectionBaseVotes(ElectionVoteBase electionBaseVotes) throws SQLException {
-        String sql = "INSERT INTO election_vote_base (election_year, eligiblevoters_primaryvote_preliminary, eligiblevoters_primaryvote_definitiv, eligiblevoters_secondaryvote_preliminary, eligiblevoters_secondarybote_definitive, actualvoters_primaryvote_preliminary, actualvoters_primaryvote_definitiv, actualvoters_secondaryvote_preliminary, actualvoters_secondarybote_definitive, validvoters_primaryvote_preliminary, validvoters_primaryvote_definitiv, validvoters_secondaryvote_preliminary, validvoters_secondarybote_definitive, invalidvoters_primaryvote_preliminary, invalidvoters_primaryvote_definitiv, invalidvoters_secondaryvote_preliminary, invalidvoters_secondarybote_definitive) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO election_vote_base (election_year, eligiblevoters_primaryvote_preliminary, eligiblevoters_primaryvote_definitive, eligiblevoters_secondaryvote_preliminary, eligiblevoters_secondaryvote_definitive, actualvoters_primaryvote_preliminary, actualvoters_primaryvote_definitive, actualvoters_secondaryvote_preliminary, actualvoters_secondaryvote_definitive, validvoters_primaryvote_preliminary, validvoters_primaryvote_definitive, validvoters_secondaryvote_preliminary, validvoters_secondaryvote_definitive, invalidvoters_primaryvote_preliminary, invalidvoters_primaryvote_definitive, invalidvoters_secondaryvote_preliminary, invalidvoters_secondaryvote_definitive) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = sqliteConnection.prepareStatement(sql)) {
             stmt.setLong(1, electionBaseVotes.getElectionYear());
             stmt.setLong(2, electionBaseVotes.getEligiblevotersPrimaryvotePreliminary());
-            stmt.setLong(3, electionBaseVotes.getEligiblevotersPrimaryvoteDefinitiv());
+            stmt.setLong(3, electionBaseVotes.getEligiblevotersPrimaryvoteDefinitive());
             stmt.setLong(4, electionBaseVotes.getEligiblevotersSecondaryvotePreliminary());
-            stmt.setLong(5, electionBaseVotes.getEligiblevotersSecondaryboteDefinitive());
+            stmt.setLong(5, electionBaseVotes.getEligiblevotersSecondaryvoteDefinitive());
             stmt.setLong(6, electionBaseVotes.getActualvotersPrimaryvotePreliminary());
-            stmt.setLong(7, electionBaseVotes.getActualvotersPrimaryvoteDefinitiv());
+            stmt.setLong(7, electionBaseVotes.getActualvotersPrimaryvoteDefinitive());
             stmt.setLong(8, electionBaseVotes.getActualvotersSecondaryvotePreliminary());
-            stmt.setLong(9, electionBaseVotes.getActualvotersSecondaryboteDefinitive());
+            stmt.setLong(9, electionBaseVotes.getActualvotersSecondaryvoteDefinitive());
             stmt.setLong(10, electionBaseVotes.getValidvotersPrimaryvotePreliminary());
-            stmt.setLong(11, electionBaseVotes.getValidvotersPrimaryvoteDefinitiv());
+            stmt.setLong(11, electionBaseVotes.getValidvotersPrimaryvoteDefinitive());
             stmt.setLong(12, electionBaseVotes.getValidvotersSecondaryvotePreliminary());
-            stmt.setLong(13, electionBaseVotes.getValidvotersSecondaryboteDefinitive());
+            stmt.setLong(13, electionBaseVotes.getValidvotersSecondaryvoteDefinitive());
             stmt.setLong(14, electionBaseVotes.getInvalidvotersPrimaryvotePreliminary());
-            stmt.setLong(15, electionBaseVotes.getInvalidvotersPrimaryvoteDefinitiv());
+            stmt.setLong(15, electionBaseVotes.getInvalidvotersPrimaryvoteDefinitive());
             stmt.setLong(16, electionBaseVotes.getInvalidvotersSecondaryvotePreliminary());
-            stmt.setLong(17, electionBaseVotes.getInvalidvotersSecondaryboteDefinitive());
+            stmt.setLong(17, electionBaseVotes.getInvalidvotersSecondaryvoteDefinitive());
             stmt.executeUpdate();
         }
     }
 
     private void insertStateBaseVotes(List<StateVoteBase> stateBaseVotes) throws SQLException {
-        String sql = "INSERT INTO state_vote_base (election_year, state_id, eligiblevoters_primaryvote_preliminary, eligiblevoters_primaryvote_definitiv, eligiblevoters_secondaryvote_preliminary, eligiblevoters_secondarybote_definitive, actualvoters_primaryvote_preliminary, actualvoters_primaryvote_definitiv, actualvoters_secondaryvote_preliminary, actualvoters_secondarybote_definitive, validvoters_primaryvote_preliminary, validvoters_primaryvote_definitiv, validvoters_secondaryvote_preliminary, validvoters_secondarybote_definitive, invalidvoters_primaryvote_preliminary, invalidvoters_primaryvote_definitiv, invalidvoters_secondaryvote_preliminary, invalidvoters_secondarybote_definitive) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO state_vote_base (election_year, state_id, eligiblevoters_primaryvote_preliminary, eligiblevoters_primaryvote_definitive, eligiblevoters_secondaryvote_preliminary, eligiblevoters_secondaryvote_definitive, actualvoters_primaryvote_preliminary, actualvoters_primaryvote_definitive, actualvoters_secondaryvote_preliminary, actualvoters_secondaryvote_definitive, validvoters_primaryvote_preliminary, validvoters_primaryvote_definitive, validvoters_secondaryvote_preliminary, validvoters_secondaryvote_definitive, invalidvoters_primaryvote_preliminary, invalidvoters_primaryvote_definitive, invalidvoters_secondaryvote_preliminary, invalidvoters_secondaryvote_definitive) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = sqliteConnection.prepareStatement(sql)) {
             sqliteConnection.setAutoCommit(false);
             for (StateVoteBase stateVoteBase : stateBaseVotes) {
                 stmt.setLong(1, stateVoteBase.getElectionYear());
                 stmt.setLong(2, stateVoteBase.getStateId());
                 stmt.setLong(3, stateVoteBase.getEligiblevotersPrimaryvotePreliminary());
-                stmt.setLong(4, stateVoteBase.getEligiblevotersPrimaryvoteDefinitiv());
+                stmt.setLong(4, stateVoteBase.getEligiblevotersPrimaryvoteDefinitive());
                 stmt.setLong(5, stateVoteBase.getEligiblevotersSecondaryvotePreliminary());
-                stmt.setLong(6, stateVoteBase.getEligiblevotersSecondaryboteDefinitive());
+                stmt.setLong(6, stateVoteBase.getEligiblevotersSecondaryvoteDefinitive());
                 stmt.setLong(7, stateVoteBase.getActualvotersPrimaryvotePreliminary());
-                stmt.setLong(8, stateVoteBase.getActualvotersPrimaryvoteDefinitiv());
+                stmt.setLong(8, stateVoteBase.getActualvotersPrimaryvoteDefinitive());
                 stmt.setLong(9, stateVoteBase.getActualvotersSecondaryvotePreliminary());
-                stmt.setLong(10, stateVoteBase.getActualvotersSecondaryboteDefinitive());
+                stmt.setLong(10, stateVoteBase.getActualvotersSecondaryvoteDefinitive());
                 stmt.setLong(11, stateVoteBase.getValidvotersPrimaryvotePreliminary());
-                stmt.setLong(12, stateVoteBase.getValidvotersPrimaryvoteDefinitiv());
+                stmt.setLong(12, stateVoteBase.getValidvotersPrimaryvoteDefinitive());
                 stmt.setLong(13, stateVoteBase.getValidvotersSecondaryvotePreliminary());
-                stmt.setLong(14, stateVoteBase.getValidvotersSecondaryboteDefinitive());
+                stmt.setLong(14, stateVoteBase.getValidvotersSecondaryvoteDefinitive());
                 stmt.setLong(15, stateVoteBase.getInvalidvotersPrimaryvotePreliminary());
-                stmt.setLong(16, stateVoteBase.getInvalidvotersPrimaryvoteDefinitiv());
+                stmt.setLong(16, stateVoteBase.getInvalidvotersPrimaryvoteDefinitive());
                 stmt.setLong(17, stateVoteBase.getInvalidvotersSecondaryvotePreliminary());
-                stmt.setLong(18, stateVoteBase.getInvalidvotersSecondaryboteDefinitive());
+                stmt.setLong(18, stateVoteBase.getInvalidvotersSecondaryvoteDefinitive());
                 stmt.addBatch();
             }
             stmt.executeBatch();
@@ -171,7 +171,7 @@ public class DatabaseManager {
     }
 
     private void insertConstituencyVotesBase(List<ConstituencyVoteBase> constituencyVotesBase) throws SQLException {
-        String sql = "INSERT INTO constituency_vote_base (election_year, state_id, constituency_id, eligiblevoters_primaryvote_preliminary, eligiblevoters_primaryvote_definitiv, eligiblevoters_secondaryvote_preliminary, eligiblevoters_secondarybote_definitive, actualvoters_primaryvote_preliminary, actualvoters_primaryvote_definitiv, actualvoters_secondaryvote_preliminary, actualvoters_secondarybote_definitive, validvoters_primaryvote_preliminary, validvoters_primaryvote_definitiv, validvoters_secondaryvote_preliminary, validvoters_secondarybote_definitive, invalidvoters_primaryvote_preliminary, invalidvoters_primaryvote_definitiv, invalidvoters_secondaryvote_preliminary, invalidvoters_secondarybote_definitive) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO constituency_vote_base (election_year, state_id, constituency_id, eligiblevoters_primaryvote_preliminary, eligiblevoters_primaryvote_definitive, eligiblevoters_secondaryvote_preliminary, eligiblevoters_secondaryvote_definitive, actualvoters_primaryvote_preliminary, actualvoters_primaryvote_definitive, actualvoters_secondaryvote_preliminary, actualvoters_secondaryvote_definitive, validvoters_primaryvote_preliminary, validvoters_primaryvote_definitive, validvoters_secondaryvote_preliminary, validvoters_secondaryvote_definitive, invalidvoters_primaryvote_preliminary, invalidvoters_primaryvote_definitive, invalidvoters_secondaryvote_preliminary, invalidvoters_secondaryvote_definitive) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = sqliteConnection.prepareStatement(sql)) {
             sqliteConnection.setAutoCommit(false);
             for (ConstituencyVoteBase constituencyVoteBase : constituencyVotesBase) {
@@ -179,21 +179,21 @@ public class DatabaseManager {
                 stmt.setLong(2, constituencyVoteBase.getStateId());
                 stmt.setLong(3, constituencyVoteBase.getConstituencyId());
                 stmt.setLong(4, constituencyVoteBase.getEligiblevotersPrimaryvotePreliminary());
-                stmt.setLong(5, constituencyVoteBase.getEligiblevotersPrimaryvoteDefinitiv());
+                stmt.setLong(5, constituencyVoteBase.getEligiblevotersPrimaryvoteDefinitive());
                 stmt.setLong(6, constituencyVoteBase.getEligiblevotersSecondaryvotePreliminary());
-                stmt.setLong(7, constituencyVoteBase.getEligiblevotersSecondaryboteDefinitive());
+                stmt.setLong(7, constituencyVoteBase.getEligiblevotersSecondaryvoteDefinitive());
                 stmt.setLong(8, constituencyVoteBase.getActualvotersPrimaryvotePreliminary());
-                stmt.setLong(9, constituencyVoteBase.getActualvotersPrimaryvoteDefinitiv());
+                stmt.setLong(9, constituencyVoteBase.getActualvotersPrimaryvoteDefinitive());
                 stmt.setLong(10, constituencyVoteBase.getActualvotersSecondaryvotePreliminary());
-                stmt.setLong(11, constituencyVoteBase.getActualvotersSecondaryboteDefinitive());
+                stmt.setLong(11, constituencyVoteBase.getActualvotersSecondaryvoteDefinitive());
                 stmt.setLong(12, constituencyVoteBase.getValidvotersPrimaryvotePreliminary());
-                stmt.setLong(13, constituencyVoteBase.getValidvotersPrimaryvoteDefinitiv());
+                stmt.setLong(13, constituencyVoteBase.getValidvotersPrimaryvoteDefinitive());
                 stmt.setLong(14, constituencyVoteBase.getValidvotersSecondaryvotePreliminary());
-                stmt.setLong(15, constituencyVoteBase.getValidvotersSecondaryboteDefinitive());
+                stmt.setLong(15, constituencyVoteBase.getValidvotersSecondaryvoteDefinitive());
                 stmt.setLong(16, constituencyVoteBase.getInvalidvotersPrimaryvotePreliminary());
-                stmt.setLong(17, constituencyVoteBase.getInvalidvotersPrimaryvoteDefinitiv());
+                stmt.setLong(17, constituencyVoteBase.getInvalidvotersPrimaryvoteDefinitive());
                 stmt.setLong(18, constituencyVoteBase.getInvalidvotersSecondaryvotePreliminary());
-                stmt.setLong(19, constituencyVoteBase.getInvalidvotersSecondaryboteDefinitive());
+                stmt.setLong(19, constituencyVoteBase.getInvalidvotersSecondaryvoteDefinitive());
                 stmt.addBatch();
             }
             stmt.executeBatch();
@@ -204,16 +204,16 @@ public class DatabaseManager {
     }
 
     private void insertElectionPartyVotes(List<ElectionVoteParty> electionPartyVotes) throws SQLException {
-        String sql = "INSERT INTO election_vote_party (election_year, party_id, primaryvote_preliminary, primaryvote_definitiv, secondaryvote_preliminary, secondaryvote_definitiv) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO election_vote_party (election_year, party_id, primaryvote_preliminary, primaryvote_definitive, secondaryvote_preliminary, secondaryvote_definitive) VALUES (?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = sqliteConnection.prepareStatement(sql)) {
             sqliteConnection.setAutoCommit(false);
             for (ElectionVoteParty electionVoteParty : electionPartyVotes) {
                 stmt.setLong(1, electionVoteParty.getElectionYear());
                 stmt.setLong(2, electionVoteParty.getPartyId());
                 stmt.setLong(3, electionVoteParty.getPrimaryvotePreliminary());
-                stmt.setLong(4, electionVoteParty.getPrimaryvoteDefinitiv());
+                stmt.setLong(4, electionVoteParty.getPrimaryvoteDefinitive());
                 stmt.setLong(5, electionVoteParty.getSecondaryvotePreliminary());
-                stmt.setLong(6, electionVoteParty.getSecondaryvoteDefinitiv());
+                stmt.setLong(6, electionVoteParty.getSecondaryvoteDefinitive());
                 stmt.addBatch();
             }
             stmt.executeBatch();
@@ -224,7 +224,7 @@ public class DatabaseManager {
     }
 
     private void insertStatePartyVotes(List<StateVoteParty> statePartyVotes) throws SQLException {
-        String sql = "INSERT INTO state_vote_party (election_year, party_id, state_id, primaryvote_preliminary, primaryvote_definitiv, secondaryvote_preliminary, secondaryvote_definitiv) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO state_vote_party (election_year, party_id, state_id, primaryvote_preliminary, primaryvote_definitive, secondaryvote_preliminary, secondaryvote_definitive) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = sqliteConnection.prepareStatement(sql)) {
             sqliteConnection.setAutoCommit(false);
             for (StateVoteParty stateVoteParty : statePartyVotes) {
@@ -232,9 +232,9 @@ public class DatabaseManager {
                 stmt.setLong(2, stateVoteParty.getPartyId());
                 stmt.setLong(3, stateVoteParty.getStateId());
                 stmt.setLong(4, stateVoteParty.getPrimaryvotePreliminary());
-                stmt.setLong(5, stateVoteParty.getPrimaryvoteDefinitiv());
+                stmt.setLong(5, stateVoteParty.getPrimaryvoteDefinitive());
                 stmt.setLong(6, stateVoteParty.getSecondaryvotePreliminary());
-                stmt.setLong(7, stateVoteParty.getSecondaryvoteDefinitiv());
+                stmt.setLong(7, stateVoteParty.getSecondaryvoteDefinitive());
                 stmt.addBatch();
             }
             stmt.executeBatch();
@@ -245,7 +245,7 @@ public class DatabaseManager {
     }
 
     private void insertConstituencyPartyVotes(List<ConstituencyVoteParty> constituencyPartyVotes) throws SQLException {
-        String sql = "INSERT INTO constituency_vote_party (election_year, party_id, state_id, constituency_id, primaryvote_preliminary, primaryvote_definitiv, secondaryvote_preliminary, secondaryvote_definitiv) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO constituency_vote_party (election_year, party_id, state_id, constituency_id, primaryvote_preliminary, primaryvote_definitive, secondaryvote_preliminary, secondaryvote_definitive) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement stmt = sqliteConnection.prepareStatement(sql)) {
             sqliteConnection.setAutoCommit(false);
@@ -255,9 +255,9 @@ public class DatabaseManager {
                 stmt.setLong(3, constituencyVoteParty.getStateId());
                 stmt.setLong(4, constituencyVoteParty.getConstituencyId());
                 stmt.setLong(5, constituencyVoteParty.getPrimaryvotePreliminary());
-                stmt.setLong(6, constituencyVoteParty.getPrimaryvoteDefinitiv());
+                stmt.setLong(6, constituencyVoteParty.getPrimaryvoteDefinitive());
                 stmt.setLong(7, constituencyVoteParty.getSecondaryvotePreliminary());
-                stmt.setLong(8, constituencyVoteParty.getSecondaryvoteDefinitiv());
+                stmt.setLong(8, constituencyVoteParty.getSecondaryvoteDefinitive());
                 stmt.addBatch();
             }
             stmt.executeBatch();
@@ -285,7 +285,7 @@ public class DatabaseManager {
     }
 
     private void insertConstituencyMappings(List<ElectionConstituency> constituencies) throws SQLException {
-        String sql = "INSERT INTO constituency_mapping (state_id, election_state_id, election_year, row_id) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO constituency_mapping (constituency_id, election_state_id, election_year, row_id) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = sqliteConnection.prepareStatement(sql)) {
             sqliteConnection.setAutoCommit(false);
             for (ElectionConstituency constituency : constituencies) {

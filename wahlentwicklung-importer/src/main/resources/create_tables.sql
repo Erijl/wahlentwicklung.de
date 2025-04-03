@@ -48,13 +48,13 @@ CREATE TABLE state_mapping
 CREATE TABLE constituency_mapping
 (
     id INTEGER NOT NULL,
-    state_id INTEGER,
+    constituency_id INTEGER,
     election_state_id INTEGER,
     election_year INTEGER NOT NULL,
     row_id INTEGER NOT NULL,
 
     PRIMARY KEY (id),
-    FOREIGN KEY (state_id) REFERENCES state (id),
+    FOREIGN KEY (constituency_id) REFERENCES constituency (id),
     FOREIGN KEY (election_year, election_state_id, row_id) REFERENCES election_constituency (election_year, state_id, row_id)
 );
 
@@ -113,28 +113,28 @@ CREATE TABLE election_vote_base
     election_year                            INTEGER NOT NULL,
 
     eligiblevoters_primaryvote_preliminary   INTEGER NOT NULL,
-    eligiblevoters_primaryvote_definitiv     INTEGER NOT NULL,
+    eligiblevoters_primaryvote_definitive     INTEGER NOT NULL,
 
     eligiblevoters_secondaryvote_preliminary INTEGER NOT NULL,
-    eligiblevoters_secondarybote_definitive  INTEGER NOT NULL,
+    eligiblevoters_secondaryvote_definitive  INTEGER NOT NULL,
 
     actualvoters_primaryvote_preliminary     INTEGER NOT NULL,
-    actualvoters_primaryvote_definitiv       INTEGER NOT NULL,
+    actualvoters_primaryvote_definitive       INTEGER NOT NULL,
 
     actualvoters_secondaryvote_preliminary   INTEGER NOT NULL,
-    actualvoters_secondarybote_definitive    INTEGER NOT NULL,
+    actualvoters_secondaryvote_definitive    INTEGER NOT NULL,
 
     validvoters_primaryvote_preliminary      INTEGER NOT NULL,
-    validvoters_primaryvote_definitiv        INTEGER NOT NULL,
+    validvoters_primaryvote_definitive        INTEGER NOT NULL,
 
     validvoters_secondaryvote_preliminary    INTEGER NOT NULL,
-    validvoters_secondarybote_definitive     INTEGER NOT NULL,
+    validvoters_secondaryvote_definitive     INTEGER NOT NULL,
 
     invalidvoters_primaryvote_preliminary    INTEGER NOT NULL,
-    invalidvoters_primaryvote_definitiv      INTEGER NOT NULL,
+    invalidvoters_primaryvote_definitive      INTEGER NOT NULL,
 
     invalidvoters_secondaryvote_preliminary  INTEGER NOT NULL,
-    invalidvoters_secondarybote_definitive   INTEGER NOT NULL,
+    invalidvoters_secondaryvote_definitive   INTEGER NOT NULL,
 
     PRIMARY KEY (election_year),
     FOREIGN KEY (election_year) REFERENCES election (year)
@@ -146,28 +146,28 @@ CREATE TABLE state_vote_base
     state_id                                 INTEGER NOT NULL,
 
     eligiblevoters_primaryvote_preliminary   INTEGER NOT NULL,
-    eligiblevoters_primaryvote_definitiv     INTEGER NOT NULL,
+    eligiblevoters_primaryvote_definitive     INTEGER NOT NULL,
 
     eligiblevoters_secondaryvote_preliminary INTEGER NOT NULL,
-    eligiblevoters_secondarybote_definitive  INTEGER NOT NULL,
+    eligiblevoters_secondaryvote_definitive  INTEGER NOT NULL,
 
     actualvoters_primaryvote_preliminary     INTEGER NOT NULL,
-    actualvoters_primaryvote_definitiv       INTEGER NOT NULL,
+    actualvoters_primaryvote_definitive       INTEGER NOT NULL,
 
     actualvoters_secondaryvote_preliminary   INTEGER NOT NULL,
-    actualvoters_secondarybote_definitive    INTEGER NOT NULL,
+    actualvoters_secondaryvote_definitive    INTEGER NOT NULL,
 
     validvoters_primaryvote_preliminary      INTEGER NOT NULL,
-    validvoters_primaryvote_definitiv        INTEGER NOT NULL,
+    validvoters_primaryvote_definitive        INTEGER NOT NULL,
 
     validvoters_secondaryvote_preliminary    INTEGER NOT NULL,
-    validvoters_secondarybote_definitive     INTEGER NOT NULL,
+    validvoters_secondaryvote_definitive     INTEGER NOT NULL,
 
     invalidvoters_primaryvote_preliminary    INTEGER NOT NULL,
-    invalidvoters_primaryvote_definitiv      INTEGER NOT NULL,
+    invalidvoters_primaryvote_definitive      INTEGER NOT NULL,
 
     invalidvoters_secondaryvote_preliminary  INTEGER NOT NULL,
-    invalidvoters_secondarybote_definitive   INTEGER NOT NULL,
+    invalidvoters_secondaryvote_definitive   INTEGER NOT NULL,
 
     PRIMARY KEY (election_year, state_id),
     FOREIGN KEY (election_year) REFERENCES election (year),
@@ -181,28 +181,28 @@ CREATE TABLE constituency_vote_base
     constituency_id                          INTEGER NOT NULL,
 
     eligiblevoters_primaryvote_preliminary   INTEGER NOT NULL,
-    eligiblevoters_primaryvote_definitiv     INTEGER NOT NULL,
+    eligiblevoters_primaryvote_definitive     INTEGER NOT NULL,
 
     eligiblevoters_secondaryvote_preliminary INTEGER NOT NULL,
-    eligiblevoters_secondarybote_definitive  INTEGER NOT NULL,
+    eligiblevoters_secondaryvote_definitive  INTEGER NOT NULL,
 
     actualvoters_primaryvote_preliminary     INTEGER NOT NULL,
-    actualvoters_primaryvote_definitiv       INTEGER NOT NULL,
+    actualvoters_primaryvote_definitive       INTEGER NOT NULL,
 
     actualvoters_secondaryvote_preliminary   INTEGER NOT NULL,
-    actualvoters_secondarybote_definitive    INTEGER NOT NULL,
+    actualvoters_secondaryvote_definitive    INTEGER NOT NULL,
 
     validvoters_primaryvote_preliminary      INTEGER NOT NULL,
-    validvoters_primaryvote_definitiv        INTEGER NOT NULL,
+    validvoters_primaryvote_definitive        INTEGER NOT NULL,
 
     validvoters_secondaryvote_preliminary    INTEGER NOT NULL,
-    validvoters_secondarybote_definitive     INTEGER NOT NULL,
+    validvoters_secondaryvote_definitive     INTEGER NOT NULL,
 
     invalidvoters_primaryvote_preliminary    INTEGER NOT NULL,
-    invalidvoters_primaryvote_definitiv      INTEGER NOT NULL,
+    invalidvoters_primaryvote_definitive      INTEGER NOT NULL,
 
     invalidvoters_secondaryvote_preliminary  INTEGER NOT NULL,
-    invalidvoters_secondarybote_definitive   INTEGER NOT NULL,
+    invalidvoters_secondaryvote_definitive   INTEGER NOT NULL,
 
     PRIMARY KEY (election_year, constituency_id),
     FOREIGN KEY (election_year) REFERENCES election (year),
@@ -217,10 +217,10 @@ CREATE TABLE election_vote_party
     party_id                  INTEGER NOT NULL,
 
     primaryvote_preliminary   INTEGER NOT NULL,
-    primaryvote_definitiv     INTEGER NOT NULL,
+    primaryvote_definitive     INTEGER NOT NULL,
 
     secondaryvote_preliminary INTEGER NOT NULL,
-    secondaryvote_definitiv   INTEGER NOT NULL,
+    secondaryvote_definitive   INTEGER NOT NULL,
 
     PRIMARY KEY (election_year, party_id),
     FOREIGN KEY (election_year) REFERENCES election (year),
@@ -234,10 +234,10 @@ CREATE TABLE state_vote_party
     state_id                  INTEGER NOT NULL,
 
     primaryvote_preliminary   INTEGER NOT NULL,
-    primaryvote_definitiv     INTEGER NOT NULL,
+    primaryvote_definitive     INTEGER NOT NULL,
 
     secondaryvote_preliminary INTEGER NOT NULL,
-    secondaryvote_definitiv   INTEGER NOT NULL,
+    secondaryvote_definitive   INTEGER NOT NULL,
 
     PRIMARY KEY (election_year, party_id, state_id),
     FOREIGN KEY (election_year) REFERENCES election (year),
@@ -253,10 +253,10 @@ CREATE TABLE constituency_vote_party
     constituency_id           INTEGER NOT NULL,
 
     primaryvote_preliminary   INTEGER NOT NULL,
-    primaryvote_definitiv     INTEGER NOT NULL,
+    primaryvote_definitive     INTEGER NOT NULL,
 
     secondaryvote_preliminary INTEGER NOT NULL,
-    secondaryvote_definitiv   INTEGER NOT NULL,
+    secondaryvote_definitive   INTEGER NOT NULL,
 
     PRIMARY KEY (election_year, party_id, constituency_id),
     FOREIGN KEY (election_year) REFERENCES election (year),

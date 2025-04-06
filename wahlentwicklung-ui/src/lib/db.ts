@@ -3,46 +3,99 @@ const path = require('path');
 
 const dbPath = path.resolve(process.cwd(), 'wahlentwicklung.db');
 
-function getElectionById(id) {
+function queryDatabase(sql, params = []) {
     return new Promise((resolve, reject) => {
-        const db = new sqlite3.Database(dbPath);
-        db.get('SELECT * FROM main.election WHERE year = ?', [id], (err, row) => {
+        const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READONLY, (err) => {
             if (err) {
+                console.error("DB Connect Error:", err.message);
+                return reject(err);
+            }
+        });
+        db.all(sql, params, (err, rows) => {
+            if (err) {
+                console.error("DB Query Error:", err.message, "SQL:", sql, "Params:", params);
                 reject(err);
             } else {
-                resolve(row);
+                resolve(rows);
             }
-            db.close();
+            db.close((closeErr) => {
+                if (closeErr) {
+                    console.error("DB Close Error:", closeErr.message);
+                }
+            });
         });
     });
 }
 
-function getAllElectionIds() {
-    return new Promise((resolve, reject) => {
-        const db = new sqlite3.Database(dbPath);
-        db.all('SELECT year FROM main.election', [], (err, rows) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(rows.map(row => row.year));
-            }
-            db.close();
-        });
-    });
+export async function getPreviousElectionYear(currentYear) {
+    const sql = `
+        SELECT MAX(year) as previousYear
+        FROM election
+        WHERE year < ?;
+    `;
+    const result = await queryDatabase(sql, [currentYear]);
+    return result[0]?.previousYear || null;
 }
 
-function getElectionBaseResultByYear(year) {
-    return new Promise((resolve, reject) => {
-        const db = new sqlite3.Database(dbPath);
-        db.get('SELECT * FROM main.election_vote_base WHERE election_year = ?', [year], (err, row) => {
-            if (err) {
-                reject(err);
-            } else {
-                resolve(row);
-            }
-            db.close();
-        });
-    });
+export async function getPrimaryVotesForYear(year) {
+    const sql = `
+        SELECT
+            p.abbreviation,
+            p.color,
+            evp.primaryvote_definitive as votes
+        FROM election_vote_party evp
+        JOIN party_mapping pm ON evp.election_year = pm.election_year AND evp.party_id = pm.column_index
+        JOIN party p ON pm.party_id = p.id
+        WHERE evp.election_year = ?
+          AND p.abbreviation IS NOT NULL; -- TODO check all relevant parties
+    `;
+    return await queryDatabase(sql, [year]);
 }
 
-module.exports = { getElectionById, getAllElectionIds, getElectionBaseResultByYear };
+export async function getTotalValidPrimaryVotesForYear(year) {
+    const sql = `
+        SELECT validvoters_primaryvote_definitive  as totalVotes
+        FROM election_vote_base
+        WHERE election_year = ?;
+    `;
+    const result = await queryDatabase(sql, [year]);
+    return result[0]?.totalVotes || 0;
+}
+
+export async function getAllElectionYears() {
+    const sql = `SELECT year FROM election ORDER BY year ASC;`;
+    const rows = await queryDatabase(sql);
+    return rows.map(row => row.year);
+}
+
+// Helper if further information will be stored in the election table
+export async function getElectionByYear(year) {
+    const sql = `SELECT year FROM election WHERE year = ?;`;
+    const result = await queryDatabase(sql, [year]);
+    return result[0] || null;
+}
+
+export async function getSeatDistributionForYear(year) {
+    const sql = `
+        SELECT
+            p.abbreviation,
+            p.color,
+            ep.seat_count as seats
+        FROM election_party ep
+        JOIN party_mapping pm ON ep.election_year = pm.election_year AND ep.column_index = pm.column_index
+        JOIN party p ON pm.party_id = p.id
+        WHERE ep.election_year = ? AND ep.seat_count > 0
+          AND p.abbreviation IS NOT NULL -- TODO check, see above todo
+        ORDER BY ep.seat_count DESC;
+    `;
+    try {
+        const rows = await queryDatabase(sql, [year]);
+        return rows.map(row => ({
+            ...row,
+            seats: Number(row.seats) || 0,
+        }));
+    } catch (error) {
+        console.error(`Error fetching seat distribution for year ${year}:`, error);
+        return [];
+    }
+}

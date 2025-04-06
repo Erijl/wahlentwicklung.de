@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Bar, BarChart, CartesianGrid, Tooltip, XAxis, YAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 
 import {
     Card,
@@ -27,13 +27,11 @@ const chartData = [
     {name: "Übrige", totalSecondaryVotes: 6332231, percentage: 0.13634701055119844, fill: '#C0C0C0'},
 ]
 
-const chartConfig = {
-
-} satisfies ChartConfig
+const chartConfig = {} satisfies ChartConfig
 
 export default function Component() {
 
-    chartData.forEach(x => x.percentage = Number((x.percentage * 10).toFixed(3)) );
+    chartData.forEach(x => x.percentage = Number((x.percentage * 10).toFixed(3)));
 
     return (
         <Card>Main Page
@@ -60,21 +58,15 @@ export default function Component() {
                             tickLine={false}
                             axisLine={false}
                             tickMargin={8}
-                            minTickGap={32}
+                            minTickGap={32}/> <YAxis/> <ChartTooltip
+                        content={<ChartTooltipContent className="w-[150px]" nameKey="percentage"
+                                                      labelFormatter={(value) => {
+                                                          return value
+                                                      }}
                         />
-                        <YAxis />
-                        <ChartTooltip
-                            content={
-                                <ChartTooltipContent
-                                    className="w-[150px]"
-                                    nameKey="percentage"
-                                    labelFormatter={(value) => {
-                                        return value
-                                    }}
-                                />
-                            }
-                        />
-                        <Bar dataKey="percentage" fill="#8884d8" />
+                        }
+                    />
+                        <Bar dataKey="percentage" fill="#8884d8"/>
                     </BarChart>
                 </ChartContainer>
             </CardContent>

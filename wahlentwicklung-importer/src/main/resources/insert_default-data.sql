@@ -366,4 +366,4 @@ VALUES (901, 'Flensburg – Schleswig'),
        (916, 'Erfurt – Weimar – Weimarer Land II'),
        (916, 'Gera – Greiz – Altenburger Land'),
        (916, 'Saalfeld-Rudolstadt – Saale-Holzland-Kreis – Saale-Orla-Kreis'),
-       (916,'Suhl – Schmalkalden-Meiningen – Hildburghausen – Sonneberg');
+       (916, 'Suhl – Schmalkalden-Meiningen – Hildburghausen – Sonneberg');

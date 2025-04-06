@@ -44,6 +44,7 @@ message ElectionParty {
   int64 election_year = 1;
   int64 column_index = 2;
   string name = 3;
+  int64 seat_count = 4;
 }
 
 message ElectionVoteBase {

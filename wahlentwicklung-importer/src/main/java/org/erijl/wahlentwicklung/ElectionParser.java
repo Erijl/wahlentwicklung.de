@@ -83,7 +83,7 @@ public class ElectionParser {
         List<ElectionParty> parties = new ArrayList<>();
 
         for (int i = this.election.getPartyOffset(); i < this.csvRecords.getFirst().size(); i += 4) {
-            parties.add(ElectionPartyBuilder.buildElectionParty(this.election.getYear(), i, this.csvRecords.getFirst().get(i)));
+            parties.add(ElectionPartyBuilder.buildElectionParty(this.election.getYear(), i, this.csvRecords.getFirst().get(i), parseVoteCount(this.csvRecords.getLast().get(i))));
         }
 
         return parties;

@@ -86,7 +86,7 @@ const BundestagSeatingChart = ({
             const angleStep = maxDotsInRow > 1 ? totalAngleRange / (maxDotsInRow - 1) : 0;
             const missingDots = totalSeats - totalDotsPlaced;
 
-            if (missingDots < 20) break;
+            if (missingDots < 20) break; //TODO see below
 
             for (let j = 0; j < maxDotsInRow; j++) {
                 if (totalDotsPlaced >= totalSeats) break;
@@ -118,6 +118,7 @@ const BundestagSeatingChart = ({
         }
 
         if (totalDotsPlaced < totalSeats) {
+            //TODO check wether all points should always be displayed for accuracy or go for beauty
             console.warn(`Could only place ${totalDotsPlaced} out of ${totalSeats} seats. Adjust parameters.`);
         }
 

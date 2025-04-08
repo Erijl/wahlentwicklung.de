@@ -98,7 +98,7 @@ public class DatabaseManager {
     }
 
     private void insertParties(List<ElectionParty> parties) throws SQLException {
-        String sql = "INSERT INTO election_party (election_year, column_index, name, seat_count) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO election_party (election_year, column_index, name, seat_count, part_of_coalition) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = sqliteConnection.prepareStatement(sql)) {
             sqliteConnection.setAutoCommit(false);
             for (ElectionParty party : parties) {
@@ -106,6 +106,7 @@ public class DatabaseManager {
                 stmt.setLong(2, party.getColumnIndex());
                 stmt.setString(3, party.getName());
                 stmt.setLong(4, party.getSeatCount());
+                stmt.setInt(5, party.getPartOfCoalition());
                 stmt.addBatch();
             }
             stmt.executeBatch();

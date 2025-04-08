@@ -45,6 +45,7 @@ message ElectionParty {
   int64 column_index = 2;
   string name = 3;
   int64 seat_count = 4;
+  int32 part_of_coalition = 5;
 }
 
 message ElectionVoteBase {

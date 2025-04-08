@@ -99,11 +99,12 @@ CREATE TABLE election_constituency
 
 CREATE TABLE election_party
 (
-    election_year INTEGER      NOT NULL,
-    column_index  INTEGER      NOT NULL,
+    election_year     INTEGER      NOT NULL,
+    column_index      INTEGER      NOT NULL,
 
-    name          VARCHAR(255) NOT NULL,
-    seat_count    INTEGER      NOT NULL,
+    name              VARCHAR(255) NOT NULL,
+    seat_count        INTEGER      NOT NULL,
+    part_of_coalition BOOLEAN      NOT NULL CHECk (part_of_coalition IN (0, 1)),
 
     PRIMARY KEY (election_year, column_index),
     FOREIGN KEY (election_year) REFERENCES election (year)

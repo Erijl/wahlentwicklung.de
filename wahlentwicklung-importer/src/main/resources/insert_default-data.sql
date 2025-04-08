@@ -1,10 +1,10 @@
 INSERT INTO party (name, abbreviation, color)
 VALUES ('Sozialdemokratische Partei Deutschlands', 'SPD', 'E3000F'),
-       ('Christlich Demokratische Union Deutschlands', 'CDU', '151518'),
+       ('Christlich Demokratische Union Deutschlands', 'CDU', '576164'),
        ('Bündnis 90/Die Grünen', 'Grüne', '46962B'),
-       ('Freie Demokratische Partei', 'FDP', 'FFFF00'),
+       ('Freie Demokratische Partei', 'FDP', 'F7BC3D'),
        ('Die Linke', 'Linke', 'BE3075'),
-       ('Christlich-Soziale Union in Bayern e.V.', 'CSU', '151518'),
+       ('Christlich-Soziale Union in Bayern e.V.', 'CSU', '004B76'),
        ('FREIE WÄHLER', '', 'FF8000'),
        ('PARTEI MENSCH UMWELT TIERSCHUTZ', 'Tierschutzpartei', '006D77'),
        ('Basisdemokratische Partei Deutschland', '', '4D4C4D'),

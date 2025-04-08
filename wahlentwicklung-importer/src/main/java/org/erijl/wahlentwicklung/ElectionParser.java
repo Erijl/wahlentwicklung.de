@@ -83,7 +83,15 @@ public class ElectionParser {
         List<ElectionParty> parties = new ArrayList<>();
 
         for (int i = this.election.getPartyOffset(); i < this.csvRecords.getFirst().size(); i += 4) {
-            parties.add(ElectionPartyBuilder.buildElectionParty(this.election.getYear(), i, this.csvRecords.getFirst().get(i), parseVoteCount(this.csvRecords.getLast().get(i))));
+            parties.add(
+                    ElectionPartyBuilder.buildElectionParty(
+                            this.election.getYear(),
+                            i,
+                            this.csvRecords.getFirst().get(i),
+                            parseVoteCount(this.csvRecords.get(this.csvRecords.size()-2).get(i)),
+                            parseNumber(this.csvRecords.getLast().get(i))
+                    )
+            );
         }
 
         return parties;
@@ -288,6 +296,14 @@ public class ElectionParser {
         }
 
         return Long.parseLong(voteCount);
+    }
+
+    private int parseNumber(String number) {
+        if (number == null || number.isEmpty()) {
+            return 0;
+        }
+
+        return Integer.parseInt(number);
     }
 
     public List<ElectionParty> getParties() {

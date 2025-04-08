@@ -77,7 +77,7 @@ const BundestagSeatingChart = ({
         const seatsPlacedPerParty: { [key: string]: number } = {};
         seatData.forEach(p => { seatsPlacedPerParty[p.abbreviation] = 0; });
         let totalDotsPlaced = 0;
-        const numRows = Math.floor((outerRadius - innerRadius - dotRadius * 2) / (dotRadius * 2 + rowPadding)) + 1;
+        const numRows = Math.floor((outerRadius - innerRadius - dotRadius * 2) / (dotRadius * 2 + rowPadding)) + 2;
 
         for (let i = 0; i < numRows; i++) {
             const rowRadius = innerRadius + dotRadius + i * (dotRadius * 2 + rowPadding);
@@ -86,7 +86,6 @@ const BundestagSeatingChart = ({
             const angleStep = maxDotsInRow > 1 ? totalAngleRange / (maxDotsInRow - 1) : 0;
             const missingDots = totalSeats - totalDotsPlaced;
 
-            if (missingDots < 20) break; //TODO see below
 
             for (let j = 0; j < maxDotsInRow; j++) {
                 if (totalDotsPlaced >= totalSeats) break;
@@ -127,10 +126,10 @@ const BundestagSeatingChart = ({
     }, [seatData, totalSeats, innerRadius, outerRadius, dotRadius, rowPadding, seatPadding]);
 
     return (
-        <div className="bg-white p-4 md:p-6 rounded shadow-lg w-full max-w-2xl mx-auto text-center">
+        <div className="bg-white p-4 md:p-6 rounded shadow-lg w-full max-w-2xl mx-auto text-left">
             {/* --- Title --- */}
             <h2 className="text-xl font-bold mb-1">Sitzverteilung im Bundestag</h2>
-            <p className="text-sm text-gray-600 mb-4">
+            <p className="text-sm text-gray-600 mb-2">
                 Bundestagswahl {currentYear}
             </p>
 
@@ -138,7 +137,7 @@ const BundestagSeatingChart = ({
             <svg
                 viewBox={`0 0 ${svgWidth} ${svgHeight}`}
                 preserveAspectRatio="xMidYMid meet"
-                className="w-full h-auto"
+                className="w-full h-80"
                 onMouseLeave={() => setHoveredParty(null)}
             >
                 {/* Render Dots with Hover Effects and Tooltip */}
@@ -171,48 +170,48 @@ const BundestagSeatingChart = ({
 
                 {/* Central Text */}
                 <text /* ... Total Seats ... */
-                    x={centerX} y={centerY - 10} textAnchor="middle" dominantBaseline="middle"
+                    x={centerX} y={centerY - 50} textAnchor="middle" dominantBaseline="middle"
                     className="text-2xl font-bold fill-current text-gray-800">
                     {totalSeats}
                 </text>
                 <text /* ... Abgeordnete ... */
-                    x={centerX} y={centerY + 15} textAnchor="middle" dominantBaseline="middle"
+                    x={centerX} y={centerY - 20} textAnchor="middle" dominantBaseline="middle"
                     className="text-lg fill-current text-gray-600">
                     Abgeordnete
                 </text>
                 {totalChange !== null && (
                     <text /* ... Change vs Previous ... */
-                        x={centerX} y={centerY + 40} textAnchor="middle" dominantBaseline="middle"
+                        x={centerX} y={centerY} textAnchor="middle" dominantBaseline="middle"
                         className={`text-sm font-semibold ${ totalChange > 0 ? 'text-green-600' : totalChange < 0 ? 'text-red-600' : 'text-gray-500' } fill-current`}>
-                        {formatChange(totalChange)} {previousYear ? `vs. ${previousYear}`: ''}
+                        {formatChange(totalChange)} {/*previousYear ? `vs. ${previousYear}`: ''*/}
                     </text>
                 )}
             </svg>
 
             {/* --- Legend Table (Uses orderedSeatData, already left-to-right) --- */}
-            <div className="mt-6 overflow-x-auto">
-                <table className="w-full text-left border-collapse text-sm mx-auto max-w-lg">
+            <div className="-mt-10 overflow-x-auto">
+                <table className="lg:w-1/2 md:w-1/2 text-left border-collapse text-sm mx-auto max-w-lg table-fixed">
                     <thead>
-                    <tr className="border-b border-gray-300">
+                    <tr className="text-center">
                         {orderedSeatData.map((party) => (
-                            <th key={party.abbreviation} className="p-2 font-semibold" style={{ color: `#${party.color || 'CCCCCC'}` }}>
+                            <th key={party.abbreviation} className="p-1 font-bold" style={{ color: `#${party.color || 'CCCCCC'}` }}>
                                 {party.abbreviation}
                             </th>
                         ))}
                     </tr>
                     </thead>
                     <tbody>
-                    <tr className="border-b border-gray-300">
+                    <tr className="text-center">
                         {orderedSeatData.map((party) => (
-                            <td key={party.abbreviation} className="p-2 font-bold text-gray-800">
+                            <td key={party.abbreviation} className="p-0 font-bold text-gray-800" style={{ color: `#${party.color || 'CCCCCC'}` }}>
                                 {party.seats}
                             </td>
                         ))}
                     </tr>
-                    <tr>
+                    <tr className="text-center">
                         {orderedSeatData.map((party) => (
-                            <td key={party.abbreviation} className={`p-2 ${ party.change === null ? 'text-gray-400' : party.change > 0 ? 'text-green-600' : party.change < 0 ? 'text-red-600' : 'text-gray-500' }`}>
-                                {party.change !== null ? formatChange(party.change) : '-'}
+                            <td key={party.abbreviation} className={`p-1 text-gray-500`}>
+                                {party.change !== null ? formatChange(party.change) : '- -'}
                             </td>
                         ))}
                     </tr>

@@ -29,7 +29,7 @@ export default function RootLayout({
     return (
         <html lang="en">
         <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white mx-auto max-w-7xl overflow-hidden px-6 lg:px-8`}
+            className={`${geistSans.variable} ${geistMono.variable} bg-white mx-auto max-w-7xl overflow-hidden px-6 lg:px-8`}
         >
 
         <Popover

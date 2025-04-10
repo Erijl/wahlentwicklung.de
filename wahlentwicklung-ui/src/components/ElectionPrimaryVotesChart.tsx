@@ -86,7 +86,7 @@ const ElectionPrimaryVotesChart = ({ chartData, currentYear, previousYear }) => 
     return (
         <div className="bg-white p-4 md:p-6 rounded shadow-lg w-full">
             <h2 className="text-xl font-bold mb-1">Erststimmen</h2>
-            <p className="text-sm text-gray-600 mb-4">Bundestagswahl {currentYear}, Deutschland</p>
+            <p className="text-sm text-gray-600 mb-4">Bundestagswahl {currentYear}</p>
 
             <ResponsiveContainer width="100%" height={350}>
                 <BarChart

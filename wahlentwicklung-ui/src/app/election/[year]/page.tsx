@@ -4,12 +4,13 @@ import {
     getPreviousElectionYear,
     getPrimaryVotesForYear,
     getTotalValidPrimaryVotesForYear,
-    getElectionByYear, getSeatDistributionForYear
+    getElectionByYear, getSeatDistributionForYear, getSeatAndCoalitionDataForYear
 } from '@/lib/db';
 import ElectionPrimaryVotesChart from '../../../components/ElectionPrimaryVotesChart';
 import { lighten } from 'polished';
 import { notFound } from 'next/navigation';
 import BundestagSeatingChart from "@/components/BundestagSeatingChart";
+import CoalitionVisualizations from "@/components/CoalitionVisualizations";
 
 interface PartyVoteData {
     abbreviation: string;
@@ -37,6 +38,20 @@ interface RawSeatInfo {
     abbreviation: string;
     color: string | null;
     seats: number;
+}
+
+interface ProcessedSeatInfo {
+    abbreviation: string;
+    color: string;
+    seats: number;
+    change: number | null;
+}
+
+interface PartySeatCoalitionData {
+    abbreviation: string;
+    color: string;
+    seats: number;
+    inCoalition: boolean;
 }
 
 interface ProcessedSeatInfo {
@@ -144,8 +159,8 @@ async function ElectionPage({ params }: { params: { year: string } }) {
     });
 
 
-    const currentSeatsRaw = await getSeatDistributionForYear(currentYear); //TODO put all await calls in a single promise resolver
-    const previousSeatsRaw = previousYear ? await getSeatDistributionForYear(previousYear) : [] as RawSeatInfo[];
+    const currentSeatsRaw = await getSeatAndCoalitionDataForYear(currentYear); //TODO put all await calls in a single promise resolver
+    const previousSeatsRaw = previousYear ? await getSeatAndCoalitionDataForYear(previousYear) : [] as RawSeatInfo[];
 
     let totalCurrentSeats = 0;
     let totalPreviousSeats = 0;
@@ -170,7 +185,12 @@ async function ElectionPage({ params }: { params: { year: string } }) {
             change: change,
         };
     });
-    const totalSeatChange = previousYear !== null ? totalCurrentSeats - totalPreviousSeats : null;
+    const totalCurrentSeatsForSeating = currentSeatsRaw.reduce((sum, p) => sum + p.seats, 0);
+    let totalPreviousSeatsForSeating = 0;
+    currentSeatsRaw.forEach(party => {
+        totalPreviousSeatsForSeating += previousSeatsMap.get(party.abbreviation) || 0;
+    });
+    const totalSeatChange = previousYear !== null ? totalCurrentSeatsForSeating - totalPreviousSeatsForSeating : null;
 
     return (
         <div className="container mx-auto p-4 space-y-10">
@@ -190,6 +210,12 @@ async function ElectionPage({ params }: { params: { year: string } }) {
             ) : (
                 <div className="text-center text-gray-500 py-10">Keine Sitzverteilungsdaten für {currentYear} verfügbar.</div>
             )}
+
+            {/* Coalitions */}
+            <CoalitionVisualizations
+                parties={currentSeatsRaw}
+                currentYear={currentYear}
+            />
 
             {/* Bar Chart */}
             <div className="max-w-4xl mx-auto">

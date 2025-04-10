@@ -99,3 +99,31 @@ export async function getSeatDistributionForYear(year) {
         return [];
     }
 }
+
+export async function getSeatAndCoalitionDataForYear(year) {
+    const sql = `
+        SELECT
+            p.abbreviation,
+            p.color,
+            ep.seat_count as seats,
+            ep.part_of_coalition
+        FROM election_party ep
+        JOIN party_mapping pm ON ep.election_year = pm.election_year AND ep.column_index = pm.column_index
+        JOIN party p ON pm.party_id = p.id
+        WHERE ep.election_year = ? AND ep.seat_count > 0
+          AND p.abbreviation IS NOT NULL
+        ORDER BY ep.seat_count DESC;
+    `;
+    try {
+        const rows = await queryDatabase(sql, [year]);
+        return rows.map(row => ({
+            abbreviation: row.abbreviation,
+            color: row.color || 'CCCCCC',
+            seats: Number(row.seats) || 0,
+            inCoalition: Boolean(row.part_of_coalition),
+        }));
+    } catch (error) {
+        console.error(`Error fetching seat/coalition data for year ${year}:`, error);
+        return [];
+    }
+}

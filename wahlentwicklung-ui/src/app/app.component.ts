@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { ElectionListComponent } from './election-list/election-list.component';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [ElectionListComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })

@@ -1,1 +1,11 @@
+/
 /elections
+/states
+/parties
+/constituencies
+/election/2025
+/election/2021
+/election/2017
+/election/2013
+/election/2009
+/election/2005

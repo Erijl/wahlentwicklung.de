@@ -1,2 +1,24 @@
-<h1 class="text-3xl font-bold underline">  Hello world!</h1>
-<app-election-list />
+<div class="min-h-screen bg-gray-50">
+  <nav class="bg-white/80 backdrop-blur border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <a routerLink="/" class="flex items-center gap-2">
+        <span class="inline-block w-2.5 h-2.5 rounded-full bg-blue-600"></span>
+        <span class="text-xl font-bold tracking-tight">Wahlentwicklung</span>
+      </a>
+      <div class="flex items-center gap-6 text-sm">
+        <a routerLink="/elections" routerLinkActive="text-blue-600" class="text-gray-700 hover:text-blue-600">Elections</a>
+        <a routerLink="/states" routerLinkActive="text-blue-600" class="text-gray-700 hover:text-blue-600">States</a>
+        <a routerLink="/parties" routerLinkActive="text-blue-600" class="text-gray-700 hover:text-blue-600">Parties</a>
+        <a routerLink="/constituencies" routerLinkActive="text-blue-600" class="text-gray-700 hover:text-blue-600">Constituencies</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="py-8">
+    <router-outlet />
+  </main>
+
+  <footer class="border-t border-gray-200 py-6 text-center text-sm text-gray-500">
+    <div class="max-w-7xl mx-auto px-4">© {{ currentYear }} Wahlentwicklung</div>
+  </footer>
+</div>

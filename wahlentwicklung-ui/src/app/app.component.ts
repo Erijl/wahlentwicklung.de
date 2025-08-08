@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
-import { ElectionListComponent } from './election-list/election-list.component';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  imports: [ElectionListComponent],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
 export class AppComponent {
   title = 'wahlentwicklung-ui';
+  currentYear = new Date().getFullYear();
 }

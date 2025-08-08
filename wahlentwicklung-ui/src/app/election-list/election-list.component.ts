@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
-import { ElectionService, Election } from '../election.service';
+import { ElectionService } from '../election.service';
+import { proto } from '../protos/objects';
+import Election = proto.objects.Election;
 
 @Component({
   selector: 'app-election-list',

@@ -1,13 +1,10 @@
 import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformServer } from '@angular/common';
 import { Observable, of } from 'rxjs';
+import { proto } from './protos/objects';
+import Election = proto.objects.Election;
 
 let Database: any = require('better-sqlite3');
-
-export interface Election {
-  year: number;
-}
-
 
 @Injectable({
   providedIn: 'root',

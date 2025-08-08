@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ElectionService } from '../election.service';
+import { BarChartComponent, BarDatum } from '../charts/bar-chart.component';
 
 type ElectionPartyView = {
   name: string;
@@ -21,7 +22,7 @@ type ElectionVoteBaseView = {
 @Component({
   selector: 'app-election-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, BarChartComponent],
   template: `
     <div class="max-w-6xl mx-auto px-4">
       <a routerLink="/elections" class="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-blue-600">
@@ -52,7 +53,7 @@ type ElectionVoteBaseView = {
         </div>
       </div>
 
-      <section>
+      <section class="mb-10">
         <h2 class="text-xl font-bold text-gray-900 mb-4">Sitzverteilung</h2>
         <div *ngIf="parties().length > 0; else noParties" class="space-y-2">
           <div class="flex justify-between text-sm text-gray-600">
@@ -79,6 +80,20 @@ type ElectionVoteBaseView = {
           <p class="text-gray-500">Keine Parteidaten gefunden.</p>
         </ng-template>
       </section>
+
+      <section class="mt-10">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Zweitstimmen</h2>
+        <app-bar-chart [data]="partyVotes()" />
+      </section>
+
+      <section class="mt-10">
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Weiterführend</h2>
+        <div class="flex flex-wrap gap-3">
+          <a [routerLink]="['/election', year(), 'states']" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-300 bg-white hover:bg-gray-50">
+            Bundesländer ({{ year() }})
+          </a>
+        </div>
+      </section>
     </div>
   `,
 })
@@ -90,6 +105,7 @@ export class ElectionDetailComponent implements OnInit {
   parties = signal<ElectionPartyView[]>([]);
   voteBase = signal<ElectionVoteBaseView | null>(null);
   totalSeats = computed(() => this.parties().reduce((sum, p) => sum + p.seat_count, 0) || 1);
+  partyVotes = signal<BarDatum[]>([]);
 
   ngOnInit(): void {
     const yearParam = Number(this.route.snapshot.paramMap.get('year'));
@@ -98,6 +114,11 @@ export class ElectionDetailComponent implements OnInit {
     // Load data on the server during prerender
     this.electionService.getElectionPartiesByYear(yearParam).subscribe((list) => this.parties.set(list));
     this.electionService.getElectionVoteBase(yearParam).subscribe((vb) => this.voteBase.set(vb));
+    this.electionService.getElectionPartyVoteShares(yearParam).subscribe((rows) => {
+      this.partyVotes.set(
+        rows.map((r) => ({ label: r.abbreviation || r.name, value: r.votes, color: r.color ? '#' + r.color : null }))
+      );
+    });
   }
 }
 

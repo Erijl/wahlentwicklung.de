@@ -13,16 +13,24 @@ function getElectionYears(dbPath) {
   return rows.map((r) => r.year);
 }
 
-function generateRoutes(years) {
+function getElectionStates(dbPath, year) {
+  const db = new Database(dbPath, { readonly: true, fileMustExist: true });
+  const rows = db.prepare('SELECT name FROM election_state WHERE election_year = ? ORDER BY name').all(year);
+  db.close();
+  return rows.map((r) => r.name);
+}
+
+function generateRoutes(dbPath, years) {
   const staticRoutes = ['/', '/elections', '/states', '/parties', '/constituencies'];
   const yearRoutes = years.map((y) => `/election/${y}`);
-  return [...new Set([...staticRoutes, ...yearRoutes])].join('\n') + '\n';
+  const perYearStateRoutes = years.flatMap((y) => getElectionStates(dbPath, y).map((name) => `/election/${y}/${encodeURIComponent(name)}/constituencies`));
+  return [...new Set([...staticRoutes, ...yearRoutes, ...perYearStateRoutes])].join('\n') + '\n';
 }
 
 try {
   const dbPath = resolve(projectRoot, 'db', 'wahlentwicklung.db');
   const years = getElectionYears(dbPath);
-  const content = generateRoutes(years);
+  const content = generateRoutes(dbPath, years);
   const routesFile = resolve(projectRoot, 'routes.txt');
   writeFileSync(routesFile, content, 'utf-8');
   console.log(`Generated ${years.length} election routes to routes.txt`);

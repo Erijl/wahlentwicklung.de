@@ -96,4 +96,132 @@ export class ElectionService {
     }
     return of(null);
   }
+
+  /**
+   * Party vote counts for a given year (secondary definitive) with metadata.
+   */
+  getElectionPartyVoteShares(year: number): Observable<Array<{ name: string; abbreviation?: string | null; color?: string | null; votes: number }>> {
+    if (isPlatformServer(this.platformId) && Database) {
+      try {
+        const db = new Database('db/wahlentwicklung.db', { readonly: true, fileMustExist: true });
+        const stmt = db.prepare(`
+          SELECT ep.name,
+                 p.abbreviation,
+                 p.color,
+                 evp.secondaryvote_definitive AS votes
+          FROM election_vote_party evp
+          JOIN election_party ep ON ep.election_year = evp.election_year AND ep.column_index = evp.party_id
+          LEFT JOIN party_mapping pm ON pm.election_year = ep.election_year AND pm.column_index = ep.column_index
+          LEFT JOIN party p ON p.id = pm.party_id
+          WHERE evp.election_year = ?
+          ORDER BY votes DESC, ep.name ASC
+        `);
+        const rows = stmt.all(year) as Array<{ name: string; abbreviation?: string | null; color?: string | null; votes: number }>; 
+        db.close();
+        return of(rows);
+      } catch (err) {
+        console.error('Database query failed on server:', err);
+        return of([]);
+      }
+    }
+    return of([]);
+  }
+
+  /** Basic lists (global) */
+  getStates(): Observable<Array<{ id: number; name: string }>> {
+    if (isPlatformServer(this.platformId) && Database) {
+      try {
+        const db = new Database('db/wahlentwicklung.db', { readonly: true, fileMustExist: true });
+        const rows = db.prepare('SELECT id, name FROM state ORDER BY name').all() as Array<{ id: number; name: string }>;
+        db.close();
+        return of(rows);
+      } catch (err) {
+        console.error('Database query failed on server:', err);
+        return of([]);
+      }
+    }
+    return of([]);
+  }
+
+  getParties(): Observable<Array<{ id: number; name: string; abbreviation?: string | null; color?: string | null }>> {
+    if (isPlatformServer(this.platformId) && Database) {
+      try {
+        const db = new Database('db/wahlentwicklung.db', { readonly: true, fileMustExist: true });
+        const rows = db.prepare('SELECT id, name, abbreviation, color FROM party ORDER BY name').all() as Array<{ id: number; name: string; abbreviation?: string | null; color?: string | null }>;
+        db.close();
+        return of(rows);
+      } catch (err) {
+        console.error('Database query failed on server:', err);
+        return of([]);
+      }
+    }
+    return of([]);
+  }
+
+  getConstituencies(): Observable<Array<{ id: number; state_id: number; name: string }>> {
+    if (isPlatformServer(this.platformId) && Database) {
+      try {
+        const db = new Database('db/wahlentwicklung.db', { readonly: true, fileMustExist: true });
+        const rows = db.prepare('SELECT id, state_id, name FROM constituency ORDER BY name').all() as Array<{ id: number; state_id: number; name: string }>;
+        db.close();
+        return of(rows);
+      } catch (err) {
+        console.error('Database query failed on server:', err);
+        return of([]);
+      }
+    }
+    return of([]);
+  }
+
+  /** Election-scoped lists */
+  getElectionStates(year: number): Observable<Array<{ row_id: number; name: string }>> {
+    if (isPlatformServer(this.platformId) && Database) {
+      try {
+        const db = new Database('db/wahlentwicklung.db', { readonly: true, fileMustExist: true });
+        const rows = db.prepare('SELECT row_id, name FROM election_state WHERE election_year = ? ORDER BY name').all(year) as Array<{ row_id: number; name: string }>;
+        db.close();
+        return of(rows);
+      } catch (err) {
+        console.error('Database query failed on server:', err);
+        return of([]);
+      }
+    }
+    return of([]);
+  }
+
+  getElectionConstituencies(year: number): Observable<Array<{ state_row_id: number; name: string }>> {
+    if (isPlatformServer(this.platformId) && Database) {
+      try {
+        const db = new Database('db/wahlentwicklung.db', { readonly: true, fileMustExist: true });
+        const rows = db.prepare('SELECT state_id as state_row_id, name FROM election_constituency WHERE election_year = ? ORDER BY name').all(year) as Array<{ state_row_id: number; name: string }>;
+        db.close();
+        return of(rows);
+      } catch (err) {
+        console.error('Database query failed on server:', err);
+        return of([]);
+      }
+    }
+    return of([]);
+  }
+
+  getElectionConstituenciesByStateName(year: number, stateName: string): Observable<Array<{ name: string }>> {
+    if (isPlatformServer(this.platformId) && Database) {
+      try {
+        const db = new Database('db/wahlentwicklung.db', { readonly: true, fileMustExist: true });
+        // Find state row_id by exact name for that year
+        const state = db.prepare('SELECT row_id FROM election_state WHERE election_year = ? AND name = ?').get(year, stateName) as { row_id: number } | undefined;
+        if (!state) {
+          db.close();
+          return of([]);
+        }
+        const rows = db.prepare('SELECT name FROM election_constituency WHERE election_year = ? AND state_id = ? ORDER BY name').all(year, state.row_id) as Array<{ name: string }>;
+        db.close();
+        return of(rows);
+      } catch (err) {
+        console.error('Database query failed on server:', err);
+        return of([]);
+      }
+    }
+    return of([]);
+  }
 }

@@ -9,6 +9,18 @@
 /election/2013
 /election/2009
 /election/2005
+/election/2025/states
+/election/2025/constituencies
+/election/2021/states
+/election/2021/constituencies
+/election/2017/states
+/election/2017/constituencies
+/election/2013/states
+/election/2013/constituencies
+/election/2009/states
+/election/2009/constituencies
+/election/2005/states
+/election/2005/constituencies
 /election/2025/Baden-W%C3%BCrttemberg/constituencies
 /election/2025/Bayern/constituencies
 /election/2025/Berlin/constituencies
@@ -105,3 +117,6 @@
 /election/2005/Sachsen-Anhalt/constituencies
 /election/2005/Schleswig-Holstein/constituencies
 /election/2005/Th%C3%BCringen/constituencies
+/party/CDU
+/state/Bayern
+/constituency/Berlin%20Mitte

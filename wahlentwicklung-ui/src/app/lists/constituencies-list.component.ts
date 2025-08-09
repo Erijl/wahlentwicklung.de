@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { ElectionService } from '../election.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-constituencies-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   template: `
     <div class="max-w-5xl mx-auto p-8">
       <header class="mb-6">
@@ -14,10 +15,10 @@ import { ElectionService } from '../election.service';
       </header>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        <div *ngFor="let c of constituencies()" class="bg-white border border-gray-200 rounded-xl p-4">
+        <a *ngFor="let c of constituencies()" [routerLink]="['/constituency', c.name]" class="bg-white border border-gray-200 rounded-xl p-4 hover:shadow">
           <div class="font-semibold text-gray-800">{{ c.name }}</div>
           <div class="text-sm text-gray-600">State-ID: {{ c.state_id }}</div>
-        </div>
+        </a>
       </div>
     </div>
   `,

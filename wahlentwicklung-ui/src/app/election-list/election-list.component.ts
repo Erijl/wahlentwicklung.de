@@ -31,6 +31,11 @@ import Election = proto.objects.Election;
             <div class="text-3xl font-bold text-blue-600 mt-1">
               {{ election.year }}
             </div>
+            <div class="mt-4 flex justify-center gap-3 text-sm text-blue-700">
+              <a [routerLink]="['/election', election.year, 'states']" class="hover:underline">Länder</a>
+              <span class="text-gray-300">•</span>
+              <a [routerLink]="['/election', election.year, 'constituencies']" class="hover:underline">Wahlkreise</a>
+            </div>
           </a>
 
         </div>

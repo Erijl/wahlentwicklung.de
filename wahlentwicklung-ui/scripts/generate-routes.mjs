@@ -24,7 +24,10 @@ function generateRoutes(dbPath, years) {
   const staticRoutes = ['/', '/elections', '/states', '/parties', '/constituencies'];
   const yearRoutes = years.map((y) => `/election/${y}`);
   const perYearStateRoutes = years.flatMap((y) => getElectionStates(dbPath, y).map((name) => `/election/${y}/${encodeURIComponent(name)}/constituencies`));
-  return [...new Set([...staticRoutes, ...yearRoutes, ...perYearStateRoutes])].join('\n') + '\n';
+  const perYearListRoutes = years.flatMap((y) => [`/election/${y}/states`, `/election/${y}/constituencies`]);
+  // Placeholder development routes for top-level lists (could be expanded later dynamically)
+  const devRoutes = ['/party/CDU', '/state/Bayern', '/constituency/Berlin%20Mitte'];
+  return [...new Set([...staticRoutes, ...yearRoutes, ...perYearListRoutes, ...perYearStateRoutes, ...devRoutes])].join('\n') + '\n';
 }
 
 try {

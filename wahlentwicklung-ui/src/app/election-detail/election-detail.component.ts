@@ -61,17 +61,23 @@ type ElectionVoteBaseView = {
             <div>Sitze</div>
           </div>
           <div class="space-y-2">
-            <div *ngFor="let p of parties()" class="bg-white rounded-lg border border-gray-200 p-3">
-              <div class="flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                  <div class="w-2 h-2 rounded-full" [style.backgroundColor]="p.color ? '#' + p.color : '#94a3b8'"></div>
-                  <div class="font-medium">{{ p.abbreviation || p.name }}</div>
-                  <div *ngIf="p.part_of_coalition" class="text-xs text-amber-700 bg-amber-100 px-2 py-0.5 rounded">Regierungspartei</div>
+            <div *ngFor="let p of parties()">
+              <div *ngIf="p.seat_count > 0" class="bg-white rounded-lg border border-gray-200 p-3">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-2 h-2 rounded-full"
+                         [style.backgroundColor]="p.color ? '#' + p.color : '#94a3b8'"></div>
+                    <div class="font-medium">{{ p.abbreviation || p.name }}</div>
+                    <div *ngIf="p.part_of_coalition" class="text-xs text-amber-700 bg-amber-100 px-2 py-0.5 rounded">
+                      Regierungspartei
+                    </div>
+                  </div>
+                  <div class="text-gray-700 font-semibold">{{ p.seat_count }}</div>
                 </div>
-                <div class="text-gray-700 font-semibold">{{ p.seat_count }}</div>
-              </div>
-              <div class="mt-2 h-2 bg-gray-100 rounded">
-                <div class="h-2 rounded" [style.width.%]="(p.seat_count / totalSeats()) * 100" [style.backgroundColor]="p.color ? '#' + p.color : '#60a5fa'"></div>
+                <div class="mt-2 h-2 bg-gray-100 rounded">
+                  <div class="h-2 rounded" [style.width.%]="(p.seat_count / totalSeats()) * 100"
+                       [style.backgroundColor]="p.color ? '#' + p.color : '#60a5fa'"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -83,13 +89,14 @@ type ElectionVoteBaseView = {
 
       <section class="mt-10">
         <h2 class="text-xl font-bold text-gray-900 mb-4">Zweitstimmen</h2>
-        <app-bar-chart [data]="partyVotes()" />
+        <app-bar-chart [data]="partyVotes()"/>
       </section>
 
       <section class="mt-10">
         <h2 class="text-xl font-bold text-gray-900 mb-4">Weiterführend</h2>
         <div class="flex flex-wrap gap-3">
-          <a [routerLink]="['/election', year(), 'states']" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-300 bg-white hover:bg-gray-50">
+          <a [routerLink]="['/election', year(), 'states']"
+             class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-300 bg-white hover:bg-gray-50">
             Bundesländer ({{ year() }})
           </a>
         </div>

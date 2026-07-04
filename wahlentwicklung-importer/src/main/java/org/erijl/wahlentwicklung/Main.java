@@ -31,6 +31,8 @@ public class Main {
             stopWatch.stop();
             System.out.println(stopWatch.formatTime());
         }
+
+        assert dbManager.executePostImportFixes();
     }
 
     /**

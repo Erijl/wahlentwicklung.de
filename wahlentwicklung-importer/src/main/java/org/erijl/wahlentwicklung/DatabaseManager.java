@@ -368,6 +368,20 @@ public class DatabaseManager {
         return constituencies;
     }
 
+    /**
+     * Applies the static post-import mapping fixes (documented renames, short
+     * forms, punctuation variants from update_mappings.sql). Must run after
+     * all elections are imported.
+     *
+     * @return whether the operation was successful
+     * @throws SQLException
+     * @throws IOException
+     */
+    public boolean executePostImportFixes() throws SQLException, IOException {
+        this.executeSQLFile("update_mappings.sql");
+        return true;
+    }
+
     private void executeSQLFile(String fileName) throws SQLException, IOException {
         URL databaseFile = Main.class.getClassLoader().getResource(fileName);
         assert databaseFile != null;

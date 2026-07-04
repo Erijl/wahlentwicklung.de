@@ -7,8 +7,8 @@ import { getConstituencies, constituencyResults, constituencyYears } from '@/lib
 import { constituencySlug } from '@/lib/slugs';
 
 const constituencies = getConstituencies().map((c) => {
-  const latest = constituencyYears(c.number).at(-1)!;
-  return { ...c, results: constituencyResults(latest, c.number) };
+  const latest = constituencyYears(c.id).at(-1)!;
+  return { ...c, results: constituencyResults(latest, c.id) };
 });
 ---
 

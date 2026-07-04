@@ -15,6 +15,7 @@ import {
   constituencyResults,
   constituencyVoteBase,
   constituencyYears,
+  officialNumber,
 } from '@/lib/queries';
 import { areaLede } from '@/lib/prose';
 import { constituencySlug } from '@/lib/slugs';
@@ -24,25 +25,26 @@ export function getStaticPaths() {
   const paths = [];
   const constituencies = getConstituencies();
   for (const c of constituencies) {
-    for (const year of constituencyYears(c.number)) {
+    for (const year of constituencyYears(c.id)) {
       paths.push({
         params: { year: String(year), slug: constituencySlug(c.number, c.name) },
-        props: { number: c.number, name: c.name, stateName: c.stateName },
+        props: { id: c.id, name: c.name, stateName: c.stateName },
       });
     }
   }
   return paths;
 }
 
-const { number, name, stateName } = Astro.props;
+const { id, name, stateName } = Astro.props;
 const year = Number(Astro.params.year);
 const years = getElectionYears();
 const prevYear = years[years.indexOf(year) - 1];
 
-const results = constituencyResults(year, number);
-const base = constituencyVoteBase(year, number)!;
+const number = officialNumber(year, id)!;
+const results = constituencyResults(year, id);
+const base = constituencyVoteBase(year, id)!;
 const lede = areaLede(`${name} (Wahlkreis ${number})`, year, results, base);
-const mappedYears = constituencyYears(number);
+const mappedYears = constituencyYears(id);
 
 const title = `Bundestagswahl ${year} – Wahlkreis ${number} ${name}`;
 ---

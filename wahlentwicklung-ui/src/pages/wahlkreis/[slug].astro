@@ -21,18 +21,18 @@ import { fmtPct } from '@/lib/format';
 export function getStaticPaths() {
   return getConstituencies().map((c) => ({
     params: { slug: constituencySlug(c.number, c.name) },
-    props: { number: c.number, name: c.name, stateName: c.stateName },
+    props: { id: c.id, number: c.number, name: c.name, stateName: c.stateName },
   }));
 }
 
-const { number, name, stateName } = Astro.props;
+const { id, number, name, stateName } = Astro.props;
 const allYears = getElectionYears();
-const mappedYears = constituencyYears(number);
+const mappedYears = constituencyYears(id);
 const latest = mappedYears.at(-1)!;
-const trends = constituencyTrends(number, ['Union', 'SPD', 'AfD', 'Grüne', 'Linke', 'FDP']);
-const latestResults = constituencyResults(latest, number);
+const trends = constituencyTrends(id, ['Union', 'SPD', 'AfD', 'Grüne', 'Linke', 'FDP']);
+const latestResults = constituencyResults(latest, id);
 const winner = [...latestResults].sort((a, b) => b.votes - a.votes)[0];
-const latestBase = constituencyVoteBase(latest, number)!;
+const latestBase = constituencyVoteBase(latest, id)!;
 const complete = mappedYears.length === allYears.length;
 
 const description = `Wahlkreis ${number} ${name} (${stateName}): Entwicklung der Zweitstimmen bei den Bundestagswahlen ${mappedYears[0]}–${latest}.`;

@@ -1,0 +1,43 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { latestElectionYear } from '@/lib/queries';
+
+const year = latestElectionYear();
+---
+
+<BaseLayout
+  title="Seite nicht gefunden"
+  description="Diese Seite existiert nicht. Zur Übersicht der Bundestagswahlen."
+  path="/404"
+>
+  <section class="nf">
+    <p class="kicker">Fehler 404</p>
+    <h1>Diese Seite gibt es nicht.</h1>
+    <p class="lede">
+      Vielleicht wurde ein Wahlkreis umbenannt oder ein Link falsch getippt — beides kommt bei
+      Wahlkreisen öfter vor, als man denkt.
+    </p>
+    <ul class="paths">
+      <li><a href={`/wahl/${year}`}>Zur Bundestagswahl {year} →</a></li>
+      <li><a href="/wahlkreise">Wahlkreis suchen →</a></li>
+      <li><a href="/">Zur Startseite →</a></li>
+    </ul>
+  </section>
+</BaseLayout>
+
+<style>
+  .nf {
+    padding: 60px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .paths {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+    font-size: 15px;
+  }
+</style>

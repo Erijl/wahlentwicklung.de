@@ -35,6 +35,11 @@ export interface StateRow {
 }
 
 export interface ConstituencyRow {
+  /** Canonical DB key (constituency.id) - internal only, never displayed. */
+  id: number;
+  /** Official Wahlkreis number of the LATEST election this district was
+   *  mapped in - the stable URL/display number. Per-year numbers shift
+   *  (Bergstrasse: 189->188->187); use officialNumber() for a given year. */
   number: number;
   name: string;
   stateId: number;
@@ -59,11 +64,24 @@ export function getStates(): StateRow[] {
 
 export function getConstituencies(): ConstituencyRow[] {
   return prepare(
-      `SELECT c.id AS number, c.name, c.state_id - 900 AS stateId, s.name AS stateName
+      `SELECT c.id AS id,
+              (SELECT cm.row_id FROM constituency_mapping cm
+                WHERE cm.constituency_id = c.id
+                ORDER BY cm.election_year DESC LIMIT 1) AS number,
+              c.name, c.state_id - 900 AS stateId, s.name AS stateName
        FROM constituency c JOIN state s ON s.id = c.state_id - 900
-       ORDER BY c.id`,
+       ORDER BY number`,
     )
     .all() as ConstituencyRow[];
+}
+
+/** Official Wahlkreis number of one district in one election year
+ *  (numbers shift between elections), or null if not mapped that year. */
+export function officialNumber(year: number, id: number): number | null {
+  const r = prepare(
+    `SELECT row_id AS n FROM constituency_mapping WHERE election_year = ? AND constituency_id = ?`,
+  ).get(year, id) as any;
+  return r?.n ?? null;
 }
 
 export function getPartiesWithAbbreviation(): { id: number; name: string; abbreviation: string }[] {
@@ -331,6 +349,8 @@ export function stateWinners(year: number): Map<string, { key: PartyKey; pct: nu
 }
 
 export interface ConstituencyTableRow {
+  id: number;
+  /** latest official number (stable slug key) */
   number: number;
   name: string;
   stateName: string;
@@ -345,7 +365,11 @@ export function constituencyTable(
   limit?: number,
 ): ConstituencyTableRow[] {
   const rows = prepare(
-      `SELECT cm.constituency_id AS number, c.name, s.name AS stateName,
+      `SELECT cm.constituency_id AS id,
+              (SELECT cm2.row_id FROM constituency_mapping cm2
+                WHERE cm2.constituency_id = cm.constituency_id
+                ORDER BY cm2.election_year DESC LIMIT 1) AS number,
+              c.name, s.name AS stateName,
               100.0 * b.actualvoters_secondaryvote_definitive
                     / b.eligiblevoters_secondaryvote_definitive AS turnout
        FROM constituency_vote_base b
@@ -359,7 +383,7 @@ export function constituencyTable(
     .all(year) as any[];
   return rows.map((r) => ({
     ...r,
-    results: constituencyResults(year, r.number, vote),
+    results: constituencyResults(year, r.id, vote),
   }));
 }
 

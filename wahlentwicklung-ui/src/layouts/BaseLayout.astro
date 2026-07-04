@@ -42,7 +42,17 @@ const current = Astro.url.pathname;
     <meta property="og:url" content={canonical} />
     <meta property="og:locale" content="de_DE" />
     <meta name="generator" content={Astro.generator} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    {/* theme before paint (no FOUC): stored preference wins, else system */}
+    <script is:inline>
+      (() => {
+        const t = localStorage.getItem('theme');
+        if (t === 'dark' || (!t && matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.dataset.theme = 'dark';
+        }
+      })();
+    </script>
   </head>
   <body>
     {/* TODO(nav): placeholder chrome — user wants a different navigation
@@ -60,6 +70,9 @@ const current = Astro.url.pathname;
               </a>
             ))
           }
+          <button id="theme-toggle" type="button" title="Helles/dunkles Design umschalten">
+            ◐
+          </button>
         </nav>
       </div>
       <div class="tric" aria-hidden="true"><i></i><i></i><i></i></div>
@@ -109,9 +122,19 @@ const current = Astro.url.pathname;
         <a
           href="https://www.bundeswahlleiterin.de/bundestagswahlen.html"
           rel="noopener">Datensatz ↗</a
-        > · <a href="/wahlen">Alle Wahlen</a>
+        > · <a href="/wahlen">Alle Wahlen</a> · <a href="/impressum">Impressum</a>
       </p>
     </footer>
+
+    <script>
+      document.getElementById('theme-toggle')?.addEventListener('click', () => {
+        const root = document.documentElement;
+        const dark = root.dataset.theme === 'dark';
+        if (dark) delete root.dataset.theme;
+        else root.dataset.theme = 'dark';
+        localStorage.setItem('theme', dark ? 'light' : 'dark');
+      });
+    </script>
   </body>
 </html>
 
@@ -152,6 +175,16 @@ const current = Astro.url.pathname;
   nav a[aria-current='page'] {
     font-weight: 700;
     color: var(--accent);
+  }
+  #theme-toggle {
+    border: 1px solid var(--hairline);
+    background: var(--raised);
+    color: var(--text-sec);
+    font-size: 14px;
+    line-height: 1;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
   }
   .tric {
     display: flex;

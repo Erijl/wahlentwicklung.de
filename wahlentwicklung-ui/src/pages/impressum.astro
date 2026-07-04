@@ -1,0 +1,39 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Impressum"
+  description="Impressum von Wahlentwicklung.de"
+  path="/impressum"
+>
+  <section class="legal">
+    <p class="kicker">Rechtliches</p>
+    <h1>Impressum</h1>
+    <p class="lede">
+      <!-- TODO(v0.9): Angaben gemäß § 5 DDG ergänzen (Name, Anschrift, Kontakt)
+           bevor die Seite öffentlich geht. -->
+      Angaben folgen vor Veröffentlichung der Seite.
+    </p>
+    <h2>Datenquellen</h2>
+    <p>
+      Alle Wahlergebnisse: Bundeswahlleiterin, amtliche Endergebnisse der Bundestagswahlen
+      2005–2025 (<a href="https://www.bundeswahlleiterin.de/bundestagswahlen.html" rel="noopener"
+        >bundeswahlleiterin.de ↗</a
+      >). Kartengeometrien: © GeoBasis-DE / BKG, via deutschlandGeoJSON (dl-de/by-2-0).
+    </p>
+  </section>
+</BaseLayout>
+
+<style>
+  .legal {
+    padding: 26px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 70ch;
+  }
+  .legal h2 {
+    margin-top: 14px;
+  }
+</style>

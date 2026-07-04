@@ -23,7 +23,10 @@ const mb = 26;
 const allPts = [...trends.values()].flat();
 const yMax = Math.max(20, Math.ceil(Math.max(...allPts.map((p) => p.pct)) / 10) * 10 + 5);
 
-const X = (year: number) => ml + ((w - ml - mr) * years.indexOf(year)) / (years.length - 1);
+const X = (year: number) =>
+  years.length === 1
+    ? ml + (w - ml - mr) / 2
+    : ml + ((w - ml - mr) * years.indexOf(year)) / (years.length - 1);
 const Y = (v: number) => mt + (h - mt - mb) * (1 - v / yMax);
 
 const gridSteps = Array.from({ length: Math.floor(yMax / 10) + 1 }, (_, i) => i * 10);

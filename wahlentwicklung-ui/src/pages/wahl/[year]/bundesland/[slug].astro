@@ -1,13 +1,11 @@
 ---
 /** Election × state snapshot. */
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import Breadcrumb from '@/components/Breadcrumb.astro';
 import ModuleFrame from '@/components/ModuleFrame.astro';
 import StatTile from '@/components/StatTile.astro';
 import StatTileGrid from '@/components/StatTileGrid.astro';
 import ResultBars from '@/components/charts/ResultBars.astro';
 import PartyTag from '@/components/PartyTag.astro';
-import YearSwitcher from '@/components/YearSwitcher.astro';
 import {
   getElectionYears,
   getStates,
@@ -54,24 +52,21 @@ const cmp = results
 const title = `Bundestagswahl ${year} in ${stateName} – Ergebnis`;
 ---
 
-<BaseLayout title={title} description={lede} path={`/wahl/${year}/bundesland/${Astro.params.slug}`}>
-  <Breadcrumb
-    items={[
-      { label: 'Wahlen', href: '/wahlen' },
-      { label: `Bundestagswahl ${year}`, href: `/wahl/${year}` },
-      { label: stateName },
-    ]}
-  />
-
+<BaseLayout
+  title={title}
+  description={lede}
+  path={`/wahl/${year}/bundesland/${Astro.params.slug}`}
+  crumbs={[
+    { label: 'Wahlen', href: '/wahlen' },
+    { label: `Bundestagswahl ${year}`, href: `/wahl/${year}` },
+    { label: stateName },
+  ]}
+  yearNav={{ years, current: year, hrefFor: (y) => `/wahl/${y}/bundesland/${Astro.params.slug}` }}
+>
   <section class="hero">
     <p class="kicker">Bundestagswahl {year} · Bundesland</p>
     <h1>{stateName}</h1>
     <p class="lede">{lede}</p>
-    <YearSwitcher
-      years={years}
-      current={year}
-      hrefFor={(y) => `/wahl/${y}/bundesland/${Astro.params.slug}`}
-    />
   </section>
 
   <ModuleFrame title="Zweitstimmen: Anteil und Veränderung" hasTable>

@@ -42,7 +42,7 @@ export function textColorVar(key: string): string {
 }
 
 /** Bundestag seating, left → right. */
-export const SEATING_ORDER: PartyKey[] = ['Linke', 'SPD', 'Grüne', 'SSW', 'Union', 'AfD'];
+export const SEATING_ORDER: PartyKey[] = ['Linke', 'SPD', 'Grüne', 'SSW', 'FDP', 'Union', 'AfD'];
 
 /** Fixed chart order = identity anchor (color follows entity, never rank). */
 export const CHART_ORDER: PartyKey[] = [
@@ -61,17 +61,12 @@ export const CHART_ORDER: PartyKey[] = [
 /**
  * Map a raw election_party row (canonical abbreviation if mapped, else the
  * per-election name) onto a display party. CDU+CSU merge into "Union" in
- * charts (split only in tables). Unmapped micro-parties fold into "Übrige".
- * BSW/SSW name-matching bridges the still-open mapping work (audit §2) —
- * remove once party_mapping is complete.
+ * charts (split only in tables). Unmapped rows are micro-parties by policy
+ * (update_mappings.sql, verified 2026-07-04) and fold into "Übrige".
  */
-export function canonParty(name: string | null, abbreviation: string | null): PartyKey {
+export function canonParty(_name: string | null, abbreviation: string | null): PartyKey {
   if (abbreviation === 'CDU' || abbreviation === 'CSU') return 'Union';
   if (abbreviation && abbreviation in CSS_VAR) return abbreviation as PartyKey;
-  const n = (name ?? '').toLowerCase();
-  if (n.includes('wagenknecht')) return 'BSW';
-  if (n.includes('südschleswig')) return 'SSW';
-  if (n.includes('freie wähler')) return 'FW';
   return 'Übrige';
 }
 

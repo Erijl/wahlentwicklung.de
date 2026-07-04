@@ -1,0 +1,217 @@
+---
+/**
+ * Global hover-card layer: any element with a `data-card` JSON attribute
+ * (built by lib/hovercard.ts) gets a Zeit-style result card on hover —
+ * kicker · title · status · ghost/main bars with values and deltas.
+ * Anchored once per element (not cursor-following), hover-capable devices
+ * only; on touch the targets are links anyway. Included by BaseLayout.
+ */
+---
+
+<div class="hcard" id="hover-card" hidden aria-hidden="true"></div>
+
+<script>
+  // Party colors resolve to the same tokens the charts use, so themes apply.
+  const COLOR: Record<string, string> = {
+    Union: '--party-union',
+    AfD: '--party-afd',
+    SPD: '--party-spd',
+    Grüne: '--party-gruene',
+    Linke: '--party-linke',
+    BSW: '--party-bsw',
+    FDP: '--party-fdp',
+    FW: '--party-fw',
+    SSW: '--party-ssw',
+    Übrige: '--party-uebrige',
+  };
+  interface CardBar {
+    p: string;
+    v: number;
+    w: number | null;
+  }
+  interface CardData {
+    k: string;
+    t: string;
+    u?: number;
+    y?: number;
+    py?: number;
+    l?: string;
+    b: CardBar[];
+  }
+
+  const card = document.getElementById('hover-card')!;
+  const fmt1 = new Intl.NumberFormat('de', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const esc = (s: string) =>
+    s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+
+  function group(x: CardBar, max: number): string {
+    const cv = `var(${COLOR[x.p] ?? '--party-uebrige'})`;
+    const tv = `var(${x.p === 'FDP' ? '--party-fdp-text' : (COLOR[x.p] ?? '--party-uebrige')})`;
+    const mh = Math.max(3, (54 * x.v) / max);
+    const gh = x.w === null ? 0 : Math.max(2, (54 * x.w) / max);
+    const delta =
+      x.w === null ? '–' : `${x.v - x.w >= 0 ? '+' : '−'}${fmt1.format(Math.abs(x.v - x.w))}`;
+    return (
+      `<div class="hc-g">` +
+      `<div class="hc-bars">` +
+      (x.w !== null ? `<i class="hc-ghost" style="height:${gh}px;background:${cv}"></i>` : '') +
+      `<i class="hc-bar" style="height:${mh}px;background:${cv}"></i>` +
+      `</div>` +
+      `<span class="hc-p" style="color:${tv}">${esc(x.p)}</span>` +
+      `<span class="hc-v" style="color:${tv}">${fmt1.format(x.v)}</span>` +
+      `<span class="hc-d">${delta}</span>` +
+      `</div>`
+    );
+  }
+
+  function render(d: CardData): void {
+    const max = Math.max(1, ...d.b.map((x) => Math.max(x.v, x.w ?? 0)));
+    card.innerHTML =
+      `<p class="hc-kicker">${esc(d.k)}</p>` +
+      `<p class="hc-title">${esc(d.t)}</p>` +
+      `<p class="hc-status">` +
+      (d.u !== undefined ? `Wahlbeteiligung ${fmt1.format(d.u)}&nbsp;%` : '') +
+      `</p>` +
+      `<p class="hc-legend"><b>${esc(d.l ?? 'Zweitstimmen')}</b>` +
+      (d.py !== undefined ? `<span><i class="gh"></i>’${String(d.py).slice(2)}</span>` : '') +
+      (d.y !== undefined ? `<span><i></i>${d.y}</span>` : '') +
+      `</p>` +
+      `<div class="hc-chart">${d.b.map((x) => group(x, max)).join('')}</div>`;
+  }
+
+  if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    let current: Element | null = null;
+    document.addEventListener('pointerover', (e) => {
+      const el = (e.target as Element).closest('[data-card]');
+      if (!el || el === current) return;
+      let d: CardData;
+      try {
+        d = JSON.parse(el.getAttribute('data-card')!);
+      } catch {
+        return;
+      }
+      current = el;
+      render(d);
+      card.hidden = false;
+      // anchor once near the entry point, clamped to the viewport
+      const r = card.getBoundingClientRect();
+      const pe = e as PointerEvent;
+      let x = pe.clientX + 14;
+      let y = pe.clientY + 14;
+      if (x + r.width > innerWidth - 8) x = pe.clientX - r.width - 14;
+      if (y + r.height > innerHeight - 8) y = pe.clientY - r.height - 14;
+      card.style.transform = `translate(${Math.max(8, x)}px, ${Math.max(8, y)}px)`;
+    });
+    document.addEventListener('pointerout', (e) => {
+      if (current && !current.contains((e as PointerEvent).relatedTarget as Node)) {
+        current = null;
+        card.hidden = true;
+      }
+    });
+  }
+</script>
+
+<style is:global>
+  .hcard {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 240;
+    pointer-events: none;
+    background: var(--raised);
+    border: 1px solid var(--hairline);
+    border-radius: 8px;
+    box-shadow: 0 12px 40px rgb(0 0 0 / 0.2);
+    padding: 12px 14px 10px;
+    width: max-content;
+    max-width: min(360px, calc(100vw - 24px));
+  }
+  .hcard .hc-kicker {
+    font-size: 11.5px;
+    color: var(--text-muted);
+  }
+  .hcard .hc-title {
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--ink);
+    margin: 1px 0 3px;
+  }
+  .hcard .hc-status {
+    font-size: 11.5px;
+    color: var(--text-sec);
+    margin-bottom: 8px;
+  }
+  .hcard .hc-check {
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .hcard .hc-legend {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .hcard .hc-legend b {
+    font-size: 12px;
+    color: var(--ink);
+    margin-right: auto;
+  }
+  .hcard .hc-legend i {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    background: var(--text-sec);
+    margin-right: 3px;
+  }
+  .hcard .hc-legend i.gh {
+    opacity: 0.35;
+  }
+  .hcard .hc-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 9px;
+  }
+  .hcard .hc-g {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 34px;
+  }
+  .hcard .hc-bars {
+    height: 56px;
+    display: flex;
+    align-items: flex-end;
+  }
+  .hcard .hc-bars i {
+    display: block;
+    border-radius: 2px 2px 0 0;
+  }
+  .hcard .hc-ghost {
+    width: 8px;
+    opacity: 0.35;
+    margin-right: -3px;
+  }
+  .hcard .hc-bar {
+    width: 13px;
+    box-shadow: 0 0 0 1px var(--raised);
+  }
+  .hcard .hc-p {
+    font-size: 11px;
+    font-weight: 700;
+    margin-top: 4px;
+  }
+  .hcard .hc-v {
+    font-size: 12.5px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+  .hcard .hc-d {
+    font-size: 10.5px;
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+</style>

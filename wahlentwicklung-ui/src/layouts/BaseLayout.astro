@@ -6,6 +6,9 @@ import '@fontsource/fira-sans-condensed/700.css';
 import '@fontsource/noto-serif/400.css';
 import '@fontsource/noto-serif/700.css';
 import '@/styles/global.css';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+import SearchPalette from '@/components/SearchPalette.astro';
+import HoverCard from '@/components/HoverCard.astro';
 
 interface Props {
   /** Page title without the site suffix. */
@@ -13,9 +16,21 @@ interface Props {
   description: string;
   /** Canonical path, e.g. "/wahl/2025". */
   path: string;
+  /** Breadcrumb for the contextual chrome row (nav concept C). */
+  crumbs?: { label: string; href?: string }[];
+  /** Year pills in the chrome: links to this page's siblings in other years. */
+  yearNav?: {
+    years: number[];
+    current?: number;
+    /** Years with comparable data (default: all); others render disabled. */
+    available?: number[];
+    hrefFor: (year: number) => string;
+  };
+  /** Right-aligned section tabs (anchor links, scroll-spy highlights). */
+  tabs?: { label: string; href: string }[];
 }
 
-const { title, description, path } = Astro.props;
+const { title, description, path, crumbs, yearNav, tabs } = Astro.props;
 const canonical = new URL(path, Astro.site);
 const fullTitle = `${title} | Wahlentwicklung.de`;
 
@@ -26,6 +41,7 @@ const nav = [
   { href: '/wahlkreise', label: 'Wahlkreise' },
 ];
 const current = Astro.url.pathname;
+const hasContextRow = Boolean(crumbs || yearNav || tabs);
 ---
 
 <!doctype html>
@@ -55,36 +71,103 @@ const current = Astro.url.pathname;
     </script>
   </head>
   <body>
-    {/* TODO(nav): placeholder chrome — user wants a different navigation
-        concept; iterate in a dedicated design pass. */}
-    <header class="site-head">
-      <div class="inner">
-        <a class="brand" href="/">
-          Wahlentwicklung<span class="tld">.de</span>
-        </a>
-        <nav aria-label="Hauptnavigation">
-          {
-            nav.map((n) => (
-              <a href={n.href} aria-current={current.startsWith(n.href) ? 'page' : undefined}>
-                {n.label}
-              </a>
-            ))
-          }
-          <button id="theme-toggle" type="button" title="Helles/dunkles Design umschalten">
-            ◐
-          </button>
-        </nav>
+    {/* chrome: nav concept C (double-decker) with B's search — see
+        design/shell-and-hover-concept.md */}
+    <header class="chrome">
+      <div class="row1">
+        <div class="r1-inner">
+          <a class="brand" href="/">
+            Wahlentwicklung<span class="tld">.de</span>
+          </a>
+          <nav class="primary" aria-label="Hauptnavigation">
+            {
+              nav.map((n) => (
+                <a href={n.href} aria-current={current.startsWith(n.href) ? 'page' : undefined}>
+                  {n.label}
+                </a>
+              ))
+            }
+          </nav>
+          <div class="r1-right">
+            <button
+              type="button"
+              class="searchbtn"
+              id="palette-open"
+              aria-haspopup="dialog"
+              aria-expanded="false"
+            >
+              <svg viewBox="0 0 16 16" aria-hidden="true"
+                ><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"
+                ></circle><path
+                  d="m10.5 10.5 3.5 3.5"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"></path></svg
+              >
+              <span class="sb-hint">Suchen …</span>
+              <kbd>Strg K</kbd>
+            </button>
+            <button
+              id="theme-toggle"
+              type="button"
+              class="theme-toggle"
+              aria-pressed="false"
+              title="Helles/dunkles Design umschalten"
+            >
+              <span class="tt-ico" aria-hidden="true">☾</span><span class="tt-label">Dunkel</span>
+            </button>
+          </div>
+        </div>
+        <div class="tric" aria-hidden="true"><i></i><i></i><i></i></div>
       </div>
-      <div class="tric" aria-hidden="true"><i></i><i></i><i></i></div>
+
+      {
+        hasContextRow && (
+          <div class="row2">
+            <div class="r2-inner">
+              {crumbs && <Breadcrumb items={crumbs} />}
+              {yearNav && (
+                <div class="years" role="group" aria-label="Wahljahr wählen">
+                  {yearNav.years.map((y) =>
+                    !(yearNav.available ?? yearNav.years).includes(y) ? (
+                      <span class="yp off" data-tip="keine vergleichbaren Daten (Gebietsreform)">
+                        {y}
+                      </span>
+                    ) : y === yearNav.current ? (
+                      <span class="yp on" aria-current="page">
+                        {y}
+                      </span>
+                    ) : (
+                      <a class="yp" href={yearNav.hrefFor(y)}>
+                        {y}
+                      </a>
+                    ),
+                  )}
+                </div>
+              )}
+              {tabs && (
+                <nav class="ctx-tabs" aria-label="Abschnitte">
+                  {tabs.map((t) => (
+                    <a href={t.href}>{t.label}</a>
+                  ))}
+                </nav>
+              )}
+            </div>
+          </div>
+        )
+      }
     </header>
+
+    <SearchPalette />
 
     <main class="site-main">
       <slot />
     </main>
 
-    {/* hover layer: any element with data-tip gets a styled tooltip.
-        Pages stay fully static — this is progressive enhancement. */}
+    {/* hover layers: data-tip = plain text tooltip, data-card = rich result
+        card. Pages stay fully static — this is progressive enhancement. */}
     <div class="tip" id="global-tip" role="tooltip" hidden></div>
+    <HoverCard />
     <script>
       const tip = document.getElementById('global-tip')!;
       let current: Element | null = null;
@@ -127,35 +210,72 @@ const current = Astro.url.pathname;
     </footer>
 
     <script>
-      document.getElementById('theme-toggle')?.addEventListener('click', () => {
+      // theme toggle: flips data-theme, persists, repaints icon/label
+      const btn = document.getElementById('theme-toggle')!;
+      const paint = () => {
+        const dark = document.documentElement.dataset.theme === 'dark';
+        btn.querySelector('.tt-ico')!.textContent = dark ? '☀' : '☾';
+        btn.querySelector('.tt-label')!.textContent = dark ? 'Hell' : 'Dunkel';
+        btn.setAttribute('aria-pressed', String(dark));
+      };
+      btn.addEventListener('click', () => {
         const root = document.documentElement;
         const dark = root.dataset.theme === 'dark';
         if (dark) delete root.dataset.theme;
         else root.dataset.theme = 'dark';
         localStorage.setItem('theme', dark ? 'light' : 'dark');
+        paint();
       });
+      paint();
+
+      // scroll-spy for the contextual section tabs (anchor links)
+      const tabLinks = [...document.querySelectorAll<HTMLAnchorElement>('.ctx-tabs a[href^="#"]')];
+      if (tabLinks.length) {
+        const sections = tabLinks
+          .map((a) => document.getElementById(decodeURIComponent(a.hash.slice(1))))
+          .filter((s): s is HTMLElement => s !== null);
+        const update = () => {
+          let cur: HTMLElement | null = null;
+          for (const s of sections) {
+            if (s.getBoundingClientRect().top <= 140) cur = s;
+          }
+          tabLinks.forEach((a) => {
+            const on = cur !== null && a.hash === `#${cur.id}`;
+            if (on) a.setAttribute('aria-current', 'true');
+            else a.removeAttribute('aria-current');
+          });
+        };
+        addEventListener('scroll', update, { passive: true });
+        update();
+      }
     </script>
   </body>
 </html>
 
 <style>
-  .site-head .inner {
+  .chrome {
+    position: sticky;
+    top: 0;
+    z-index: 80;
+  }
+  .row1 {
+    background: var(--raised);
+  }
+  .r1-inner {
     max-width: 1120px;
     margin: 0 auto;
-    padding: 16px 28px;
+    padding: 10px 28px;
     display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 16px;
-    flex-wrap: wrap;
+    align-items: center;
+    gap: 26px;
   }
   .brand {
     font-family: var(--font-brand);
     font-weight: 700;
     font-size: 19px;
     letter-spacing: 0.01em;
-    text-transform: none;
     color: var(--ink);
+    white-space: nowrap;
   }
   .brand:hover {
     text-decoration: none;
@@ -164,27 +284,73 @@ const current = Astro.url.pathname;
     color: var(--text-muted);
     font-weight: 400;
   }
-  nav {
+  .primary {
     display: flex;
     gap: 20px;
     font-size: 14.5px;
+    flex-wrap: wrap;
   }
-  nav a {
+  .primary a {
     color: var(--ink);
   }
-  nav a[aria-current='page'] {
+  .primary a[aria-current='page'] {
     font-weight: 700;
     color: var(--accent);
   }
-  #theme-toggle {
+  .r1-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .searchbtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
     border: 1px solid var(--hairline);
-    background: var(--raised);
-    color: var(--text-sec);
-    font-size: 14px;
-    line-height: 1;
-    padding: 4px 8px;
-    border-radius: 4px;
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text-muted);
+    font: inherit;
+    font-size: 13.5px;
+    padding: 5px 10px;
     cursor: pointer;
+  }
+  .searchbtn:hover {
+    color: var(--text-sec);
+    border-color: var(--text-muted);
+  }
+  .searchbtn svg {
+    width: 14px;
+    height: 14px;
+    flex: none;
+  }
+  .searchbtn kbd {
+    font-family: inherit;
+    font-size: 11px;
+    color: var(--text-sec);
+    border: 1px solid var(--hairline);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    padding: 1px 5px;
+    background: var(--raised);
+    white-space: nowrap;
+  }
+  .theme-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid var(--hairline);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text-sec);
+    font: inherit;
+    font-size: 12.5px;
+    padding: 5px 10px;
+    cursor: pointer;
+  }
+  .theme-toggle:hover {
+    color: var(--ink);
   }
   .tric {
     display: flex;
@@ -202,6 +368,107 @@ const current = Astro.url.pathname;
   .tric i:nth-child(3) {
     background: var(--tric-gold);
   }
+
+  /* contextual second row: breadcrumb + year pills + section tabs */
+  .row2 {
+    background: var(--raised);
+    border-bottom: 1px solid var(--hairline);
+  }
+  .r2-inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 8px 28px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px 22px;
+    flex-wrap: wrap;
+  }
+  .r2-inner > :global(.crumbs) {
+    padding-bottom: 8px;
+  }
+  .years {
+    display: flex;
+    gap: 5px;
+    padding-bottom: 8px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .years::-webkit-scrollbar {
+    display: none;
+  }
+  .yp {
+    font-size: 12.5px;
+    color: var(--text-sec);
+    border: 1px solid var(--hairline);
+    border-radius: 999px;
+    background: var(--surface);
+    padding: 3px 11px;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  a.yp:hover {
+    color: var(--ink);
+    border-color: var(--text-muted);
+    text-decoration: none;
+  }
+  .yp.on {
+    background: var(--ink);
+    color: var(--surface);
+    border-color: var(--ink);
+    font-weight: 700;
+  }
+  .yp.off {
+    color: var(--hairline);
+    cursor: not-allowed;
+  }
+  .ctx-tabs {
+    display: flex;
+    gap: 2px;
+    margin-left: auto;
+    align-self: stretch;
+  }
+  .ctx-tabs a {
+    font-size: 13.5px;
+    color: var(--text-sec);
+    padding: 6px 13px 9px;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+  }
+  .ctx-tabs a:hover {
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .ctx-tabs a[aria-current='true'] {
+    color: var(--accent);
+    font-weight: 700;
+    border-bottom-color: var(--accent);
+  }
+
+  @media (max-width: 780px) {
+    /* the double-decker would eat too much of a phone screen when sticky */
+    .chrome {
+      position: static;
+    }
+    .r1-inner {
+      flex-wrap: wrap;
+      gap: 8px 18px;
+      padding-inline: 16px;
+    }
+    .searchbtn .sb-hint,
+    .searchbtn kbd {
+      display: none;
+    }
+    .theme-toggle .tt-label {
+      display: none;
+    }
+    .r2-inner {
+      padding-inline: 16px;
+    }
+    .ctx-tabs {
+      display: none;
+    }
+  }
+
   .site-main {
     max-width: 1120px;
     margin: 0 auto;
@@ -211,7 +478,7 @@ const current = Astro.url.pathname;
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 50;
+    z-index: 250;
     pointer-events: none;
     background: var(--ink);
     color: var(--surface);

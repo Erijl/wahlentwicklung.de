@@ -4,14 +4,30 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import PartyTag from '@/components/PartyTag.astro';
 import MiniBars from '@/components/charts/MiniBars.astro';
 import { getElectionYears, federalResults, federalVoteBase } from '@/lib/queries';
+import { hoverCard } from '@/lib/hovercard';
 import { fmtPct } from '@/lib/format';
 
-const years = getElectionYears().reverse();
+const allYears = getElectionYears();
+const years = [...allYears].reverse();
 const rows = years.map((year) => {
   const results = federalResults(year);
   const winner = [...results].sort((a, b) => b.votes - a.votes)[0];
   const base = federalVoteBase(year);
-  return { year, results, winner, turnout: base.turnout, seats: results.reduce((a, r) => a + r.seats, 0) };
+  return {
+    year,
+    results,
+    winner,
+    turnout: base.turnout,
+    seats: results.reduce((a, r) => a + r.seats, 0),
+    card: hoverCard({
+      kicker: 'Bundesweit · Zweitstimmen',
+      title: `Bundestagswahl ${year}`,
+      turnout: base.turnout,
+      year,
+      prevYear: allYears[allYears.indexOf(year) - 1],
+      results,
+    }),
+  };
 });
 ---
 
@@ -35,7 +51,7 @@ const rows = years.map((year) => {
         <li>
           <a href={`/wahl/${r.year}`}>
             <span class="year">{r.year}</span>
-            <MiniBars results={r.results} scaleMax={40} />
+            <MiniBars results={r.results} scaleMax={40} card={r.card} />
             <span class="meta">
               <PartyTag party={r.winner.key} /> {fmtPct(r.winner.pct)} · Wahlbeteiligung{' '}
               {fmtPct(r.turnout)} · {r.seats} Sitze

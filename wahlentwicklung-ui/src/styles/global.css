@@ -12,6 +12,16 @@ html {
   -webkit-text-size-adjust: 100%;
 }
 
+/* anchor targets clear the sticky double-decker chrome */
+[id] {
+  scroll-margin-top: 110px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
 body {
   background: var(--surface);
   color: var(--ink);

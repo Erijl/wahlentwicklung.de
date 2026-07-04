@@ -13,12 +13,15 @@ interface Props {
   /** Fixed scale max in % so rows are comparable (default 50). */
   scaleMax?: number;
   parties?: PartyKey[];
+  /** Rich hover card JSON (lib/hovercard.ts) — replaces the text tooltip. */
+  card?: string;
 }
 
 const {
   results,
   scaleMax = 50,
   parties = CHART_ORDER.filter((k) => !['FW', 'SSW', 'Übrige'].includes(k)),
+  card,
 } = Astro.props;
 
 const bw = 4;
@@ -47,7 +50,8 @@ const tip = bars
   viewBox={`0 0 ${w} ${h}`}
   role="img"
   aria-label={tip}
-  data-tip={tip}
+  data-tip={card ? undefined : tip}
+  data-card={card}
 >
   {
     bars.map((b) => (

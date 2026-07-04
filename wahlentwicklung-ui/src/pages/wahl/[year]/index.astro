@@ -1,7 +1,6 @@
 ---
 /** The flagship template: election snapshot (docs/02-concept.md §2). */
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import Breadcrumb from '@/components/Breadcrumb.astro';
 import ModuleFrame from '@/components/ModuleFrame.astro';
 import StatTile from '@/components/StatTile.astro';
 import StatTileGrid from '@/components/StatTileGrid.astro';
@@ -13,16 +12,19 @@ import StateMap from '@/components/charts/StateMap.astro';
 import ResultTable from '@/components/ResultTable.astro';
 import PartyTag from '@/components/PartyTag.astro';
 import SearchFilter from '@/components/islands/SearchFilter.svelte';
-import YearSwitcher from '@/components/YearSwitcher.astro';
 import {
   getElectionYears,
+  getStates,
   federalResults,
   federalVoteBase,
   federalTrends,
   stateWinners,
+  stateResults,
+  stateVoteBase,
   constituencyTable,
   stateTurnouts,
 } from '@/lib/queries';
+import { hoverCard } from '@/lib/hovercard';
 import { electionLede } from '@/lib/prose';
 import { fmtPct, fmtDelta, fmtMillions, fmtNum } from '@/lib/format';
 import type { PartyKey } from '@/lib/parties';
@@ -62,6 +64,19 @@ const combos = CANDIDATES.filter((c) => c.parties.every((k) => seatOf(k) > 0))
   .sort((a, b) => b.sum - a.sum);
 
 const winners = stateWinners(year);
+const stateCards = new Map(
+  getStates().map((s) => [
+    s.name,
+    hoverCard({
+      kicker: `Bundestagswahl ${year}`,
+      title: s.name,
+      turnout: stateVoteBase(year, s.id)?.turnout,
+      year,
+      prevYear,
+      results: stateResults(year, s.id),
+    }),
+  ]),
+);
 const trends = federalTrends(['Union', 'SPD', 'AfD', 'Grüne', 'Linke', 'FDP']);
 const tableRows = constituencyTable(year, 'secondary');
 const tableRowsErst = constituencyTable(year, 'primary');
@@ -74,17 +89,28 @@ const title = `Bundestagswahl ${year} – Ergebnisse, Sitze, Wahlkreise`;
 const status = `Amtliches Endergebnis · Quelle: Bundeswahlleiterin`;
 ---
 
-<BaseLayout title={title} description={lede} path={`/wahl/${year}`}>
-  <Breadcrumb items={[{ label: 'Wahlen', href: '/wahlen' }, { label: `Bundestagswahl ${year}` }]} />
-
+<BaseLayout
+  title={title}
+  description={lede}
+  path={`/wahl/${year}`}
+  crumbs={[{ label: 'Wahlen', href: '/wahlen' }, { label: `Bundestagswahl ${year}` }]}
+  yearNav={{ years, current: year, hrefFor: (y) => `/wahl/${y}` }}
+  tabs={[
+    { label: 'Ergebnis', href: '#zweitstimmen' },
+    { label: 'Sitze', href: '#sitze' },
+    { label: 'Karte', href: '#karte' },
+    { label: 'Entwicklung', href: '#entwicklung' },
+    { label: 'Wahlkreise', href: '#wahlkreise' },
+  ]}
+>
   <section class="hero">
     <p class="kicker">Bundestagswahl · Zweitstimmen · amtliches Endergebnis</p>
     <h1>Bundestagswahl {year}</h1>
     <p class="lede">{lede}</p>
-    <YearSwitcher years={years} current={year} hrefFor={(y) => `/wahl/${y}`} />
   </section>
 
   <ModuleFrame
+    anchor="zweitstimmen"
     title="Zweitstimmen: Anteil und Veränderung"
     status={status}
     method={`Anteil der Zweitstimmen an allen gültigen Stimmen (${fmtNum(base.valid)}). Der blasse Balken zeigt das Ergebnis der Vorwahl${prevYear ? ` ${prevYear}` : ''}, umgerechnet auf den aktuellen Gebietsstand (Vorperiode-Werte der Bundeswahlleiterin).`}
@@ -116,7 +142,7 @@ const status = `Amtliches Endergebnis · Quelle: Bundeswahlleiterin`;
   </ModuleFrame>
 
   <div class="two">
-    <ModuleFrame title={`Sitzverteilung im Bundestag`} status={status}>
+    <ModuleFrame anchor="sitze" title={`Sitzverteilung im Bundestag`} status={status}>
       <Hemicycle results={results} />
     </ModuleFrame>
     <ModuleFrame
@@ -129,8 +155,12 @@ const status = `Amtliches Endergebnis · Quelle: Bundeswahlleiterin`;
   </div>
 
   <div class="two">
-    <ModuleFrame title="Stärkste Partei nach Bundesland" status={status}>
-      <StateMap winners={winners} hrefFor={(name) => `/wahl/${year}/bundesland/${slugify(name)}`} />
+    <ModuleFrame anchor="karte" title="Stärkste Partei nach Bundesland" status={status}>
+      <StateMap
+        winners={winners}
+        cards={stateCards}
+        hrefFor={(name) => `/wahl/${year}/bundesland/${slugify(name)}`}
+      />
       <p class="fnote">
         Zweitstimmen · Detailansicht: <a href="/bundeslaender">alle Bundesländer</a>
       </p>
@@ -166,6 +196,7 @@ const status = `Amtliches Endergebnis · Quelle: Bundeswahlleiterin`;
   </div>
 
   <ModuleFrame
+    anchor="entwicklung"
     title={`Entwicklung der Zweitstimmen ${years[0]}–${years.at(-1)}`}
     status={status}
     method="Bundesweite Zweitstimmenanteile je Wahl. CDU und CSU sind als Union zusammengefasst."
@@ -174,6 +205,7 @@ const status = `Amtliches Endergebnis · Quelle: Bundeswahlleiterin`;
   </ModuleFrame>
 
   <ModuleFrame
+    anchor="wahlkreise"
     title={tableRows.length === 299 ? 'Alle 299 Wahlkreise' : `${tableRows.length} von 299 Wahlkreisen`}
     status={status}
     method={`Stimmenanteile je Wahlkreis, sortiert nach Wahlbeteiligung. Umschaltbar zwischen Zweit- und Erststimmen.${tableRows.length < 299 ? ' Wahlkreise, deren Zuordnung wegen Gebietsreformen noch aussteht, fehlen vorerst.' : ''}`}
@@ -187,10 +219,10 @@ const status = `Amtliches Endergebnis · Quelle: Bundeswahlleiterin`;
     </div>
     <div id={`wk-table-${year}`}>
       <div data-vote-view="zweit">
-        <ResultTable rows={tableRows} linkYear={year} />
+        <ResultTable rows={tableRows} linkYear={year} cardPrevYear={prevYear} />
       </div>
       <div data-vote-view="erst" hidden>
-        <ResultTable rows={tableRowsErst} linkYear={year} />
+        <ResultTable rows={tableRowsErst} linkYear={year} cardPrevYear={prevYear} cardLabel="Erststimmen" />
       </div>
     </div>
   </ModuleFrame>

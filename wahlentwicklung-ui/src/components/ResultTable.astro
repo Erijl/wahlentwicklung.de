@@ -6,6 +6,7 @@
 import PartyTag from '@/components/PartyTag.astro';
 import MiniBars from '@/components/charts/MiniBars.astro';
 import { fmtPct } from '@/lib/format';
+import { hoverCard } from '@/lib/hovercard';
 import { CHART_ORDER, textColorVar, type PartyKey } from '@/lib/parties';
 import type { ConstituencyTableRow } from '@/lib/queries';
 import { constituencySlug } from '@/lib/slugs';
@@ -18,6 +19,10 @@ interface Props {
   collapsedRows?: number;
   /** id so search islands can target this table's rows. */
   listId?: string;
+  /** Hover-card context: previous election year (ghost-bar legend). */
+  cardPrevYear?: number;
+  /** Hover-card chart label, e.g. "Erststimmen" (default Zweitstimmen). */
+  cardLabel?: string;
 }
 
 const {
@@ -26,7 +31,22 @@ const {
   linkYear,
   collapsedRows = 10,
   listId,
+  cardPrevYear,
+  cardLabel,
 } = Astro.props;
+
+const cardFor = (row: ConstituencyTableRow) =>
+  linkYear
+    ? hoverCard({
+        kicker: `${row.stateName} · Wahlkreis ${row.number}`,
+        title: row.name,
+        turnout: row.turnout,
+        year: linkYear,
+        prevYear: cardPrevYear,
+        label: cardLabel,
+        results: row.results,
+      })
+    : undefined;
 const pctOf = (row: ConstituencyTableRow, k: PartyKey) =>
   row.results.find((r) => r.key === k)?.pct ?? 0;
 const collapsible = collapsedRows > 0 && rows.length > collapsedRows + 4;
@@ -47,7 +67,7 @@ const collapsible = collapsedRows > 0 && rows.length > collapsedRows + 4;
           rows.map((row) => (
             <tr data-search={`${row.number} ${row.name} ${row.stateName}`}>
               <td class="wk">
-                <MiniBars results={row.results} parties={columns} />
+                <MiniBars results={row.results} parties={columns} card={cardFor(row)} />
                 <span class="wk-name">
                   <a
                     href={

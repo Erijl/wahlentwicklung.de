@@ -14,9 +14,12 @@ interface Props {
   winners: Map<string, { key: PartyKey; pct: number }>;
   /** Makes states clickable, e.g. (name) => `/wahl/2025/bundesland/${slugify(name)}` */
   hrefFor?: (stateName: string) => string;
+  /** Rich hover cards per state name (lib/hovercard.ts JSON) — replace the
+   *  plain text tooltip where provided. */
+  cards?: Map<string, string>;
 }
 
-const { winners, hrefFor } = Astro.props;
+const { winners, hrefFor, cards } = Astro.props;
 
 const w = 440;
 const h = 560;
@@ -56,12 +59,14 @@ const paths = features.map((f) => {
       ),
     )
     .join(' ');
+  const card = cards?.get(f.properties.name);
   return {
     d,
     name: f.properties.name,
     fill: win ? `color-mix(in srgb, ${colorVar(win.key)} 72%, var(--surface))` : 'var(--hairline)',
     hover: win ? colorVar(win.key) : 'var(--hairline)',
-    tip: win ? `${f.properties.name}\n${win.key}: ${fmtPct(win.pct)}` : f.properties.name,
+    card,
+    tip: card ? undefined : win ? `${f.properties.name}\n${win.key}: ${fmtPct(win.pct)}` : f.properties.name,
     href: hrefFor?.(f.properties.name),
   };
 });
@@ -72,10 +77,10 @@ const paths = features.map((f) => {
     paths.map((p) =>
       p.href ? (
         <a href={p.href} aria-label={p.name}>
-          <path d={p.d} fill={p.fill} style={`--hover:${p.hover}`} stroke="var(--surface)" stroke-width="1.2" data-tip={p.tip} />
+          <path d={p.d} fill={p.fill} style={`--hover:${p.hover}`} stroke="var(--surface)" stroke-width="1.2" data-tip={p.tip} data-card={p.card} />
         </a>
       ) : (
-        <path d={p.d} fill={p.fill} style={`--hover:${p.hover}`} stroke="var(--surface)" stroke-width="1.2" data-tip={p.tip} />
+        <path d={p.d} fill={p.fill} style={`--hover:${p.hover}`} stroke="var(--surface)" stroke-width="1.2" data-tip={p.tip} data-card={p.card} />
       ),
     )
   }

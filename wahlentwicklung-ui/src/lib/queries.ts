@@ -7,8 +7,8 @@
  * - Vote tables key parties by `election_party.column_index`; canonical
  *   identity always goes through `party_mapping` (join, then canonParty()).
  * - `constituency.state_id` stores raw 9xx row-ids; normalize with -900.
- * - Audit-§4 seat fix (SSW 2021/2025) is applied here at query time until
- *   the DB is corrected.
+ * - Seat corrections (SSW 2021/2025, FDP 2021) live in the importer's
+ *   update_mappings.sql since 2026-07-04 — no query-time bridges anymore.
  */
 import { prepare } from './db';
 import { canonParty, sortByChartOrder, type PartyKey } from './parties';
@@ -202,20 +202,7 @@ export function federalResults(year: number): PartyResult[] {
        WHERE evp.election_year = ?`,
     )
     .all(year) as any[];
-  const results = aggregate(rows, base.valid, prevValid?.v ?? 0);
-  return applySeatFixes(year, results);
-}
-
-/** Audit §4: SSW's single seat is missing in 2021/2025 until the DB fix lands. */
-function applySeatFixes(year: number, results: PartyResult[]): PartyResult[] {
-  if (year !== 2021 && year !== 2025) return results;
-  const ssw = results.find((r) => r.key === 'SSW');
-  if (ssw) {
-    if (ssw.seats === 0) ssw.seats = 1;
-  } else {
-    results.push({ key: 'SSW', votes: 0, pct: 0, prevPct: null, seats: 1 });
-  }
-  return results;
+  return aggregate(rows, base.valid, prevValid?.v ?? 0);
 }
 
 export function stateResults(year: number, stateId: number): PartyResult[] {

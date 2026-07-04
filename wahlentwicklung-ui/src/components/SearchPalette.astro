@@ -1,0 +1,324 @@
+---
+/**
+ * Command palette (nav concept B, merged into the C shell — see
+ * design/shell-and-hover-concept.md §2). Backed by the build-time entity
+ * index at /suche-index.json (~330 entries), fetched lazily on first open.
+ * Matching is diacritic-folded, multi-term AND; word-start hits rank first.
+ * Opens via the header button, Strg/⌘ K or "/".
+ */
+---
+
+<div class="palette" id="palette" hidden>
+  <div class="pal-backdrop" data-pal-close></div>
+  <div class="pal-panel" role="dialog" aria-modal="true" aria-label="Suche">
+    <div class="pal-inputrow">
+      <svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="7" cy="7" r="4.5" fill="none" stroke="currentColor" stroke-width="1.5"></circle><path d="m10.5 10.5 3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"></path></svg>
+      <input
+        type="text"
+        id="pal-input"
+        placeholder="Wahl, Wahlkreis, Partei oder Bundesland suchen …"
+        autocomplete="off"
+        spellcheck="false"
+        aria-label="Suchbegriff"
+      />
+    </div>
+    <ul class="pal-list" id="pal-list"></ul>
+    <p class="pal-empty" id="pal-empty" hidden>Keine Treffer – anderen Begriff versuchen.</p>
+    <div class="pal-foot">
+      <span><kbd>↑</kbd> <kbd>↓</kbd> navigieren</span>
+      <span><kbd>↵</kbd> öffnen</span>
+      <span><kbd>Esc</kbd> schließen</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  interface Entry {
+    n: string; // display name
+    t: string; // badge type
+    h: string; // href
+    k?: string; // extra search keywords
+  }
+
+  const palette = document.getElementById('palette')!;
+  const openBtn = document.getElementById('palette-open');
+  const input = document.getElementById('pal-input') as HTMLInputElement;
+  const list = document.getElementById('pal-list')!;
+  const empty = document.getElementById('pal-empty')!;
+
+  let index: (Entry & { f: string })[] | null = null;
+  let shown: Entry[] = [];
+  let active = 0;
+
+  // queries fold umlauts the German way (ö→oe); the haystack additionally
+  // carries a bare-vowel variant so "koln" finds Köln too
+  const fold = (s: string) =>
+    s
+      .toLowerCase()
+      .replaceAll('ä', 'ae')
+      .replaceAll('ö', 'oe')
+      .replaceAll('ü', 'ue')
+      .replaceAll('ß', 'ss')
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '');
+  const strip = (s: string) =>
+    s
+      .toLowerCase()
+      .replaceAll('ß', 'ss')
+      .normalize('NFD')
+      .replace(/[̀-ͯ]/g, '');
+
+  async function ensureIndex(): Promise<void> {
+    if (index) return;
+    const res = await fetch('/suche-index.json');
+    const raw = (await res.json()) as Entry[];
+    index = raw.map((e) => {
+      const text = `${e.n} ${e.k ?? ''}`;
+      return { ...e, f: `${fold(text)} ${strip(text)}` };
+    });
+  }
+
+  function matches(q: string): Entry[] {
+    if (!index) return [];
+    const terms = fold(q).split(/\s+/).filter(Boolean);
+    if (terms.length === 0) return index.slice(0, 10);
+    const hits: { e: Entry; s: number }[] = [];
+    for (const e of index) {
+      let score = 0;
+      let ok = true;
+      for (const t of terms) {
+        const i = e.f.indexOf(t);
+        if (i === -1) {
+          ok = false;
+          break;
+        }
+        score += i === 0 || e.f[i - 1] === ' ' || e.f[i - 1] === '-' ? 2 : 1;
+      }
+      if (ok) hits.push({ e, s: score });
+    }
+    hits.sort((a, b) => b.s - a.s); // stable: index order breaks ties
+    return hits.slice(0, 12).map((h) => h.e);
+  }
+
+  function highlight(name: string, q: string): (string | HTMLElement)[] {
+    const term = q.trim().split(/\s+/)[0] ?? '';
+    const i = term ? name.toLowerCase().indexOf(term.toLowerCase()) : -1;
+    if (i === -1) return [name];
+    const b = document.createElement('b');
+    b.textContent = name.slice(i, i + term.length);
+    return [name.slice(0, i), b, name.slice(i + term.length)];
+  }
+
+  function setActive(i: number): void {
+    active = i;
+    [...list.children].forEach((li, j) => li.classList.toggle('active', j === i));
+    list.children[i]?.scrollIntoView({ block: 'nearest' });
+  }
+
+  function renderList(): void {
+    const q = input.value;
+    shown = matches(q);
+    list.replaceChildren(
+      ...shown.map((e) => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = e.h;
+        a.className = 'pal-name';
+        a.append(...highlight(e.n, q));
+        const badge = document.createElement('span');
+        badge.className = 'pal-badge';
+        badge.textContent = e.t;
+        li.append(a, badge);
+        li.addEventListener('click', () => {
+          location.assign(e.h);
+        });
+        return li;
+      }),
+    );
+    empty.hidden = shown.length > 0;
+    setActive(0);
+  }
+
+  function openPalette(): void {
+    palette.hidden = false;
+    openBtn?.setAttribute('aria-expanded', 'true');
+    input.value = '';
+    document.body.style.overflow = 'hidden';
+    input.focus();
+    ensureIndex().then(renderList);
+  }
+  function closePalette(): void {
+    palette.hidden = true;
+    openBtn?.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+
+  openBtn?.addEventListener('click', openPalette);
+  palette.querySelector('[data-pal-close]')!.addEventListener('click', closePalette);
+  input.addEventListener('input', renderList);
+
+  document.addEventListener('keydown', (e) => {
+    const inField = /^(input|textarea|select)$/i.test((e.target as Element).tagName);
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      palette.hidden ? openPalette() : closePalette();
+      return;
+    }
+    if (palette.hidden) {
+      if (e.key === '/' && !inField && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        e.preventDefault();
+        openPalette();
+      }
+      return;
+    }
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      closePalette();
+    } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (!shown.length) return;
+      setActive(
+        e.key === 'ArrowDown' ? Math.min(active + 1, shown.length - 1) : Math.max(active - 1, 0),
+      );
+    } else if (e.key === 'Enter') {
+      const target = shown[active];
+      if (target) location.assign(target.h);
+    }
+  });
+</script>
+
+<style>
+  .palette {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+  }
+  .pal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgb(0 0 0 / 0.42);
+  }
+  .pal-panel {
+    position: relative;
+    margin: 12vh auto 0;
+    width: min(620px, calc(100vw - 32px));
+    background: var(--raised);
+    border: 1px solid var(--hairline);
+    border-radius: 8px;
+    box-shadow: 0 20px 60px rgb(0 0 0 / 0.25);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    max-height: 70vh;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .pal-panel {
+      animation: pal-in 0.14s ease-out;
+    }
+    @keyframes pal-in {
+      from {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+      to {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  }
+  .pal-inputrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .pal-inputrow svg {
+    width: 16px;
+    height: 16px;
+    flex: none;
+    color: var(--text-muted);
+  }
+  .pal-inputrow input {
+    border: none;
+    background: none;
+    outline: none;
+    font: inherit;
+    font-size: 15.5px;
+    color: var(--ink);
+    width: 100%;
+  }
+  .pal-inputrow input::placeholder {
+    color: var(--text-muted);
+  }
+  .pal-list {
+    list-style: none;
+    overflow-y: auto;
+    padding: 6px;
+  }
+  .pal-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 11px;
+    border-radius: 5px;
+    font-size: 14.5px;
+    cursor: pointer;
+  }
+  .pal-list li:hover,
+  .pal-list li.active {
+    background: var(--surface);
+  }
+  .pal-list li.active {
+    box-shadow: inset 2px 0 0 var(--accent);
+  }
+  .pal-list :global(.pal-name) {
+    color: var(--ink);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .pal-list :global(.pal-name:hover) {
+    text-decoration: none;
+  }
+  .pal-list :global(.pal-name b) {
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .pal-list :global(.pal-badge) {
+    flex: none;
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-sec);
+    border: 1px solid var(--hairline);
+    border-radius: 4px;
+    padding: 1px 7px;
+    background: var(--surface);
+  }
+  .pal-empty {
+    padding: 22px 16px;
+    color: var(--text-muted);
+    font-size: 14px;
+    text-align: center;
+  }
+  .pal-foot {
+    border-top: 1px solid var(--hairline);
+    padding: 8px 16px;
+    font-size: 11.5px;
+    color: var(--text-muted);
+    display: flex;
+    gap: 16px;
+  }
+  .pal-foot kbd {
+    font-family: inherit;
+    font-size: 10.5px;
+    border: 1px solid var(--hairline);
+    border-bottom-width: 2px;
+    border-radius: 3px;
+    padding: 0 4px;
+    background: var(--raised);
+  }
+</style>

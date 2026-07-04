@@ -5,13 +5,38 @@ import StateMap from '@/components/charts/StateMap.astro';
 import ModuleFrame from '@/components/ModuleFrame.astro';
 import PartyTag from '@/components/PartyTag.astro';
 import MiniBars from '@/components/charts/MiniBars.astro';
-import { getStates, latestElectionYear, stateWinners, stateResults } from '@/lib/queries';
+import {
+  getElectionYears,
+  getStates,
+  latestElectionYear,
+  stateWinners,
+  stateResults,
+  stateVoteBase,
+} from '@/lib/queries';
+import { hoverCard } from '@/lib/hovercard';
 import { slugify } from '@/lib/slugs';
 import { fmtPct } from '@/lib/format';
 
-const states = getStates();
 const latest = latestElectionYear();
+const years = getElectionYears();
+const prevYear = years[years.indexOf(latest) - 1];
 const winners = stateWinners(latest);
+const states = getStates().map((s) => {
+  const results = stateResults(latest, s.id);
+  return {
+    ...s,
+    results,
+    card: hoverCard({
+      kicker: `Bundestagswahl ${latest}`,
+      title: s.name,
+      turnout: stateVoteBase(latest, s.id)?.turnout,
+      year: latest,
+      prevYear,
+      results,
+    }),
+  };
+});
+const stateCards = new Map(states.map((s) => [s.name, s.card]));
 ---
 
 <BaseLayout
@@ -30,7 +55,7 @@ const winners = stateWinners(latest);
 
   <div class="two">
     <ModuleFrame title={`Stärkste Partei ${latest}`}>
-      <StateMap winners={winners} hrefFor={(name) => `/bundesland/${slugify(name)}`} />
+      <StateMap winners={winners} cards={stateCards} hrefFor={(name) => `/bundesland/${slugify(name)}`} />
     </ModuleFrame>
     <ModuleFrame title="Alle Bundesländer" status="alphabetisch">
       <ul class="statelist">
@@ -42,7 +67,7 @@ const winners = stateWinners(latest);
               return (
                 <li>
                   <a href={`/bundesland/${slugify(s.name)}`}>
-                    <MiniBars results={stateResults(latest, s.id)} />
+                    <MiniBars results={s.results} card={s.card} />
                     <strong class="grow">{s.name}</strong>
                     {win && (
                       <span class="meta">

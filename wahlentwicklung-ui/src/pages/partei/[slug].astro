@@ -1,7 +1,6 @@
 ---
 /** Party development page — canonical party, own mapping (no Union merge). */
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import Breadcrumb from '@/components/Breadcrumb.astro';
 import ModuleFrame from '@/components/ModuleFrame.astro';
 import TrendLines from '@/components/charts/TrendLines.astro';
 import StatTile from '@/components/StatTile.astro';
@@ -38,9 +37,12 @@ const latestSeats = seats.at(-1);
 const description = `${name} (${abbreviation}) bei den Bundestagswahlen: Zweitstimmen-Entwicklung ${trendYears[0]}–${trendYears.at(-1)}, beste und aktuelle Ergebnisse.`;
 ---
 
-<BaseLayout title={`${abbreviation} – Wahlentwicklung`} description={description} path={`/partei/${Astro.params.slug}`}>
-  <Breadcrumb items={[{ label: 'Parteien', href: '/parteien' }, { label: abbreviation }]} />
-
+<BaseLayout
+  title={`${abbreviation} – Wahlentwicklung`}
+  description={description}
+  path={`/partei/${Astro.params.slug}`}
+  crumbs={[{ label: 'Parteien', href: '/parteien' }, { label: abbreviation }]}
+>
   <section class="hero">
     <p class="kicker">Partei · Entwicklung</p>
     <h1>{abbreviation}</h1>

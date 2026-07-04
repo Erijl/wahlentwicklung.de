@@ -15,6 +15,8 @@ interface Props {
   method?: string;
   /** Set when a table view is provided via the `table` slot. */
   hasTable?: boolean;
+  /** Anchor id so chrome section tabs (BaseLayout `tabs`) can target it. */
+  anchor?: string;
 }
 
 const {
@@ -23,11 +25,12 @@ const {
   sourceHref = 'https://www.bundeswahlleiterin.de/bundestagswahlen.html',
   method,
   hasTable = false,
+  anchor,
 } = Astro.props;
 const id = `mod-${Math.random().toString(36).slice(2, 8)}`;
 ---
 
-<section class="mod">
+<section class="mod" id={anchor}>
   <div class="mod-head">
     <div>
       <h2>{title}</h2>

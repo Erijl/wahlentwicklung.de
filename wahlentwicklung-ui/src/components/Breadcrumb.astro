@@ -1,4 +1,6 @@
 ---
+/** Breadcrumb, rendered inside the chrome's contextual row (BaseLayout
+ *  `crumbs` prop) — compact, current page bold. */
 interface Props {
   items: { label: string; href?: string }[];
 }
@@ -9,8 +11,12 @@ const { items } = Astro.props;
   {
     items.map((c, i) => (
       <>
-        {i > 0 && <span class="sep" aria-hidden="true">›</span>}
-        {c.href ? <a href={c.href}>{c.label}</a> : <span aria-current="page">{c.label}</span>}
+        {i > 0 && <span class="sep" aria-hidden="true">/</span>}
+        {c.href ? (
+          <a href={c.href}>{c.label}</a>
+        ) : (
+          <strong aria-current="page">{c.label}</strong>
+        )}
       </>
     ))
   }
@@ -19,13 +25,23 @@ const { items } = Astro.props;
 <style>
   .crumbs {
     display: flex;
+    align-items: center;
     flex-wrap: wrap;
-    gap: 6px;
+    gap: 7px;
     font-size: 13px;
     color: var(--text-muted);
-    padding: 14px 0 0;
   }
   .crumbs a {
     color: var(--text-sec);
+  }
+  .crumbs a:hover {
+    color: var(--accent);
+  }
+  .crumbs .sep {
+    color: var(--hairline);
+  }
+  .crumbs strong {
+    color: var(--ink);
+    font-weight: 600;
   }
 </style>

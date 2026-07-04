@@ -2,7 +2,6 @@
 /** Constituency development page — lineage-aware: shows honest gaps where
  *  redistricting breaks comparability (docs/01-data-audit.md §3). */
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import Breadcrumb from '@/components/Breadcrumb.astro';
 import ModuleFrame from '@/components/ModuleFrame.astro';
 import TrendLines from '@/components/charts/TrendLines.astro';
 import StatTile from '@/components/StatTile.astro';
@@ -42,9 +41,8 @@ const description = `Wahlkreis ${number} ${name} (${stateName}): Entwicklung der
   title={`Wahlkreis ${number} ${name} – Entwicklung`}
   description={description}
   path={`/wahlkreis/${Astro.params.slug}`}
+  crumbs={[{ label: 'Wahlkreise', href: '/wahlkreise' }, { label: `${number} ${name}` }]}
 >
-  <Breadcrumb items={[{ label: 'Wahlkreise', href: '/wahlkreise' }, { label: `${number} ${name}` }]} />
-
   <section class="hero">
     <p class="kicker">Wahlkreis {number} · {stateName} · Entwicklung</p>
     <h1>{name}</h1>

@@ -3,12 +3,32 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import SearchFilter from '@/components/islands/SearchFilter.svelte';
 import MiniBars from '@/components/charts/MiniBars.astro';
-import { getConstituencies, constituencyResults, constituencyYears } from '@/lib/queries';
+import {
+  getElectionYears,
+  getConstituencies,
+  constituencyResults,
+  constituencyVoteBase,
+  constituencyYears,
+} from '@/lib/queries';
+import { hoverCard } from '@/lib/hovercard';
 import { constituencySlug } from '@/lib/slugs';
 
+const years = getElectionYears();
 const constituencies = getConstituencies().map((c) => {
   const latest = constituencyYears(c.id).at(-1)!;
-  return { ...c, results: constituencyResults(latest, c.id) };
+  const results = constituencyResults(latest, c.id);
+  return {
+    ...c,
+    results,
+    card: hoverCard({
+      kicker: `${c.stateName} · Wahlkreis ${c.number}`,
+      title: c.name,
+      turnout: constituencyVoteBase(latest, c.id)?.turnout,
+      year: latest,
+      prevYear: years[years.indexOf(latest) - 1],
+      results,
+    }),
+  };
 });
 ---
 
@@ -34,7 +54,7 @@ const constituencies = getConstituencies().map((c) => {
         <li data-search={`${c.number} ${c.name} ${c.stateName}`}>
           <a href={`/wahlkreis/${constituencySlug(c.number, c.name)}`}>
             <span class="num">{c.number}</span>
-            <MiniBars results={c.results} />
+            <MiniBars results={c.results} card={c.card} />
             <span class="name">
               <strong>{c.name}</strong>
               <span>{c.stateName}</span>

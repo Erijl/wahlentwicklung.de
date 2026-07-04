@@ -2,13 +2,11 @@
 /** Election × constituency snapshot. Only mapped (year, Wahlkreis) pairs
  *  exist as pages — unmapped raw rows follow as the mapping completes. */
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import Breadcrumb from '@/components/Breadcrumb.astro';
 import ModuleFrame from '@/components/ModuleFrame.astro';
 import StatTile from '@/components/StatTile.astro';
 import StatTileGrid from '@/components/StatTileGrid.astro';
 import ResultBars from '@/components/charts/ResultBars.astro';
 import PartyTag from '@/components/PartyTag.astro';
-import YearSwitcher from '@/components/YearSwitcher.astro';
 import {
   getElectionYears,
   getConstituencies,
@@ -49,26 +47,27 @@ const mappedYears = constituencyYears(id);
 const title = `Bundestagswahl ${year} – Wahlkreis ${number} ${name}`;
 ---
 
-<BaseLayout title={title} description={lede} path={`/wahl/${year}/wahlkreis/${Astro.params.slug}`}>
-  <Breadcrumb
-    items={[
-      { label: 'Wahlen', href: '/wahlen' },
-      { label: `Bundestagswahl ${year}`, href: `/wahl/${year}` },
-      { label: 'Wahlkreise', href: '/wahlkreise' },
-      { label: `${number} ${name}` },
-    ]}
-  />
-
+<BaseLayout
+  title={title}
+  description={lede}
+  path={`/wahl/${year}/wahlkreis/${Astro.params.slug}`}
+  crumbs={[
+    { label: 'Wahlen', href: '/wahlen' },
+    { label: `Bundestagswahl ${year}`, href: `/wahl/${year}` },
+    { label: 'Wahlkreise', href: '/wahlkreise' },
+    { label: `${number} ${name}` },
+  ]}
+  yearNav={{
+    years,
+    current: year,
+    available: mappedYears,
+    hrefFor: (y) => `/wahl/${y}/wahlkreis/${Astro.params.slug}`,
+  }}
+>
   <section class="hero">
     <p class="kicker">Bundestagswahl {year} · Wahlkreis {number} · {stateName}</p>
     <h1>{name}</h1>
     <p class="lede">{lede}</p>
-    <YearSwitcher
-      years={years}
-      current={year}
-      available={mappedYears}
-      hrefFor={(y) => `/wahl/${y}/wahlkreis/${Astro.params.slug}`}
-    />
   </section>
 
   <ModuleFrame

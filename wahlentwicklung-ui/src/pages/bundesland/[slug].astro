@@ -1,7 +1,6 @@
 ---
 /** State development page: party trends + turnout across all elections. */
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import Breadcrumb from '@/components/Breadcrumb.astro';
 import ModuleFrame from '@/components/ModuleFrame.astro';
 import TrendLines from '@/components/charts/TrendLines.astro';
 import StatTile from '@/components/StatTile.astro';
@@ -32,9 +31,12 @@ const bestTurnout = [...turnouts].sort((a, b) => b.base!.turnout - a.base!.turno
 const description = `${stateName} bei den Bundestagswahlen ${years[0]}–${latest}: Entwicklung der Zweitstimmen, Wahlbeteiligung und Ergebnisse aller Wahlen.`;
 ---
 
-<BaseLayout title={`${stateName} – Wahlentwicklung seit ${years[0]}`} description={description} path={`/bundesland/${Astro.params.slug}`}>
-  <Breadcrumb items={[{ label: 'Bundesländer', href: '/bundeslaender' }, { label: stateName }]} />
-
+<BaseLayout
+  title={`${stateName} – Wahlentwicklung seit ${years[0]}`}
+  description={description}
+  path={`/bundesland/${Astro.params.slug}`}
+  crumbs={[{ label: 'Bundesländer', href: '/bundeslaender' }, { label: stateName }]}
+>
   <section class="hero">
     <p class="kicker">Bundesland · Entwicklung {years[0]}–{latest}</p>
     <h1>{stateName}</h1>

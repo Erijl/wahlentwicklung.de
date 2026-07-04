@@ -10,10 +10,17 @@ interface Props {
 
 const { results, subLabel } = Astro.props;
 
-const seats = SEATING_ORDER.map((k) => ({
-  key: k,
-  seats: results.find((r) => r.key === k)?.seats ?? 0,
-})).filter((s) => s.seats > 0);
+// seating order first; any seat-holding party missing from it is appended
+// (center-right) rather than silently dropped
+const seats = [
+  ...SEATING_ORDER,
+  ...results.filter((r) => !SEATING_ORDER.includes(r.key)).map((r) => r.key),
+]
+  .map((k) => ({
+    key: k,
+    seats: results.find((r) => r.key === k)?.seats ?? 0,
+  }))
+  .filter((s) => s.seats > 0);
 const total = seats.reduce((a, s) => a + s.seats, 0);
 
 const w = 560;

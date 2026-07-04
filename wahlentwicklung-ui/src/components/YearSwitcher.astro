@@ -1,0 +1,72 @@
+---
+/**
+ * The year picker (concept: docs/02-concept.md §2 addendum).
+ * On a static site the "currently selected year" IS the URL — this renders
+ * segmented pills linking to the same page in every other election year.
+ * Years without data for this entity render disabled.
+ */
+interface Props {
+  years: number[];
+  current?: number;
+  /** Builds the target path for a year, e.g. (y) => `/wahl/${y}/wahlkreis/135-…` */
+  hrefFor: (year: number) => string;
+  /** Years that actually have data (default: all). */
+  available?: number[];
+}
+
+const { years, current, hrefFor, available = years } = Astro.props;
+---
+
+<nav class="yswitch" aria-label="Wahljahr wählen">
+  {
+    years.map((y) =>
+      !available.includes(y) ? (
+        <span class="y off" data-tip="keine vergleichbaren Daten (Gebietsreform)">
+          {y}
+        </span>
+      ) : y === current ? (
+        <span class="y on" aria-current="page">
+          {y}
+        </span>
+      ) : (
+        <a class="y" href={hrefFor(y)}>
+          {y}
+        </a>
+      ),
+    )
+  }
+</nav>
+
+<style>
+  .yswitch {
+    display: inline-flex;
+    border: 1px solid var(--hairline);
+    border-radius: 5px;
+    overflow: hidden;
+    background: var(--raised);
+  }
+  .y {
+    padding: 5px 12px;
+    font-size: 13.5px;
+    font-variant-numeric: tabular-nums;
+    color: var(--text-sec);
+    border-right: 1px solid var(--hairline);
+  }
+  .y:last-child {
+    border-right: none;
+  }
+  a.y:hover {
+    background: var(--surface);
+    text-decoration: none;
+    color: var(--ink);
+  }
+  .y.on {
+    background: var(--ink);
+    color: var(--surface);
+    font-weight: 700;
+  }
+  .y.off {
+    color: var(--hairline);
+    cursor: not-allowed;
+  }
+</style>

@@ -27,7 +27,7 @@ const pMax = Math.max(32, ...shown.map((r) => Math.max(r.pct, r.prevPct ?? 0))) 
 const band = w / shown.length;
 const curW = 30;
 const ghoW = 18;
-const gap = 4;
+const overlap = 10; // how far the main bar covers the ghost
 
 function bar(x: number, base: number, height: number, width: number): string {
   const hh = Math.max(height, 2);
@@ -46,16 +46,23 @@ const base = top + plotH;
   {
     shown.map((r, i) => {
       const cx = band * i + band / 2;
-      const gx = cx - (curW + gap + ghoW) / 2 + ghoW / 2;
-      const bx = gx + ghoW / 2 + gap + curW / 2;
+      // ghost sits behind the main bar, overlapping (Zeit-style):
+      // main bar is centered; ghost peeks out to the left
+      const bx = cx + ghoW / 4;
+      const gx = bx - curW / 2 - ghoW / 2 + overlap;
       const ch = (plotH * r.pct) / pMax;
       const gh = r.prevPct !== null ? (plotH * r.prevPct) / pMax : 0;
+      const tipText =
+        `${r.key}: ${fmtPct(r.pct)}` +
+        (r.prevPct !== null
+          ? `\n${prevLabel}: ${fmtPct(r.prevPct)} (${fmtDelta(r.pct - r.prevPct)} Pp.)`
+          : '\nnicht angetreten bei der Vorwahl');
       return (
-        <>
+        <g data-tip={tipText}>
           {r.prevPct !== null && (
-            <path d={bar(gx, base, gh, ghoW)} fill={colorVar(r.key)} opacity="0.25" />
+            <path d={bar(gx, base, gh, ghoW)} fill={colorVar(r.key)} opacity="0.3" />
           )}
-          <path d={bar(bx, base, ch, curW)} fill={colorVar(r.key)} />
+          <path d={bar(bx, base, ch, curW)} fill={colorVar(r.key)} stroke="var(--surface)" stroke-width="1.5" />
           <text x={cx} y={base + 20} text-anchor="middle" class="t-lbl">
             {r.key}
           </text>
@@ -65,7 +72,14 @@ const base = top + plotH;
           <text x={cx} y={base + 58} text-anchor="middle" class="t-dim">
             {r.prevPct !== null ? fmtDelta(r.pct - r.prevPct) : 'neu'}
           </text>
-        </>
+          <rect
+            x={band * i}
+            y="0"
+            width={band}
+            height={h}
+            fill="transparent"
+          />
+        </g>
       );
     })
   }

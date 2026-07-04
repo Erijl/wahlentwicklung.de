@@ -12,9 +12,11 @@ import geo from '@/data/bundeslaender.geo.json';
 
 interface Props {
   winners: Map<string, { key: PartyKey; pct: number }>;
+  /** Makes states clickable, e.g. (name) => `/wahl/2025/bundesland/${slugify(name)}` */
+  hrefFor?: (stateName: string) => string;
 }
 
-const { winners } = Astro.props;
+const { winners, hrefFor } = Astro.props;
 
 const w = 440;
 const h = 560;
@@ -58,18 +60,24 @@ const paths = features.map((f) => {
     d,
     name: f.properties.name,
     fill: win ? `color-mix(in srgb, ${colorVar(win.key)} 72%, var(--surface))` : 'var(--hairline)',
-    title: win ? `${f.properties.name}: ${win.key} ${fmtPct(win.pct)}` : f.properties.name,
+    hover: win ? colorVar(win.key) : 'var(--hairline)',
+    tip: win ? `${f.properties.name}\n${win.key}: ${fmtPct(win.pct)}` : f.properties.name,
+    href: hrefFor?.(f.properties.name),
   };
 });
 ---
 
 <svg viewBox={`0 0 ${w} ${h}`} role="img" aria-label="Stärkste Partei je Bundesland">
   {
-    paths.map((p) => (
-      <path d={p.d} fill={p.fill} stroke="var(--surface)" stroke-width="1.2">
-        <title>{p.title}</title>
-      </path>
-    ))
+    paths.map((p) =>
+      p.href ? (
+        <a href={p.href} aria-label={p.name}>
+          <path d={p.d} fill={p.fill} style={`--hover:${p.hover}`} stroke="var(--surface)" stroke-width="1.2" data-tip={p.tip} />
+        </a>
+      ) : (
+        <path d={p.d} fill={p.fill} style={`--hover:${p.hover}`} stroke="var(--surface)" stroke-width="1.2" data-tip={p.tip} />
+      ),
+    )
   }
 </svg>
 
@@ -78,5 +86,14 @@ const paths = features.map((f) => {
     width: 100%;
     max-width: 440px;
     height: auto;
+  }
+  path:hover {
+    fill: var(--hover);
+    stroke-width: 1.6;
+  }
+  a:focus-visible path {
+    outline: none;
+    stroke: var(--accent);
+    stroke-width: 2;
   }
 </style>

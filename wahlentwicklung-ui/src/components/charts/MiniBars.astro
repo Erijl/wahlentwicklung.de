@@ -1,0 +1,65 @@
+---
+/**
+ * Tiny inline result sparkbars (Zeit-style row prefix): fixed party order,
+ * bar height = share. Comparable across rows because order and scale are
+ * fixed. Carries a data-tip with the exact values.
+ */
+import { colorVar, CHART_ORDER, type PartyKey } from '@/lib/parties';
+import { fmtPct } from '@/lib/format';
+import type { PartyResult } from '@/lib/queries';
+
+interface Props {
+  results: PartyResult[];
+  /** Fixed scale max in % so rows are comparable (default 50). */
+  scaleMax?: number;
+  parties?: PartyKey[];
+}
+
+const {
+  results,
+  scaleMax = 50,
+  parties = CHART_ORDER.filter((k) => !['FW', 'SSW', 'Übrige'].includes(k)),
+} = Astro.props;
+
+const bw = 4;
+const gap = 1;
+const h = 16;
+const w = parties.length * (bw + gap) - gap;
+const bars = parties.map((k, i) => {
+  const pct = results.find((r) => r.key === k)?.pct ?? 0;
+  return {
+    k,
+    x: i * (bw + gap),
+    bh: Math.max((h * Math.min(pct, scaleMax)) / scaleMax, pct > 0 ? 1 : 0),
+    pct,
+  };
+});
+const tip = bars
+  .filter((b) => b.pct > 0)
+  .map((b) => `${b.k} ${fmtPct(b.pct)}`)
+  .join(' · ');
+---
+
+<svg
+  class="minibars"
+  width={w}
+  height={h}
+  viewBox={`0 0 ${w} ${h}`}
+  role="img"
+  aria-label={tip}
+  data-tip={tip}
+>
+  {
+    bars.map((b) => (
+      <rect x={b.x} y={h - b.bh} width={bw} height={b.bh} fill={colorVar(b.k)} />
+    ))
+  }
+</svg>
+
+<style>
+  .minibars {
+    display: inline-block;
+    vertical-align: -2px;
+    flex-shrink: 0;
+  }
+</style>

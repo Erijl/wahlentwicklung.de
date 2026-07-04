@@ -12,6 +12,8 @@ import TrendLines from '@/components/charts/TrendLines.astro';
 import StateMap from '@/components/charts/StateMap.astro';
 import ResultTable from '@/components/ResultTable.astro';
 import PartyTag from '@/components/PartyTag.astro';
+import SearchFilter from '@/components/islands/SearchFilter.svelte';
+import YearSwitcher from '@/components/YearSwitcher.astro';
 import {
   getElectionYears,
   federalResults,
@@ -24,6 +26,7 @@ import {
 import { electionLede } from '@/lib/prose';
 import { fmtPct, fmtDelta, fmtMillions, fmtNum } from '@/lib/format';
 import type { PartyKey } from '@/lib/parties';
+import { slugify } from '@/lib/slugs';
 
 export function getStaticPaths() {
   return getElectionYears().map((year) => ({ params: { year: String(year) } }));
@@ -60,7 +63,8 @@ const combos = CANDIDATES.filter((c) => c.parties.every((k) => seatOf(k) > 0))
 
 const winners = stateWinners(year);
 const trends = federalTrends(['Union', 'SPD', 'AfD', 'Grüne', 'Linke', 'FDP']);
-const tableRows = constituencyTable(year);
+const tableRows = constituencyTable(year, 'secondary');
+const tableRowsErst = constituencyTable(year, 'primary');
 const topTurnoutState = stateTurnouts(year)[0];
 const biggestGain = [...results]
   .filter((r) => r.prevPct !== null && r.key !== 'Übrige')
@@ -77,6 +81,7 @@ const status = `Amtliches Endergebnis · Quelle: Bundeswahlleiterin`;
     <p class="kicker">Bundestagswahl · Zweitstimmen · amtliches Endergebnis</p>
     <h1>Bundestagswahl {year}</h1>
     <p class="lede">{lede}</p>
+    <YearSwitcher years={years} current={year} hrefFor={(y) => `/wahl/${y}`} />
   </section>
 
   <ModuleFrame
@@ -125,7 +130,7 @@ const status = `Amtliches Endergebnis · Quelle: Bundeswahlleiterin`;
 
   <div class="two">
     <ModuleFrame title="Stärkste Partei nach Bundesland" status={status}>
-      <StateMap winners={winners} />
+      <StateMap winners={winners} hrefFor={(name) => `/wahl/${year}/bundesland/${slugify(name)}`} />
       <p class="fnote">
         Zweitstimmen · Detailansicht: <a href="/bundeslaender">alle Bundesländer</a>
       </p>
@@ -168,9 +173,41 @@ const status = `Amtliches Endergebnis · Quelle: Bundeswahlleiterin`;
     <TrendLines trends={trends} years={years} />
   </ModuleFrame>
 
-  <ModuleFrame title="Alle 299 Wahlkreise" status={status} method="Zweitstimmenanteile je Wahlkreis, sortiert nach Wahlbeteiligung.">
-    <ResultTable rows={tableRows} linkYear={year} />
+  <ModuleFrame
+    title={tableRows.length === 299 ? 'Alle 299 Wahlkreise' : `${tableRows.length} von 299 Wahlkreisen`}
+    status={status}
+    method={`Stimmenanteile je Wahlkreis, sortiert nach Wahlbeteiligung. Umschaltbar zwischen Zweit- und Erststimmen.${tableRows.length < 299 ? ' Wahlkreise, deren Zuordnung wegen Gebietsreformen noch aussteht, fehlen vorerst.' : ''}`}
+  >
+    <div class="table-tools">
+      <div class="vswitch" role="group" aria-label="Stimmenart">
+        <button type="button" class="on" data-vote-btn="zweit">Zweitstimmen</button>
+        <button type="button" data-vote-btn="erst">Erststimmen</button>
+      </div>
+      <SearchFilter client:load target={`wk-table-${year}`} placeholder="Wahlkreis oder Bundesland suchen …" />
+    </div>
+    <div id={`wk-table-${year}`}>
+      <div data-vote-view="zweit">
+        <ResultTable rows={tableRows} linkYear={year} />
+      </div>
+      <div data-vote-view="erst" hidden>
+        <ResultTable rows={tableRowsErst} linkYear={year} />
+      </div>
+    </div>
   </ModuleFrame>
+
+  <script>
+    document.querySelectorAll<HTMLButtonElement>('[data-vote-btn]').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const which = btn.dataset.voteBtn;
+        document.querySelectorAll<HTMLElement>('[data-vote-view]').forEach((v) => {
+          v.hidden = v.dataset.voteView !== which;
+        });
+        document.querySelectorAll<HTMLButtonElement>('[data-vote-btn]').forEach((b) => {
+          b.classList.toggle('on', b === btn);
+        });
+      });
+    });
+  </script>
 
   <nav class="xlinks" aria-label="Weitere Wahlen">
     {prevYear && <a href={`/wahl/${prevYear}`}>← Bundestagswahl {prevYear}</a>}
@@ -187,7 +224,39 @@ const status = `Amtliches Endergebnis · Quelle: Bundeswahlleiterin`;
     padding: 26px 0 18px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .table-tools {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .vswitch {
+    display: inline-flex;
+    border: 1px solid var(--hairline);
+    border-radius: 5px;
+    overflow: hidden;
+    background: var(--raised);
+  }
+  .vswitch button {
+    border: none;
+    background: transparent;
+    color: var(--text-sec);
+    font: inherit;
+    font-size: 13.5px;
+    padding: 6px 14px;
+    cursor: pointer;
+  }
+  .vswitch button + button {
+    border-left: 1px solid var(--hairline);
+  }
+  .vswitch button.on {
+    background: var(--ink);
+    color: var(--surface);
+    font-weight: 700;
   }
   .two {
     display: grid;

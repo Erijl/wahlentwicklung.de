@@ -4,7 +4,8 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import StateMap from '@/components/charts/StateMap.astro';
 import ModuleFrame from '@/components/ModuleFrame.astro';
 import PartyTag from '@/components/PartyTag.astro';
-import { getStates, latestElectionYear, stateWinners } from '@/lib/queries';
+import MiniBars from '@/components/charts/MiniBars.astro';
+import { getStates, latestElectionYear, stateWinners, stateResults } from '@/lib/queries';
 import { slugify } from '@/lib/slugs';
 import { fmtPct } from '@/lib/format';
 
@@ -29,7 +30,7 @@ const winners = stateWinners(latest);
 
   <div class="two">
     <ModuleFrame title={`Stärkste Partei ${latest}`}>
-      <StateMap winners={winners} />
+      <StateMap winners={winners} hrefFor={(name) => `/bundesland/${slugify(name)}`} />
     </ModuleFrame>
     <ModuleFrame title="Alle Bundesländer" status="alphabetisch">
       <ul class="statelist">
@@ -41,7 +42,8 @@ const winners = stateWinners(latest);
               return (
                 <li>
                   <a href={`/bundesland/${slugify(s.name)}`}>
-                    <strong>{s.name}</strong>
+                    <MiniBars results={stateResults(latest, s.id)} />
+                    <strong class="grow">{s.name}</strong>
                     {win && (
                       <span class="meta">
                         <PartyTag party={win.key} /> {fmtPct(win.pct)}
@@ -83,7 +85,7 @@ const winners = stateWinners(latest);
   .statelist a {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
+    align-items: center;
     gap: 12px;
     padding: 10px 0;
     color: var(--ink);
@@ -92,6 +94,10 @@ const winners = stateWinners(latest);
   .statelist a:hover {
     text-decoration: none;
     background: var(--raised);
+  }
+  .grow {
+    flex: 1;
+    margin-left: 10px;
   }
   .meta {
     color: var(--text-sec);

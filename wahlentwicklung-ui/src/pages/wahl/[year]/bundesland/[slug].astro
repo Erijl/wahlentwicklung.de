@@ -7,6 +7,7 @@ import StatTile from '@/components/StatTile.astro';
 import StatTileGrid from '@/components/StatTileGrid.astro';
 import ResultBars from '@/components/charts/ResultBars.astro';
 import PartyTag from '@/components/PartyTag.astro';
+import YearSwitcher from '@/components/YearSwitcher.astro';
 import {
   getElectionYears,
   getStates,
@@ -66,6 +67,11 @@ const title = `Bundestagswahl ${year} in ${stateName} – Ergebnis`;
     <p class="kicker">Bundestagswahl {year} · Bundesland</p>
     <h1>{stateName}</h1>
     <p class="lede">{lede}</p>
+    <YearSwitcher
+      years={years}
+      current={year}
+      hrefFor={(y) => `/wahl/${y}/bundesland/${Astro.params.slug}`}
+    />
   </section>
 
   <ModuleFrame title="Zweitstimmen: Anteil und Veränderung" hasTable>
@@ -133,7 +139,8 @@ const title = `Bundestagswahl ${year} in ${stateName} – Ergebnis`;
     padding: 26px 0 18px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    align-items: flex-start;
+    gap: 12px;
   }
   .xlinks {
     display: flex;

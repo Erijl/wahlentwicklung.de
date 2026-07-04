@@ -1,63 +1,139 @@
 ---
-/** Dense result table: one row per area, party share columns. Also serves
- *  as the universal "raw data" view behind every chart toggle. */
+/** Dense result table: mini result-bars + one row per area, party share
+ *  columns colored by party. Collapsible (first N rows + fade + centered
+ *  show-more) as progressive enhancement — without JS all rows show.
+ *  Rows carry data-search so a SearchFilter island can target the table. */
 import PartyTag from '@/components/PartyTag.astro';
+import MiniBars from '@/components/charts/MiniBars.astro';
 import { fmtPct } from '@/lib/format';
-import { CHART_ORDER, type PartyKey } from '@/lib/parties';
+import { CHART_ORDER, textColorVar, type PartyKey } from '@/lib/parties';
 import type { ConstituencyTableRow } from '@/lib/queries';
 import { constituencySlug } from '@/lib/slugs';
 
 interface Props {
   rows: ConstituencyTableRow[];
-  /** Party columns; default = the classic seven. */
   columns?: PartyKey[];
   linkYear?: number;
+  /** Rows shown before the fade + "show more" (0 = never collapse). */
+  collapsedRows?: number;
+  /** id so search islands can target this table's rows. */
+  listId?: string;
 }
 
 const {
   rows,
   columns = CHART_ORDER.filter((k) => !['FW', 'SSW', 'Übrige'].includes(k)),
   linkYear,
+  collapsedRows = 10,
+  listId,
 } = Astro.props;
 const pctOf = (row: ConstituencyTableRow, k: PartyKey) =>
   row.results.find((r) => r.key === k)?.pct ?? 0;
+const collapsible = collapsedRows > 0 && rows.length > collapsedRows + 4;
 ---
 
-<div class="tblwrap">
-  <table>
-    <thead>
-      <tr>
-        <th class="wk">Wahlkreis</th>
-        <th>Beteiligung</th>
-        {columns.map((k) => <th><PartyTag party={k} /></th>)}
-      </tr>
-    </thead>
-    <tbody>
-      {
-        rows.map((row) => (
-          <tr>
-            <td class="wk">
-              <a
-                href={
-                  linkYear
-                    ? `/wahl/${linkYear}/wahlkreis/${constituencySlug(row.number, row.name)}`
-                    : `/wahlkreis/${constituencySlug(row.number, row.name)}`
-                }
-              >
-                {row.name}
-              </a>
-              <span>{row.stateName}</span>
-            </td>
-            <td>{fmtPct(row.turnout).replace(' %', '')}</td>
-            {columns.map((k) => <td>{fmtPct(pctOf(row, k)).replace(' %', '')}</td>)}
-          </tr>
-        ))
-      }
-    </tbody>
-  </table>
+<div class="rt" data-collapsed-rows={collapsible ? collapsedRows : undefined}>
+  <div class="tblwrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="wk">Wahlkreis</th>
+          <th>Beteiligung</th>
+          {columns.map((k) => <th><PartyTag party={k} /></th>)}
+        </tr>
+      </thead>
+      <tbody id={listId}>
+        {
+          rows.map((row) => (
+            <tr data-search={`${row.number} ${row.name} ${row.stateName}`}>
+              <td class="wk">
+                <MiniBars results={row.results} parties={columns} />
+                <span class="wk-name">
+                  <a
+                    href={
+                      linkYear
+                        ? `/wahl/${linkYear}/wahlkreis/${constituencySlug(row.number, row.name)}`
+                        : `/wahlkreis/${constituencySlug(row.number, row.name)}`
+                    }
+                  >
+                    {row.name}
+                  </a>
+                  <span>{row.stateName}</span>
+                </span>
+              </td>
+              <td>{fmtPct(row.turnout).replace(' %', '')}</td>
+              {columns.map((k) => (
+                <td style={`color:${textColorVar(k)}`}>{fmtPct(pctOf(row, k)).replace(' %', '')}</td>
+              ))}
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+  {
+    collapsible && (
+      <div class="rt-more" hidden>
+        <button type="button" class="rt-more-btn" data-more-label={`Alle ${rows.length} anzeigen ↓`} data-less-label="Weniger anzeigen ↑">
+          Alle {rows.length} anzeigen ↓
+        </button>
+      </div>
+    )
+  }
 </div>
 
+<script>
+  // collapse enhancement: hide rows past the threshold, fade + toggle
+  document.querySelectorAll<HTMLElement>('.rt[data-collapsed-rows]').forEach((rt) => {
+    const n = Number(rt.dataset.collapsedRows);
+    const body = rt.querySelector('tbody');
+    const more = rt.querySelector<HTMLElement>('.rt-more');
+    const btn = rt.querySelector<HTMLButtonElement>('.rt-more-btn');
+    if (!body || !more || !btn) return;
+    let collapsed = true;
+    const apply = () => {
+      [...body.rows].forEach((tr, i) => {
+        tr.classList.toggle('rt-hidden', collapsed && i >= n);
+      });
+      rt.classList.toggle('rt-collapsed', collapsed);
+      btn.textContent = collapsed ? btn.dataset.moreLabel! : btn.dataset.lessLabel!;
+    };
+    more.hidden = false;
+    apply();
+    btn.addEventListener('click', () => {
+      collapsed = !collapsed;
+      apply();
+      if (collapsed) rt.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    });
+    // an active search must see all rows: suspend the collapse while querying.
+    // The event fires on the search island's target container, which wraps
+    // this table — listen at document level and match by containment.
+    let preSearch = collapsed;
+    let searching = false;
+    document.addEventListener('searchfilter', (e) => {
+      const container = e.target as Element;
+      if (!container.contains(rt)) return;
+      const q = (e as CustomEvent).detail?.query ?? '';
+      if (q !== '' && !searching) {
+        searching = true;
+        preSearch = collapsed;
+        collapsed = false;
+        more.hidden = true;
+        apply();
+      } else if (q === '' && searching) {
+        searching = false;
+        collapsed = preSearch;
+        more.hidden = false;
+        apply();
+      }
+    });
+  });
+</script>
+
 <style>
+  .rt {
+    position: relative;
+  }
   .tblwrap {
     overflow-x: auto;
   }
@@ -85,15 +161,66 @@ const pctOf = (row: ConstituencyTableRow, k: PartyKey) =>
     border-bottom: 1px solid var(--hairline);
     text-align: right;
     font-size: 13.5px;
+    font-weight: 600;
   }
-  td.wk a {
-    display: block;
+  td.wk {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 400;
+  }
+  .wk-name {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .wk-name a {
     font-size: 13.5px;
     font-weight: 600;
     color: var(--ink);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
-  td.wk span {
+  .wk-name > span {
     font-size: 11.5px;
     color: var(--text-muted);
+  }
+  tbody tr:hover td {
+    background: var(--raised);
+  }
+  :global(.rt-hidden) {
+    display: none;
+  }
+  .rt-more {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    padding: 14px 0 4px;
+  }
+  .rt-collapsed .rt-more::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -56px;
+    height: 56px;
+    background: linear-gradient(to bottom, transparent, var(--surface));
+    pointer-events: none;
+  }
+  .rt-more-btn {
+    border: 1px solid var(--hairline);
+    background: var(--raised);
+    color: var(--ink);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 7px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgb(0 0 0 / 0.08);
+  }
+  .rt-more-btn:hover {
+    border-color: var(--accent);
   }
 </style>

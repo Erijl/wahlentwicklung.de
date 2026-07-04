@@ -114,13 +114,20 @@ export function stateVoteBase(year: number, stateId: number): VoteBase | null {
   return row ? toVoteBase(row) : null;
 }
 
-export function constituencyVoteBase(year: number, num: number): VoteBase | null {
+export type VoteType = 'secondary' | 'primary';
+
+export function constituencyVoteBase(
+  year: number,
+  num: number,
+  vote: VoteType = 'secondary',
+): VoteBase | null {
+  const v = vote === 'primary' ? 'primaryvote' : 'secondaryvote';
   const row = prepare(
-      `SELECT b.eligiblevoters_secondaryvote_definitive AS elig,
-              b.actualvoters_secondaryvote_definitive AS act,
-              b.validvoters_secondaryvote_definitive AS valid,
-              b.eligiblevoters_secondaryvote_previous AS elig_prev,
-              b.actualvoters_secondaryvote_previous AS act_prev
+      `SELECT b.eligiblevoters_${v}_definitive AS elig,
+              b.actualvoters_${v}_definitive AS act,
+              b.validvoters_${v}_definitive AS valid,
+              b.eligiblevoters_${v}_previous AS elig_prev,
+              b.actualvoters_${v}_previous AS act_prev
        FROM constituency_vote_base b
        JOIN constituency_mapping cm ON cm.election_year = b.election_year
             AND cm.election_state_id = b.state_id AND cm.row_id = b.constituency_id
@@ -219,11 +226,16 @@ export function stateResults(year: number, stateId: number): PartyResult[] {
   return aggregate(rows, base.valid, prev?.v ?? 0);
 }
 
-export function constituencyResults(year: number, num: number): PartyResult[] {
-  const base = constituencyVoteBase(year, num);
+export function constituencyResults(
+  year: number,
+  num: number,
+  vote: VoteType = 'secondary',
+): PartyResult[] {
+  const v = vote === 'primary' ? 'primaryvote' : 'secondaryvote';
+  const base = constituencyVoteBase(year, num, vote);
   if (!base) return [];
   const prev = prepare(
-      `SELECT b.validvoters_secondaryvote_previous AS v
+      `SELECT b.validvoters_${v}_previous AS v
        FROM constituency_vote_base b
        JOIN constituency_mapping cm ON cm.election_year = b.election_year
             AND cm.election_state_id = b.state_id AND cm.row_id = b.constituency_id
@@ -232,7 +244,7 @@ export function constituencyResults(year: number, num: number): PartyResult[] {
     .get(year, num) as any;
   const rows = prepare(
       `SELECT p.abbreviation AS abbr, p.name AS pname, ep.name AS epname,
-              cvp.secondaryvote_definitive AS votes, cvp.secondaryvote_previous AS prev
+              cvp.${v}_definitive AS votes, cvp.${v}_previous AS prev
        FROM constituency_vote_party cvp
        JOIN constituency_mapping cm ON cm.election_year = cvp.election_year
             AND cm.election_state_id = cvp.state_id AND cm.row_id = cvp.constituency_id
@@ -327,7 +339,11 @@ export interface ConstituencyTableRow {
 }
 
 /** All constituencies of an election with per-party shares (dense table). */
-export function constituencyTable(year: number, limit?: number): ConstituencyTableRow[] {
+export function constituencyTable(
+  year: number,
+  vote: VoteType = 'secondary',
+  limit?: number,
+): ConstituencyTableRow[] {
   const rows = prepare(
       `SELECT cm.constituency_id AS number, c.name, s.name AS stateName,
               100.0 * b.actualvoters_secondaryvote_definitive
@@ -343,7 +359,7 @@ export function constituencyTable(year: number, limit?: number): ConstituencyTab
     .all(year) as any[];
   return rows.map((r) => ({
     ...r,
-    results: constituencyResults(year, r.number),
+    results: constituencyResults(year, r.number, vote),
   }));
 }
 

@@ -3,6 +3,7 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import ResultBars from '@/components/charts/ResultBars.astro';
 import ModuleFrame from '@/components/ModuleFrame.astro';
+import YearSwitcher from '@/components/YearSwitcher.astro';
 import { latestElectionYear, federalResults, federalVoteBase, getElectionYears } from '@/lib/queries';
 import { electionLede } from '@/lib/prose';
 
@@ -31,6 +32,10 @@ const entries = [
     <p class="kicker">Die Entwicklung der Bundestagswahlen · {years[0]}–{year}</p>
     <h1>Wie Deutschland wählt</h1>
     <p class="lede">{lede}</p>
+    <div class="yearrow">
+      <span>Direkt zu einer Wahl:</span>
+      <YearSwitcher years={years} hrefFor={(y) => `/wahl/${y}`} />
+    </div>
   </section>
 
   <ModuleFrame title={`Bundestagswahl ${year}: Zweitstimmen`}>
@@ -59,7 +64,15 @@ const entries = [
     padding: 34px 0 18px;
     display: flex;
     flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .yearrow {
+    display: flex;
+    align-items: center;
     gap: 10px;
+    font-size: 13px;
+    color: var(--text-sec);
   }
   .fnote {
     margin-top: 10px;

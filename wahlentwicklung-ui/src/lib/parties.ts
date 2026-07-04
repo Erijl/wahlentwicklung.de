@@ -34,6 +34,13 @@ export function colorVar(key: string): string {
   return CSS_VAR[key as PartyKey] ?? CSS_VAR['Übrige'];
 }
 
+/** Party color for *text* (table values). Same as the mark color except
+ *  where that fails text contrast (FDP yellow → darker text step). */
+export function textColorVar(key: string): string {
+  if (key === 'FDP') return 'var(--party-fdp-text)';
+  return colorVar(key);
+}
+
 /** Bundestag seating, left → right. */
 export const SEATING_ORDER: PartyKey[] = ['Linke', 'SPD', 'Grüne', 'SSW', 'Union', 'AfD'];
 

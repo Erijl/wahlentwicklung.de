@@ -8,6 +8,7 @@ import StatTile from '@/components/StatTile.astro';
 import StatTileGrid from '@/components/StatTileGrid.astro';
 import ResultBars from '@/components/charts/ResultBars.astro';
 import PartyTag from '@/components/PartyTag.astro';
+import YearSwitcher from '@/components/YearSwitcher.astro';
 import {
   getElectionYears,
   getConstituencies,
@@ -60,6 +61,12 @@ const title = `Bundestagswahl ${year} – Wahlkreis ${number} ${name}`;
     <p class="kicker">Bundestagswahl {year} · Wahlkreis {number} · {stateName}</p>
     <h1>{name}</h1>
     <p class="lede">{lede}</p>
+    <YearSwitcher
+      years={years}
+      current={year}
+      available={mappedYears}
+      hrefFor={(y) => `/wahl/${y}/wahlkreis/${Astro.params.slug}`}
+    />
   </section>
 
   <ModuleFrame
@@ -119,7 +126,8 @@ const title = `Bundestagswahl ${year} – Wahlkreis ${number} ${name}`;
     padding: 26px 0 18px;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    align-items: flex-start;
+    gap: 12px;
   }
   .xlinks {
     display: flex;

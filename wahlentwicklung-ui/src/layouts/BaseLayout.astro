@@ -2,6 +2,7 @@
 import '@fontsource/fira-sans/400.css';
 import '@fontsource/fira-sans/600.css';
 import '@fontsource/fira-sans/700.css';
+import '@fontsource/fira-sans-condensed/700.css';
 import '@fontsource/noto-serif/400.css';
 import '@fontsource/noto-serif/700.css';
 import '@/styles/global.css';
@@ -68,6 +69,40 @@ const current = Astro.url.pathname;
       <slot />
     </main>
 
+    {/* hover layer: any element with data-tip gets a styled tooltip.
+        Pages stay fully static — this is progressive enhancement. */}
+    <div class="tip" id="global-tip" role="tooltip" hidden></div>
+    <script>
+      const tip = document.getElementById('global-tip')!;
+      let current: Element | null = null;
+      function move(e: PointerEvent) {
+        const pad = 12;
+        const r = tip.getBoundingClientRect();
+        let x = e.clientX + pad;
+        let y = e.clientY + pad;
+        if (x + r.width > innerWidth - 4) x = e.clientX - r.width - pad;
+        if (y + r.height > innerHeight - 4) y = e.clientY - r.height - pad;
+        tip.style.transform = `translate(${x}px, ${y}px)`;
+      }
+      document.addEventListener('pointerover', (e) => {
+        const el = (e.target as Element).closest('[data-tip]');
+        if (!el || el === current) return;
+        current = el;
+        tip.textContent = el.getAttribute('data-tip');
+        tip.hidden = false;
+        move(e as PointerEvent);
+      });
+      document.addEventListener('pointermove', (e) => {
+        if (current) move(e as PointerEvent);
+      });
+      document.addEventListener('pointerout', (e) => {
+        if (current && !current.contains((e as PointerEvent).relatedTarget as Node)) {
+          current = null;
+          tip.hidden = true;
+        }
+      });
+    </script>
+
     <footer class="site-foot">
       <p>
         Datengrundlage: Bundeswahlleiterin, amtliche Endergebnisse 2005–2025 ·
@@ -92,9 +127,11 @@ const current = Astro.url.pathname;
     flex-wrap: wrap;
   }
   .brand {
-    font-weight: 800;
-    font-size: 18px;
-    letter-spacing: -0.01em;
+    font-family: var(--font-brand);
+    font-weight: 700;
+    font-size: 19px;
+    letter-spacing: 0.01em;
+    text-transform: none;
     color: var(--ink);
   }
   .brand:hover {
@@ -136,6 +173,21 @@ const current = Astro.url.pathname;
     max-width: 1120px;
     margin: 0 auto;
     padding: 0 28px 40px;
+  }
+  .tip {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 50;
+    pointer-events: none;
+    background: var(--ink);
+    color: var(--surface);
+    font-size: 12.5px;
+    line-height: 1.4;
+    padding: 6px 9px;
+    border-radius: 4px;
+    max-width: 280px;
+    white-space: pre-line;
   }
   .site-foot {
     border-top: 1px solid var(--hairline);

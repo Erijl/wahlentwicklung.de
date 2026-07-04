@@ -2,10 +2,14 @@
 /** Constituency grid list — 299 entries with client-side search island. */
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import SearchFilter from '@/components/islands/SearchFilter.svelte';
-import { getConstituencies } from '@/lib/queries';
+import MiniBars from '@/components/charts/MiniBars.astro';
+import { getConstituencies, constituencyResults, constituencyYears } from '@/lib/queries';
 import { constituencySlug } from '@/lib/slugs';
 
-const constituencies = getConstituencies();
+const constituencies = getConstituencies().map((c) => {
+  const latest = constituencyYears(c.number).at(-1)!;
+  return { ...c, results: constituencyResults(latest, c.number) };
+});
 ---
 
 <BaseLayout
@@ -30,6 +34,7 @@ const constituencies = getConstituencies();
         <li data-search={`${c.number} ${c.name} ${c.stateName}`}>
           <a href={`/wahlkreis/${constituencySlug(c.number, c.name)}`}>
             <span class="num">{c.number}</span>
+            <MiniBars results={c.results} />
             <span class="name">
               <strong>{c.name}</strong>
               <span>{c.stateName}</span>

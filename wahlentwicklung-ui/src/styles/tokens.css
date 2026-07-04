@@ -27,9 +27,15 @@
   --party-ssw: #274f8d;
   --party-uebrige: #8a8f98;
 
+  /* FDP yellow fails text contrast on light — darker step for text-only use
+     (marks keep --party-fdp; see design system §2 WARN mitigation) */
+  --party-fdp-text: #8f760a;
+
   /* type */
   --font-sans: 'Fira Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-serif: 'Noto Serif', Georgia, 'Times New Roman', serif;
+  /* brand wordmark: condensed humanist sans = the BundesSans-Condensed look */
+  --font-brand: 'Fira Sans Condensed', 'Fira Sans', 'Segoe UI', sans-serif;
 
   /* federal tricolor — brand hairline only, never UI colors */
   --tric-schwarz: #000000;
@@ -58,4 +64,6 @@
   --party-fw: #e08a2e;
   --party-ssw: #5b82c4;
   --party-uebrige: #6b7078;
+
+  --party-fdp-text: #b08e20; /* passes on dark surface */
 }

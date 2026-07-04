@@ -27,6 +27,8 @@
       if (hit) n++;
     });
     visible = n;
+    // let wrappers (e.g. collapsible tables) react to active searches
+    container.dispatchEvent(new CustomEvent('searchfilter', { detail: { query: q }, bubbles: true }));
   });
 </script>
 

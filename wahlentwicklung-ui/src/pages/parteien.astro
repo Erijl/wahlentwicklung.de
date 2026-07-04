@@ -1,0 +1,99 @@
+---
+/** Party overview. v0.1: canonical parties with abbreviation; grows as the
+ *  party mapping (audit §2) completes. */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PartyTag from '@/components/PartyTag.astro';
+import { getPartiesWithAbbreviation, partyTrend } from '@/lib/queries';
+import { partySlug } from '@/lib/slugs';
+import { fmtPct } from '@/lib/format';
+
+const parties = getPartiesWithAbbreviation()
+  .map((p) => {
+    const trend = partyTrend(p.id);
+    return { ...p, latest: trend.at(-1) };
+  })
+  .sort((a, b) => (b.latest?.pct ?? 0) - (a.latest?.pct ?? 0));
+---
+
+<BaseLayout
+  title="Parteien – Ergebnisse & Entwicklung"
+  description="Parteien bei den Bundestagswahlen seit 2005: aktuelle Zweitstimmenanteile und die Entwicklung über alle Wahlen."
+  path="/parteien"
+>
+  <section class="hero">
+    <p class="kicker">Übersicht</p>
+    <h1>Parteien</h1>
+    <p class="lede">
+      Entwicklung der Zweitstimmen seit 2005 je Partei. Weitere Parteien folgen, sobald ihre
+      Zuordnung über alle Wahljahre abgeschlossen ist.
+    </p>
+  </section>
+
+  <ul class="plist">
+    {
+      parties.map((p) => (
+        <li>
+          <a href={`/partei/${partySlug(p.abbreviation)}`}>
+            <span class="ab">
+              <PartyTag party={p.abbreviation} />
+            </span>
+            <span class="name">{p.name}</span>
+            {p.latest && (
+              <span class="meta">
+                {fmtPct(p.latest.pct)} ({p.latest.year})
+              </span>
+            )}
+            <span class="go">→</span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</BaseLayout>
+
+<style>
+  .hero {
+    padding: 26px 0 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .plist {
+    list-style: none;
+    border-top: 1px solid var(--hairline);
+  }
+  .plist li {
+    border-bottom: 1px solid var(--hairline);
+  }
+  .plist a {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    padding: 12px 0;
+    color: var(--ink);
+  }
+  .plist a:hover {
+    text-decoration: none;
+    background: var(--raised);
+  }
+  .ab {
+    min-width: 120px;
+    font-weight: 700;
+  }
+  .name {
+    color: var(--text-sec);
+    font-size: 13.5px;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .meta {
+    color: var(--text-sec);
+    font-size: 13.5px;
+    font-variant-numeric: tabular-nums;
+  }
+  .go {
+    color: var(--text-muted);
+  }
+</style>

@@ -1,0 +1,90 @@
+---
+/**
+ * Development line chart across election years. 2px lines, end markers with
+ * surface ring, collision-avoided direct end-labels with leader lines.
+ */
+import { colorVar, type PartyKey } from '@/lib/parties';
+import { fmtPct } from '@/lib/format';
+import type { TrendPoint } from '@/lib/queries';
+
+interface Props {
+  trends: Map<PartyKey, TrendPoint[]>;
+  years: number[];
+}
+
+const { trends, years } = Astro.props;
+
+const w = 760;
+const h = 300;
+const ml = 34;
+const mr = 98;
+const mt = 10;
+const mb = 26;
+const allPts = [...trends.values()].flat();
+const yMax = Math.max(20, Math.ceil(Math.max(...allPts.map((p) => p.pct)) / 10) * 10 + 5);
+
+const X = (year: number) => ml + ((w - ml - mr) * years.indexOf(year)) / (years.length - 1);
+const Y = (v: number) => mt + (h - mt - mb) * (1 - v / yMax);
+
+const gridSteps = Array.from({ length: Math.floor(yMax / 10) + 1 }, (_, i) => i * 10);
+
+const series = [...trends.entries()].map(([key, pts]) => ({
+  key,
+  path: 'M' + pts.map((p) => `${X(p.year).toFixed(1)} ${Y(p.pct).toFixed(1)}`).join(' L'),
+  end: pts[pts.length - 1],
+}));
+
+// collision-avoided end labels
+const MIN_GAP = 15;
+const labels = series
+  .map((s) => ({ key: s.key, x: X(s.end.year), yLine: Y(s.end.pct), y: Y(s.end.pct), pct: s.end.pct }))
+  .sort((a, b) => a.y - b.y);
+for (let i = 1; i < labels.length; i++) {
+  if (labels[i].y - labels[i - 1].y < MIN_GAP) labels[i].y = labels[i - 1].y + MIN_GAP;
+}
+---
+
+<svg viewBox={`0 0 ${w} ${h}`} role="img" aria-label="Entwicklung der Zweitstimmenanteile">
+  {
+    gridSteps.map((g) => (
+      <>
+        <line x1={ml} y1={Y(g).toFixed(1)} x2={w - mr} y2={Y(g).toFixed(1)} stroke="var(--hairline)" stroke-width="1" />
+        <text x={ml - 6} y={(Y(g) + 4).toFixed(1)} text-anchor="end" class="t-dim">
+          {g}
+        </text>
+      </>
+    ))
+  }
+  {
+    years.map((y) => (
+      <text x={X(y).toFixed(1)} y={h - 6} text-anchor="middle" class="t-dim">
+        {y}
+      </text>
+    ))
+  }
+  {
+    series.map((s) => (
+      <>
+        <path d={s.path} fill="none" stroke={colorVar(s.key)} stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
+        <circle cx={X(s.end.year).toFixed(1)} cy={Y(s.end.pct).toFixed(1)} r="4" fill={colorVar(s.key)} stroke="var(--surface)" stroke-width="2" />
+      </>
+    ))
+  }
+  {
+    labels.map((l) => (
+      <>
+        <line x1={(l.x + 5).toFixed(1)} y1={l.yLine.toFixed(1)} x2={(l.x + 14).toFixed(1)} y2={l.y.toFixed(1)} stroke="var(--text-muted)" stroke-width="1" />
+        <text x={(l.x + 17).toFixed(1)} y={(l.y + 4).toFixed(1)} class="t-lbl">
+          {l.key} {fmtPct(l.pct).replace(' %', '')}
+        </text>
+      </>
+    ))
+  }
+</svg>
+
+<style>
+  svg {
+    width: 100%;
+    height: auto;
+  }
+</style>

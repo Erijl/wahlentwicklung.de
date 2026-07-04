@@ -1,0 +1,177 @@
+---
+/** Election × state snapshot. */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+import ModuleFrame from '@/components/ModuleFrame.astro';
+import StatTile from '@/components/StatTile.astro';
+import StatTileGrid from '@/components/StatTileGrid.astro';
+import ResultBars from '@/components/charts/ResultBars.astro';
+import PartyTag from '@/components/PartyTag.astro';
+import {
+  getElectionYears,
+  getStates,
+  stateResults,
+  stateVoteBase,
+  federalResults,
+} from '@/lib/queries';
+import { areaLede } from '@/lib/prose';
+import { slugify } from '@/lib/slugs';
+import { fmtPct, fmtDelta, fmtNum, fmtMillions } from '@/lib/format';
+
+export function getStaticPaths() {
+  const paths = [];
+  for (const year of getElectionYears()) {
+    for (const s of getStates()) {
+      paths.push({
+        params: { year: String(year), slug: slugify(s.name) },
+        props: { stateId: s.id, stateName: s.name },
+      });
+    }
+  }
+  return paths;
+}
+
+const { stateId, stateName } = Astro.props;
+const year = Number(Astro.params.year);
+const years = getElectionYears();
+const prevYear = years[years.indexOf(year) - 1];
+
+const results = stateResults(year, stateId);
+const base = stateVoteBase(year, stateId)!;
+const federal = federalResults(year);
+const lede = areaLede(stateName, year, results, base);
+
+// state vs federal: the party over-/under-performing here the most
+const cmp = results
+  .filter((r) => r.key !== 'Übrige')
+  .map((r) => ({
+    key: r.key,
+    diff: r.pct - (federal.find((f) => f.key === r.key)?.pct ?? 0),
+  }))
+  .sort((a, b) => b.diff - a.diff);
+
+const title = `Bundestagswahl ${year} in ${stateName} – Ergebnis`;
+---
+
+<BaseLayout title={title} description={lede} path={`/wahl/${year}/bundesland/${Astro.params.slug}`}>
+  <Breadcrumb
+    items={[
+      { label: 'Wahlen', href: '/wahlen' },
+      { label: `Bundestagswahl ${year}`, href: `/wahl/${year}` },
+      { label: stateName },
+    ]}
+  />
+
+  <section class="hero">
+    <p class="kicker">Bundestagswahl {year} · Bundesland</p>
+    <h1>{stateName}</h1>
+    <p class="lede">{lede}</p>
+  </section>
+
+  <ModuleFrame title="Zweitstimmen: Anteil und Veränderung" hasTable>
+    <ResultBars
+      results={results}
+      prevLabel={prevYear ? `Vorwahl ${prevYear}` : 'Vorwahl'}
+      currentLabel={`${stateName} ${year}`}
+    />
+    <div slot="table" class="tblwrap">
+      <table>
+        <thead><tr><th>Partei</th><th>Stimmen</th><th>Anteil</th><th>ggü. Vorwahl</th></tr></thead>
+        <tbody>
+          {
+            results.map((r) => (
+              <tr>
+                <td><PartyTag party={r.key} /></td>
+                <td>{fmtNum(r.votes)}</td>
+                <td>{fmtPct(r.pct)}</td>
+                <td>{r.prevPct !== null ? fmtDelta(r.pct - r.prevPct) : '–'}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </ModuleFrame>
+
+  <ModuleFrame title="Auf einen Blick" status="berechnet aus dem amtlichen Endergebnis">
+    <StatTileGrid>
+      <StatTile
+        label="Wahlbeteiligung"
+        value={fmtPct(base.turnout)}
+        sub={base.prevTurnout > 0 ? `${fmtDelta(base.turnout - base.prevTurnout)} Pp. ggü. Vorwahl` : undefined}
+      />
+      <StatTile label="Wahlberechtigte" value={fmtMillions(base.eligible)} />
+      {
+        cmp[0] && (
+          <StatTile
+            label="Stärker als im Bund"
+            value={`${cmp[0].key} ${fmtDelta(cmp[0].diff)} Pp.`}
+            sub="Abweichung vom Bundesergebnis"
+          />
+        )
+      }
+      {
+        cmp.at(-1) && (
+          <StatTile
+            label="Schwächer als im Bund"
+            value={`${cmp.at(-1)!.key} ${fmtDelta(cmp.at(-1)!.diff)} Pp.`}
+            sub="Abweichung vom Bundesergebnis"
+          />
+        )
+      }
+    </StatTileGrid>
+  </ModuleFrame>
+
+  <nav class="xlinks" aria-label="Verwandte Seiten">
+    <a href={`/bundesland/${Astro.params.slug}`}>Entwicklung von {stateName} seit {years[0]} →</a>
+    <a href={`/wahl/${year}`}>Gesamtergebnis {year} →</a>
+  </nav>
+</BaseLayout>
+
+<style>
+  .hero {
+    padding: 26px 0 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .xlinks {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 18px 0;
+    border-top: 1px solid var(--hairline);
+    font-size: 14px;
+  }
+  .tblwrap {
+    overflow-x: auto;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-variant-numeric: tabular-nums;
+  }
+  th {
+    font-size: 12px;
+    color: var(--text-sec);
+    text-align: right;
+    font-weight: 600;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--ink);
+  }
+  th:first-child {
+    text-align: left;
+    padding-left: 0;
+  }
+  td {
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--hairline);
+    text-align: right;
+    font-size: 13.5px;
+  }
+  td:first-child {
+    text-align: left;
+    padding-left: 0;
+  }
+</style>

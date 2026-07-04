@@ -1,0 +1,133 @@
+---
+/**
+ * The identical chrome every visualization wears (docs/03-design-system.md §4):
+ * title · status line with source link · method-info · chart↔table toggle.
+ * The toggle works without JS via <details>-free CSS checkbox pattern is
+ * avoided — instead both views render and a tiny inline script swaps them;
+ * with JS disabled the chart shows and the table stays reachable per page.
+ */
+interface Props {
+  title: string;
+  /** e.g. "Amtliches Endergebnis · Quelle: Bundeswahlleiterin" */
+  status?: string;
+  sourceHref?: string;
+  /** Method / calculation note shown behind the ⓘ toggle. */
+  method?: string;
+  /** Set when a table view is provided via the `table` slot. */
+  hasTable?: boolean;
+}
+
+const {
+  title,
+  status = 'Amtliches Endergebnis · Quelle: Bundeswahlleiterin',
+  sourceHref = 'https://www.bundeswahlleiterin.de/bundestagswahlen.html',
+  method,
+  hasTable = false,
+} = Astro.props;
+const id = `mod-${Math.random().toString(36).slice(2, 8)}`;
+---
+
+<section class="mod">
+  <div class="mod-head">
+    <div>
+      <h2>{title}</h2>
+      <p class="status">
+        {status}
+        <a href={sourceHref} rel="noopener">↗</a>
+      </p>
+    </div>
+    <div class="mod-actions">
+      {
+        method && (
+          <button type="button" title="Methodik anzeigen" data-info={id}>
+            ⓘ
+          </button>
+        )
+      }
+      {
+        hasTable && (
+          <button type="button" title="Tabellenansicht umschalten" data-toggle={id}>
+            ⇄ Tabelle
+          </button>
+        )
+      }
+    </div>
+  </div>
+
+  {method && <p class="method" id={`${id}-info`} hidden>{method}</p>}
+
+  <div class="view-chart" id={`${id}-chart`}>
+    <slot />
+  </div>
+  {
+    hasTable && (
+      <div class="view-table" id={`${id}-table`} hidden>
+        <slot name="table" />
+      </div>
+    )
+  }
+</section>
+
+<script>
+  // Progressive enhancement for the ⓘ and ⇄ toggles.
+  document.querySelectorAll<HTMLButtonElement>('[data-toggle]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.toggle;
+      const chart = document.getElementById(`${id}-chart`);
+      const table = document.getElementById(`${id}-table`);
+      if (!chart || !table) return;
+      const showTable = table.hidden;
+      table.hidden = !showTable;
+      chart.hidden = showTable;
+      btn.textContent = showTable ? '⇄ Grafik' : '⇄ Tabelle';
+    });
+  });
+  document.querySelectorAll<HTMLButtonElement>('[data-info]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const info = document.getElementById(`${btn.dataset.info}-info`);
+      if (info) info.hidden = !info.hidden;
+    });
+  });
+</script>
+
+<style>
+  .mod {
+    padding: 22px 0;
+    border-top: 1px solid var(--hairline);
+  }
+  .mod-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+  .status {
+    color: var(--text-muted);
+    font-size: 12.5px;
+    margin-top: 2px;
+  }
+  .mod-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .mod-actions button {
+    border: 1px solid var(--hairline);
+    background: var(--raised);
+    color: var(--text-sec);
+    font: inherit;
+    font-size: 12.5px;
+    padding: 3px 9px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .method {
+    font-size: 13px;
+    color: var(--text-sec);
+    border-left: 2px solid var(--accent);
+    padding-left: 10px;
+    margin-bottom: 12px;
+    max-width: 70ch;
+  }
+</style>

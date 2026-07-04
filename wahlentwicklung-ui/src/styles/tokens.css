@@ -1,0 +1,61 @@
+/* Design tokens — single source: docs/03-design-system.md.
+   Party colors are entity-owned and validated (light & dark) with the
+   dataviz six-checks; do not tweak individual values without re-running
+   the validator. */
+
+:root {
+  /* surfaces & text */
+  --surface: #fcfcfb;
+  --raised: #ffffff;
+  --ink: #1b1d20;
+  --text-sec: #54575c;
+  --text-muted: #8a8d93;
+  --hairline: #e4e4e1;
+  --accent: #0f766e;
+
+  /* party colors (light) */
+  --party-union: #43474d;
+  --party-cdu: #43474d;
+  --party-csu: #43474d;
+  --party-afd: #0089cc;
+  --party-spd: #e8354a;
+  --party-gruene: #2e7519;
+  --party-linke: #c13584;
+  --party-bsw: #6d28d9;
+  --party-fdp: #c9a70b;
+  --party-fw: #d97706;
+  --party-ssw: #274f8d;
+  --party-uebrige: #8a8f98;
+
+  /* type */
+  --font-sans: 'Fira Sans', 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --font-serif: 'Noto Serif', Georgia, 'Times New Roman', serif;
+
+  /* federal tricolor — brand hairline only, never UI colors */
+  --tric-schwarz: #000000;
+  --tric-rot: #dd0000;
+  --tric-gold: #ffce00;
+}
+
+[data-theme='dark'] {
+  --surface: #17181a;
+  --raised: #1f2023;
+  --ink: #ecedee;
+  --text-sec: #a6a9ae;
+  --text-muted: #6e7176;
+  --hairline: #2a2c30;
+  --accent: #34c7b5;
+
+  --party-union: #9aa1ae;
+  --party-cdu: #9aa1ae;
+  --party-csu: #9aa1ae;
+  --party-afd: #2b94d1;
+  --party-spd: #f0566a;
+  --party-gruene: #3d8a22;
+  --party-linke: #d45fa3;
+  --party-bsw: #9d6bf0;
+  --party-fdp: #b08e20;
+  --party-fw: #e08a2e;
+  --party-ssw: #5b82c4;
+  --party-uebrige: #6b7078;
+}

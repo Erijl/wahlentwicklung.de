@@ -1,0 +1,103 @@
+---
+/** State overview: map + list. */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import StateMap from '@/components/charts/StateMap.astro';
+import ModuleFrame from '@/components/ModuleFrame.astro';
+import PartyTag from '@/components/PartyTag.astro';
+import { getStates, latestElectionYear, stateWinners } from '@/lib/queries';
+import { slugify } from '@/lib/slugs';
+import { fmtPct } from '@/lib/format';
+
+const states = getStates();
+const latest = latestElectionYear();
+const winners = stateWinners(latest);
+---
+
+<BaseLayout
+  title="Bundesländer – Wahlergebnisse & Entwicklung"
+  description={`Alle 16 Bundesländer: stärkste Partei bei der Bundestagswahl ${latest} und die Entwicklung der Ergebnisse seit 2005.`}
+  path="/bundeslaender"
+>
+  <section class="hero">
+    <p class="kicker">Übersicht</p>
+    <h1>Bundesländer</h1>
+    <p class="lede">
+      Die 16 Länder im Vergleich — stärkste Partei {latest} auf der Karte, Entwicklung seit 2005
+      auf den Detailseiten.
+    </p>
+  </section>
+
+  <div class="two">
+    <ModuleFrame title={`Stärkste Partei ${latest}`}>
+      <StateMap winners={winners} />
+    </ModuleFrame>
+    <ModuleFrame title="Alle Bundesländer" status="alphabetisch">
+      <ul class="statelist">
+        {
+          [...states]
+            .sort((a, b) => a.name.localeCompare(b.name, 'de'))
+            .map((s) => {
+              const win = winners.get(s.name);
+              return (
+                <li>
+                  <a href={`/bundesland/${slugify(s.name)}`}>
+                    <strong>{s.name}</strong>
+                    {win && (
+                      <span class="meta">
+                        <PartyTag party={win.key} /> {fmtPct(win.pct)}
+                      </span>
+                    )}
+                  </a>
+                </li>
+              );
+            })
+        }
+      </ul>
+    </ModuleFrame>
+  </div>
+</BaseLayout>
+
+<style>
+  .hero {
+    padding: 26px 0 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .two {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: 32px;
+  }
+  @media (max-width: 900px) {
+    .two {
+      grid-template-columns: 1fr;
+    }
+  }
+  .statelist {
+    list-style: none;
+  }
+  .statelist li {
+    border-bottom: 1px solid var(--hairline);
+  }
+  .statelist a {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    padding: 10px 0;
+    color: var(--ink);
+    font-size: 14.5px;
+  }
+  .statelist a:hover {
+    text-decoration: none;
+    background: var(--raised);
+  }
+  .meta {
+    color: var(--text-sec);
+    font-size: 13px;
+    display: inline-flex;
+    gap: 6px;
+    align-items: baseline;
+  }
+</style>

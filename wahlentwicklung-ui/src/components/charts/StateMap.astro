@@ -1,0 +1,82 @@
+---
+/**
+ * Germany choropleth (state level): strongest party per Bundesland.
+ * Geometry from deutschlandGeoJSON (simplified); fills use
+ * color-mix(party, surface) so both themes work. Constituency-level map
+ * (299) is a phase-3 island — see docs/02-concept.md roadmap.
+ */
+import { colorVar } from '@/lib/parties';
+import { fmtPct } from '@/lib/format';
+import type { PartyKey } from '@/lib/parties';
+import geo from '@/data/bundeslaender.geo.json';
+
+interface Props {
+  winners: Map<string, { key: PartyKey; pct: number }>;
+}
+
+const { winners } = Astro.props;
+
+const w = 440;
+const h = 560;
+type Ring = [number, number][];
+const features = (geo as any).features as {
+  properties: { name: string };
+  geometry: { type: string; coordinates: any };
+}[];
+
+const allPts: [number, number][] = [];
+for (const f of features) {
+  const polys = f.geometry.type === 'MultiPolygon' ? f.geometry.coordinates : [f.geometry.coordinates];
+  for (const poly of polys) allPts.push(...(poly[0] as Ring));
+}
+const lons = allPts.map((p) => p[0]);
+const lats = allPts.map((p) => p[1]);
+const minLon = Math.min(...lons);
+const maxLat = Math.max(...lats);
+const kLat = Math.cos((51 * Math.PI) / 180);
+const s = Math.min(
+  (w - 8) / ((Math.max(...lons) - minLon) * kLat),
+  (h - 8) / (maxLat - Math.min(...lats)),
+);
+const PR = (lon: number, lat: number): [number, number] => [
+  4 + (lon - minLon) * kLat * s,
+  4 + (maxLat - lat) * s,
+];
+
+const paths = features.map((f) => {
+  const win = winners.get(f.properties.name);
+  const polys = f.geometry.type === 'MultiPolygon' ? f.geometry.coordinates : [f.geometry.coordinates];
+  const d = polys
+    .flatMap((poly: Ring[]) =>
+      poly.map(
+        (ring) =>
+          'M' + ring.map(([lon, lat]) => PR(lon, lat).map((v) => v.toFixed(1)).join(' ')).join(' L') + ' Z',
+      ),
+    )
+    .join(' ');
+  return {
+    d,
+    name: f.properties.name,
+    fill: win ? `color-mix(in srgb, ${colorVar(win.key)} 72%, var(--surface))` : 'var(--hairline)',
+    title: win ? `${f.properties.name}: ${win.key} ${fmtPct(win.pct)}` : f.properties.name,
+  };
+});
+---
+
+<svg viewBox={`0 0 ${w} ${h}`} role="img" aria-label="Stärkste Partei je Bundesland">
+  {
+    paths.map((p) => (
+      <path d={p.d} fill={p.fill} stroke="var(--surface)" stroke-width="1.2">
+        <title>{p.title}</title>
+      </path>
+    ))
+  }
+</svg>
+
+<style>
+  svg {
+    width: 100%;
+    max-width: 440px;
+    height: auto;
+  }
+</style>

@@ -1,0 +1,96 @@
+---
+/** Start page: latest election hero + entry points. */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ResultBars from '@/components/charts/ResultBars.astro';
+import ModuleFrame from '@/components/ModuleFrame.astro';
+import { latestElectionYear, federalResults, federalVoteBase, getElectionYears } from '@/lib/queries';
+import { electionLede } from '@/lib/prose';
+
+const year = latestElectionYear();
+const years = getElectionYears();
+const results = federalResults(year);
+const base = federalVoteBase(year);
+const lede = electionLede(year, results, base);
+const prevYear = years[years.indexOf(year) - 1];
+
+const entries = [
+  { href: `/wahl/${year}`, title: `Bundestagswahl ${year}`, sub: 'Ergebnis, Sitze, Karten, alle Wahlkreise' },
+  { href: '/wahlen', title: 'Alle Wahlen', sub: `${years[0]}–${year} im Überblick` },
+  { href: '/parteien', title: 'Parteien', sub: 'Entwicklung der Zweitstimmen seit 2005' },
+  { href: '/bundeslaender', title: 'Bundesländer', sub: '16 Länder im Vergleich' },
+  { href: '/wahlkreise', title: 'Wahlkreise', sub: 'Alle 299 mit Suche' },
+];
+---
+
+<BaseLayout
+  title="Bundestagswahlen seit 2005 – Ergebnisse & Entwicklung"
+  description={`Wahlentwicklung.de zeigt alle Bundestagswahlen von 2005 bis ${year}: Ergebnisse, Sitzverteilungen, Karten und die Entwicklung jeder Partei, jedes Bundeslands und aller 299 Wahlkreise.`}
+  path="/"
+>
+  <section class="hero">
+    <p class="kicker">Die Entwicklung der Bundestagswahlen · {years[0]}–{year}</p>
+    <h1>Wie Deutschland wählt</h1>
+    <p class="lede">{lede}</p>
+  </section>
+
+  <ModuleFrame title={`Bundestagswahl ${year}: Zweitstimmen`}>
+    <ResultBars
+      results={results}
+      prevLabel={prevYear ? `Vorwahl ${prevYear}` : 'Vorwahl'}
+      currentLabel={`Bundestagswahl ${year}`}
+    />
+    <p class="fnote"><a href={`/wahl/${year}`}>Zum vollständigen Ergebnis {year} →</a></p>
+  </ModuleFrame>
+
+  <nav class="entries" aria-label="Einstiege">
+    {
+      entries.map((e) => (
+        <a href={e.href}>
+          <strong>{e.title}</strong>
+          <span>{e.sub}</span>
+        </a>
+      ))
+    }
+  </nav>
+</BaseLayout>
+
+<style>
+  .hero {
+    padding: 34px 0 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .fnote {
+    margin-top: 10px;
+    font-size: 13px;
+  }
+  .entries {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1px;
+    background: var(--hairline);
+    border: 1px solid var(--hairline);
+    margin-top: 22px;
+  }
+  .entries a {
+    background: var(--raised);
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    color: var(--ink);
+  }
+  .entries a:hover {
+    text-decoration: none;
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+  }
+  .entries strong {
+    font-size: 15.5px;
+  }
+  .entries span {
+    font-size: 12.5px;
+    color: var(--text-sec);
+  }
+</style>

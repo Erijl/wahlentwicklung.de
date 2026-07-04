@@ -1,0 +1,163 @@
+---
+/** Election × constituency snapshot. Only mapped (year, Wahlkreis) pairs
+ *  exist as pages — unmapped raw rows follow as the mapping completes. */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+import ModuleFrame from '@/components/ModuleFrame.astro';
+import StatTile from '@/components/StatTile.astro';
+import StatTileGrid from '@/components/StatTileGrid.astro';
+import ResultBars from '@/components/charts/ResultBars.astro';
+import PartyTag from '@/components/PartyTag.astro';
+import {
+  getElectionYears,
+  getConstituencies,
+  constituencyResults,
+  constituencyVoteBase,
+  constituencyYears,
+} from '@/lib/queries';
+import { areaLede } from '@/lib/prose';
+import { constituencySlug } from '@/lib/slugs';
+import { fmtPct, fmtDelta, fmtNum } from '@/lib/format';
+
+export function getStaticPaths() {
+  const paths = [];
+  const constituencies = getConstituencies();
+  for (const c of constituencies) {
+    for (const year of constituencyYears(c.number)) {
+      paths.push({
+        params: { year: String(year), slug: constituencySlug(c.number, c.name) },
+        props: { number: c.number, name: c.name, stateName: c.stateName },
+      });
+    }
+  }
+  return paths;
+}
+
+const { number, name, stateName } = Astro.props;
+const year = Number(Astro.params.year);
+const years = getElectionYears();
+const prevYear = years[years.indexOf(year) - 1];
+
+const results = constituencyResults(year, number);
+const base = constituencyVoteBase(year, number)!;
+const lede = areaLede(`${name} (Wahlkreis ${number})`, year, results, base);
+const mappedYears = constituencyYears(number);
+
+const title = `Bundestagswahl ${year} – Wahlkreis ${number} ${name}`;
+---
+
+<BaseLayout title={title} description={lede} path={`/wahl/${year}/wahlkreis/${Astro.params.slug}`}>
+  <Breadcrumb
+    items={[
+      { label: 'Wahlen', href: '/wahlen' },
+      { label: `Bundestagswahl ${year}`, href: `/wahl/${year}` },
+      { label: 'Wahlkreise', href: '/wahlkreise' },
+      { label: `${number} ${name}` },
+    ]}
+  />
+
+  <section class="hero">
+    <p class="kicker">Bundestagswahl {year} · Wahlkreis {number} · {stateName}</p>
+    <h1>{name}</h1>
+    <p class="lede">{lede}</p>
+  </section>
+
+  <ModuleFrame
+    title="Zweitstimmen: Anteil und Veränderung"
+    method="Zweitstimmenanteile im Wahlkreis. Der blasse Balken zeigt die Vorwahl, umgerechnet auf den aktuellen Gebietsstand."
+    hasTable
+  >
+    <ResultBars
+      results={results}
+      prevLabel={prevYear ? `Vorwahl ${prevYear}` : 'Vorwahl'}
+      currentLabel={`Wahlkreis ${number} · ${year}`}
+    />
+    <div slot="table" class="tblwrap">
+      <table>
+        <thead><tr><th>Partei</th><th>Stimmen</th><th>Anteil</th><th>ggü. Vorwahl</th></tr></thead>
+        <tbody>
+          {
+            results.map((r) => (
+              <tr>
+                <td><PartyTag party={r.key} /></td>
+                <td>{fmtNum(r.votes)}</td>
+                <td>{fmtPct(r.pct)}</td>
+                <td>{r.prevPct !== null ? fmtDelta(r.pct - r.prevPct) : '–'}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </ModuleFrame>
+
+  <ModuleFrame title="Auf einen Blick" status="berechnet aus dem amtlichen Endergebnis">
+    <StatTileGrid>
+      <StatTile
+        label="Wahlbeteiligung"
+        value={fmtPct(base.turnout)}
+        sub={base.prevTurnout > 0 ? `${fmtDelta(base.turnout - base.prevTurnout)} Pp. ggü. Vorwahl` : undefined}
+      />
+      <StatTile label="Wahlberechtigte" value={fmtNum(base.eligible)} />
+      <StatTile label="Gültige Zweitstimmen" value={fmtNum(base.valid)} />
+      <StatTile
+        label="Datenlage"
+        value={`${mappedYears.length} von ${years.length} Wahlen`}
+        sub={mappedYears.length < years.length ? 'Gebietsreformen: frühere Wahlen teils nicht zuordenbar' : 'vollständig seit 2005'}
+      />
+    </StatTileGrid>
+  </ModuleFrame>
+
+  <nav class="xlinks" aria-label="Verwandte Seiten">
+    <a href={`/wahlkreis/${Astro.params.slug}`}>Entwicklung dieses Wahlkreises →</a>
+    <a href={`/wahl/${year}`}>Gesamtergebnis {year} →</a>
+  </nav>
+</BaseLayout>
+
+<style>
+  .hero {
+    padding: 26px 0 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .xlinks {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 18px 0;
+    border-top: 1px solid var(--hairline);
+    font-size: 14px;
+  }
+  .tblwrap {
+    overflow-x: auto;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-variant-numeric: tabular-nums;
+  }
+  th {
+    font-size: 12px;
+    color: var(--text-sec);
+    text-align: right;
+    font-weight: 600;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--ink);
+  }
+  th:first-child {
+    text-align: left;
+    padding-left: 0;
+  }
+  td {
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--hairline);
+    text-align: right;
+    font-size: 13.5px;
+  }
+  td:first-child {
+    text-align: left;
+    padding-left: 0;
+  }
+</style>

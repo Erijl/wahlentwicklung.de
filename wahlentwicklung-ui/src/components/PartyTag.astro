@@ -1,0 +1,27 @@
+---
+/** Colored swatch + party abbreviation — the identity channel next to text
+ *  (text itself never wears party color). */
+import { colorVar } from '@/lib/parties';
+
+interface Props {
+  party: string;
+}
+const { party } = Astro.props;
+---
+
+<span class="ptag"><i style={`background:${colorVar(party)}`}></i>{party}</span>
+
+<style>
+  .ptag {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 5px;
+    white-space: nowrap;
+  }
+  .ptag i {
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    align-self: center;
+  }
+</style>

@@ -1,0 +1,244 @@
+---
+/** The flagship template: election snapshot (docs/02-concept.md §2). */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+import ModuleFrame from '@/components/ModuleFrame.astro';
+import StatTile from '@/components/StatTile.astro';
+import StatTileGrid from '@/components/StatTileGrid.astro';
+import ResultBars from '@/components/charts/ResultBars.astro';
+import Hemicycle from '@/components/charts/Hemicycle.astro';
+import CoalitionBars from '@/components/charts/CoalitionBars.astro';
+import TrendLines from '@/components/charts/TrendLines.astro';
+import StateMap from '@/components/charts/StateMap.astro';
+import ResultTable from '@/components/ResultTable.astro';
+import PartyTag from '@/components/PartyTag.astro';
+import {
+  getElectionYears,
+  federalResults,
+  federalVoteBase,
+  federalTrends,
+  stateWinners,
+  constituencyTable,
+  stateTurnouts,
+} from '@/lib/queries';
+import { electionLede } from '@/lib/prose';
+import { fmtPct, fmtDelta, fmtMillions, fmtNum } from '@/lib/format';
+import type { PartyKey } from '@/lib/parties';
+
+export function getStaticPaths() {
+  return getElectionYears().map((year) => ({ params: { year: String(year) } }));
+}
+
+const year = Number(Astro.params.year);
+const years = getElectionYears();
+const prevYear = years[years.indexOf(year) - 1];
+
+const results = federalResults(year);
+const base = federalVoteBase(year);
+const lede = electionLede(year, results, base);
+const totalSeats = results.reduce((a, r) => a + r.seats, 0);
+const majority = Math.floor(totalSeats / 2) + 1;
+
+// coalition combos: candidates whose parties all hold seats, the four
+// closest to the majority line (interesting = knife's edge or just above)
+const CANDIDATES: { label: string; parties: PartyKey[] }[] = [
+  { label: 'Union + SPD', parties: ['Union', 'SPD'] },
+  { label: 'Union + Grüne', parties: ['Union', 'Grüne'] },
+  { label: 'Union + FDP', parties: ['Union', 'FDP'] },
+  { label: 'SPD + Grüne', parties: ['SPD', 'Grüne'] },
+  { label: 'SPD + Grüne + FDP', parties: ['SPD', 'Grüne', 'FDP'] },
+  { label: 'Union + SPD + Grüne', parties: ['Union', 'SPD', 'Grüne'] },
+  { label: 'SPD + Grüne + Linke', parties: ['SPD', 'Grüne', 'Linke'] },
+  { label: 'Union + FDP + Grüne', parties: ['Union', 'FDP', 'Grüne'] },
+];
+const seatOf = (k: PartyKey) => results.find((r) => r.key === k)?.seats ?? 0;
+const combos = CANDIDATES.filter((c) => c.parties.every((k) => seatOf(k) > 0))
+  .map((c) => ({ ...c, sum: c.parties.reduce((a, k) => a + seatOf(k), 0) }))
+  .sort((a, b) => Math.abs(a.sum - majority) - Math.abs(b.sum - majority))
+  .slice(0, 4)
+  .sort((a, b) => b.sum - a.sum);
+
+const winners = stateWinners(year);
+const trends = federalTrends(['Union', 'SPD', 'AfD', 'Grüne', 'Linke', 'FDP']);
+const tableRows = constituencyTable(year);
+const topTurnoutState = stateTurnouts(year)[0];
+const biggestGain = [...results]
+  .filter((r) => r.prevPct !== null && r.key !== 'Übrige')
+  .sort((a, b) => b.pct - b.prevPct! - (a.pct - a.prevPct!))[0];
+
+const title = `Bundestagswahl ${year} – Ergebnisse, Sitze, Wahlkreise`;
+const status = `Amtliches Endergebnis · Quelle: Bundeswahlleiterin`;
+---
+
+<BaseLayout title={title} description={lede} path={`/wahl/${year}`}>
+  <Breadcrumb items={[{ label: 'Wahlen', href: '/wahlen' }, { label: `Bundestagswahl ${year}` }]} />
+
+  <section class="hero">
+    <p class="kicker">Bundestagswahl · Zweitstimmen · amtliches Endergebnis</p>
+    <h1>Bundestagswahl {year}</h1>
+    <p class="lede">{lede}</p>
+  </section>
+
+  <ModuleFrame
+    title="Zweitstimmen: Anteil und Veränderung"
+    status={status}
+    method={`Anteil der Zweitstimmen an allen gültigen Stimmen (${fmtNum(base.valid)}). Der blasse Balken zeigt das Ergebnis der Vorwahl${prevYear ? ` ${prevYear}` : ''}, umgerechnet auf den aktuellen Gebietsstand (Vorperiode-Werte der Bundeswahlleiterin).`}
+    hasTable
+  >
+    <ResultBars
+      results={results}
+      prevLabel={prevYear ? `Vorwahl ${prevYear}` : 'Vorwahl'}
+      currentLabel={`Bundestagswahl ${year}`}
+    />
+    <div slot="table" class="tblwrap">
+      <table>
+        <thead><tr><th>Partei</th><th>Stimmen</th><th>Anteil</th><th>ggü. Vorwahl</th><th>Sitze</th></tr></thead>
+        <tbody>
+          {
+            results.map((r) => (
+              <tr>
+                <td><PartyTag party={r.key} /></td>
+                <td>{fmtNum(r.votes)}</td>
+                <td>{fmtPct(r.pct)}</td>
+                <td>{r.prevPct !== null ? fmtDelta(r.pct - r.prevPct) : '–'}</td>
+                <td>{r.seats || '–'}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </ModuleFrame>
+
+  <div class="two">
+    <ModuleFrame title={`Sitzverteilung im Bundestag`} status={status}>
+      <Hemicycle results={results} />
+    </ModuleFrame>
+    <ModuleFrame
+      title="Mögliche Mehrheiten"
+      status={status}
+      method="Rein rechnerische Mehrheiten auf Basis der Sitzverteilung; keine Aussage über politische Koalitionsoptionen."
+    >
+      <CoalitionBars results={results} combos={combos} />
+    </ModuleFrame>
+  </div>
+
+  <div class="two">
+    <ModuleFrame title="Stärkste Partei nach Bundesland" status={status}>
+      <StateMap winners={winners} />
+      <p class="fnote">
+        Zweitstimmen · Detailansicht: <a href="/bundeslaender">alle Bundesländer</a>
+      </p>
+    </ModuleFrame>
+    <ModuleFrame title="Auf einen Blick" status="berechnet aus dem amtlichen Endergebnis">
+      <StatTileGrid>
+        <StatTile
+          label="Wahlbeteiligung"
+          value={fmtPct(base.turnout)}
+          sub={base.prevTurnout > 0 ? `${fmtDelta(base.turnout - base.prevTurnout)} Pp. ggü. Vorwahl` : undefined}
+        />
+        <StatTile
+          label="Wahlberechtigte"
+          value={fmtMillions(base.eligible)}
+          sub={`${fmtNum(base.eligible)} Personen`}
+        />
+        {
+          biggestGain && biggestGain.prevPct !== null && (
+            <StatTile
+              label="Größter Zugewinn"
+              value={`${biggestGain.key} ${fmtDelta(biggestGain.pct - biggestGain.prevPct)} Pp.`}
+              sub={prevYear ? `im Vergleich zur Bundestagswahl ${prevYear}` : undefined}
+            />
+          )
+        }
+        <StatTile
+          label="Höchste Beteiligung"
+          value={topTurnoutState.name}
+          sub={`${fmtPct(topTurnoutState.turnout)} der Wahlberechtigten`}
+        />
+      </StatTileGrid>
+    </ModuleFrame>
+  </div>
+
+  <ModuleFrame
+    title={`Entwicklung der Zweitstimmen ${years[0]}–${years.at(-1)}`}
+    status={status}
+    method="Bundesweite Zweitstimmenanteile je Wahl. CDU und CSU sind als Union zusammengefasst."
+  >
+    <TrendLines trends={trends} years={years} />
+  </ModuleFrame>
+
+  <ModuleFrame title="Alle 299 Wahlkreise" status={status} method="Zweitstimmenanteile je Wahlkreis, sortiert nach Wahlbeteiligung.">
+    <ResultTable rows={tableRows} linkYear={year} />
+  </ModuleFrame>
+
+  <nav class="xlinks" aria-label="Weitere Wahlen">
+    {prevYear && <a href={`/wahl/${prevYear}`}>← Bundestagswahl {prevYear}</a>}
+    {
+      years[years.indexOf(year) + 1] && (
+        <a href={`/wahl/${years[years.indexOf(year) + 1]}`}>Bundestagswahl {years[years.indexOf(year) + 1]} →</a>
+      )
+    }
+  </nav>
+</BaseLayout>
+
+<style>
+  .hero {
+    padding: 26px 0 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .two {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+  @media (max-width: 900px) {
+    .two {
+      grid-template-columns: 1fr;
+    }
+  }
+  .fnote {
+    margin-top: 8px;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .xlinks {
+    display: flex;
+    justify-content: space-between;
+    padding: 18px 0;
+    border-top: 1px solid var(--hairline);
+    font-size: 14px;
+  }
+  .tblwrap {
+    overflow-x: auto;
+  }
+  table {
+    border-collapse: collapse;
+    width: 100%;
+    font-variant-numeric: tabular-nums;
+  }
+  th {
+    font-size: 12px;
+    color: var(--text-sec);
+    text-align: right;
+    font-weight: 600;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--ink);
+  }
+  th:first-child {
+    text-align: left;
+    padding-left: 0;
+  }
+  td {
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--hairline);
+    text-align: right;
+    font-size: 13.5px;
+  }
+  td:first-child {
+    text-align: left;
+    padding-left: 0;
+  }
+</style>

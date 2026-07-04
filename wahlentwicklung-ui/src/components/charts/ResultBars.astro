@@ -1,0 +1,79 @@
+---
+/**
+ * Column chart: share per party with the previous election as a ghost bar
+ * (25 % opacity, thinner — mark specs from docs/03-design-system.md §5).
+ * Pure build-time SVG; colors are CSS vars so the theme applies.
+ */
+import { colorVar } from '@/lib/parties';
+import { fmtPct, fmtDelta } from '@/lib/format';
+import type { PartyResult } from '@/lib/queries';
+
+interface Props {
+  results: PartyResult[];
+  /** Max parties to show as own columns; the rest is omitted (table has all). */
+  max?: number;
+  prevLabel?: string;
+  currentLabel?: string;
+}
+
+const { results, max = 8, prevLabel = 'Vorwahl', currentLabel = 'Diese Wahl' } = Astro.props;
+
+const shown = results.filter((r) => r.key !== 'Übrige' && (r.pct >= 1 || r.seats > 0)).slice(0, max);
+const w = 760;
+const h = 275;
+const plotH = 170;
+const top = 30;
+const pMax = Math.max(32, ...shown.map((r) => Math.max(r.pct, r.prevPct ?? 0))) * 1.02;
+const band = w / shown.length;
+const curW = 30;
+const ghoW = 18;
+const gap = 4;
+
+function bar(x: number, base: number, height: number, width: number): string {
+  const hh = Math.max(height, 2);
+  return `M${(x - width / 2).toFixed(1)} ${base.toFixed(1)} V${(base - hh + 4).toFixed(1)} q0 -4 4 -4 h${width - 8} q4 0 4 4 V${base.toFixed(1)} Z`;
+}
+const base = top + plotH;
+---
+
+<svg viewBox={`0 0 ${w} ${h}`} role="img" aria-label="Zweitstimmenanteile im Vergleich zur Vorwahl">
+  <g class="t-dim">
+    <rect x="0" y="0" width="10" height="10" rx="2" fill={colorVar('Union')} opacity="0.25"></rect>
+    <text x="16" y="9">{prevLabel}</text>
+    <rect x="110" y="0" width="10" height="10" rx="2" fill={colorVar('Union')}></rect>
+    <text x="126" y="9">{currentLabel}</text>
+  </g>
+  {
+    shown.map((r, i) => {
+      const cx = band * i + band / 2;
+      const gx = cx - (curW + gap + ghoW) / 2 + ghoW / 2;
+      const bx = gx + ghoW / 2 + gap + curW / 2;
+      const ch = (plotH * r.pct) / pMax;
+      const gh = r.prevPct !== null ? (plotH * r.prevPct) / pMax : 0;
+      return (
+        <>
+          {r.prevPct !== null && (
+            <path d={bar(gx, base, gh, ghoW)} fill={colorVar(r.key)} opacity="0.25" />
+          )}
+          <path d={bar(bx, base, ch, curW)} fill={colorVar(r.key)} />
+          <text x={cx} y={base + 20} text-anchor="middle" class="t-lbl">
+            {r.key}
+          </text>
+          <text x={cx} y={base + 40} text-anchor="middle" class="t-val">
+            {fmtPct(r.pct)}
+          </text>
+          <text x={cx} y={base + 58} text-anchor="middle" class="t-dim">
+            {r.prevPct !== null ? fmtDelta(r.pct - r.prevPct) : 'neu'}
+          </text>
+        </>
+      );
+    })
+  }
+</svg>
+
+<style>
+  svg {
+    width: 100%;
+    height: auto;
+  }
+</style>

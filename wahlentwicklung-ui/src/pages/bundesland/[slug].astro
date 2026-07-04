@@ -1,0 +1,99 @@
+---
+/** State development page: party trends + turnout across all elections. */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+import ModuleFrame from '@/components/ModuleFrame.astro';
+import TrendLines from '@/components/charts/TrendLines.astro';
+import StatTile from '@/components/StatTile.astro';
+import StatTileGrid from '@/components/StatTileGrid.astro';
+import { getElectionYears, getStates, stateTrends, stateVoteBase, stateResults } from '@/lib/queries';
+import { slugify } from '@/lib/slugs';
+import { fmtPct } from '@/lib/format';
+
+export function getStaticPaths() {
+  return getStates().map((s) => ({
+    params: { slug: slugify(s.name) },
+    props: { stateId: s.id, stateName: s.name },
+  }));
+}
+
+const { stateId, stateName } = Astro.props;
+const years = getElectionYears();
+const latest = years.at(-1)!;
+const trends = stateTrends(stateId, ['Union', 'SPD', 'AfD', 'Grüne', 'Linke', 'FDP']);
+const latestResults = stateResults(latest, stateId);
+const winner = [...latestResults].sort((a, b) => b.votes - a.votes)[0];
+const turnouts = years
+  .map((y) => ({ year: y, base: stateVoteBase(y, stateId) }))
+  .filter((t) => t.base !== null);
+const latestBase = turnouts.at(-1)!.base!;
+const bestTurnout = [...turnouts].sort((a, b) => b.base!.turnout - a.base!.turnout)[0];
+
+const description = `${stateName} bei den Bundestagswahlen ${years[0]}–${latest}: Entwicklung der Zweitstimmen, Wahlbeteiligung und Ergebnisse aller Wahlen.`;
+---
+
+<BaseLayout title={`${stateName} – Wahlentwicklung seit ${years[0]}`} description={description} path={`/bundesland/${Astro.params.slug}`}>
+  <Breadcrumb items={[{ label: 'Bundesländer', href: '/bundeslaender' }, { label: stateName }]} />
+
+  <section class="hero">
+    <p class="kicker">Bundesland · Entwicklung {years[0]}–{latest}</p>
+    <h1>{stateName}</h1>
+    <p class="lede">
+      Bei der Bundestagswahl {latest} ist {winner.key === 'Union' ? 'die Union' : winner.key} mit
+      {fmtPct(winner.pct)} stärkste Kraft in {stateName}; die Wahlbeteiligung liegt bei
+      {fmtPct(latestBase.turnout)}.
+    </p>
+  </section>
+
+  <ModuleFrame
+    title={`Entwicklung der Zweitstimmen ${years[0]}–${latest}`}
+    method="Zweitstimmenanteile je Bundestagswahl in diesem Bundesland. CDU und CSU sind als Union zusammengefasst."
+  >
+    <TrendLines trends={trends} years={years} />
+  </ModuleFrame>
+
+  <ModuleFrame title="Auf einen Blick" status="berechnet aus den amtlichen Endergebnissen">
+    <StatTileGrid>
+      <StatTile label={`Wahlbeteiligung ${latest}`} value={fmtPct(latestBase.turnout)} />
+      <StatTile
+        label="Höchste Beteiligung"
+        value={String(bestTurnout.year)}
+        sub={fmtPct(bestTurnout.base!.turnout)}
+      />
+    </StatTileGrid>
+  </ModuleFrame>
+
+  <ModuleFrame title="Alle Wahlen in diesem Bundesland" status="Sprungmarken">
+    <ul class="yearlist">
+      {
+        years.map((y) => (
+          <li>
+            <a href={`/wahl/${y}/bundesland/${Astro.params.slug}`}>Bundestagswahl {y} in {stateName} →</a>
+          </li>
+        ))
+      }
+    </ul>
+  </ModuleFrame>
+</BaseLayout>
+
+<style>
+  .hero {
+    padding: 26px 0 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .yearlist {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+  }
+  .yearlist li {
+    border-bottom: 1px solid var(--hairline);
+  }
+  .yearlist a {
+    display: block;
+    padding: 10px 0;
+    font-size: 14.5px;
+  }
+</style>

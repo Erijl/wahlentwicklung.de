@@ -1,0 +1,126 @@
+---
+/** Constituency development page — lineage-aware: shows honest gaps where
+ *  redistricting breaks comparability (docs/01-data-audit.md §3). */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+import ModuleFrame from '@/components/ModuleFrame.astro';
+import TrendLines from '@/components/charts/TrendLines.astro';
+import StatTile from '@/components/StatTile.astro';
+import StatTileGrid from '@/components/StatTileGrid.astro';
+import {
+  getElectionYears,
+  getConstituencies,
+  constituencyTrends,
+  constituencyYears,
+  constituencyResults,
+  constituencyVoteBase,
+} from '@/lib/queries';
+import { constituencySlug } from '@/lib/slugs';
+import { fmtPct } from '@/lib/format';
+
+export function getStaticPaths() {
+  return getConstituencies().map((c) => ({
+    params: { slug: constituencySlug(c.number, c.name) },
+    props: { number: c.number, name: c.name, stateName: c.stateName },
+  }));
+}
+
+const { number, name, stateName } = Astro.props;
+const allYears = getElectionYears();
+const mappedYears = constituencyYears(number);
+const latest = mappedYears.at(-1)!;
+const trends = constituencyTrends(number, ['Union', 'SPD', 'AfD', 'Grüne', 'Linke', 'FDP']);
+const latestResults = constituencyResults(latest, number);
+const winner = [...latestResults].sort((a, b) => b.votes - a.votes)[0];
+const latestBase = constituencyVoteBase(latest, number)!;
+const complete = mappedYears.length === allYears.length;
+
+const description = `Wahlkreis ${number} ${name} (${stateName}): Entwicklung der Zweitstimmen bei den Bundestagswahlen ${mappedYears[0]}–${latest}.`;
+---
+
+<BaseLayout
+  title={`Wahlkreis ${number} ${name} – Entwicklung`}
+  description={description}
+  path={`/wahlkreis/${Astro.params.slug}`}
+>
+  <Breadcrumb items={[{ label: 'Wahlkreise', href: '/wahlkreise' }, { label: `${number} ${name}` }]} />
+
+  <section class="hero">
+    <p class="kicker">Wahlkreis {number} · {stateName} · Entwicklung</p>
+    <h1>{name}</h1>
+    <p class="lede">
+      Bei der Bundestagswahl {latest} ist {winner.key === 'Union' ? 'die Union' : winner.key} mit
+      {fmtPct(winner.pct)} stärkste Kraft im Wahlkreis {name}; die Wahlbeteiligung liegt bei
+      {fmtPct(latestBase.turnout)}.
+    </p>
+  </section>
+
+  {
+    !complete && (
+      <p class="notice">
+        Für diesen Wahlkreis liegen vergleichbare Ergebnisse für {mappedYears.join(', ')} vor.
+        Frühere Wahlen sind wegen Gebiets- oder Zuschnittsänderungen nicht direkt zuordenbar.
+      </p>
+    )
+  }
+
+  <ModuleFrame
+    title={`Entwicklung der Zweitstimmen ${mappedYears[0]}–${latest}`}
+    method="Zweitstimmenanteile je Bundestagswahl in diesem Wahlkreis (aktueller Zuschnitt). CDU und CSU sind als Union zusammengefasst."
+  >
+    <TrendLines trends={trends} years={mappedYears} />
+  </ModuleFrame>
+
+  <ModuleFrame title="Auf einen Blick" status="berechnet aus den amtlichen Endergebnissen">
+    <StatTileGrid>
+      <StatTile label={`Wahlbeteiligung ${latest}`} value={fmtPct(latestBase.turnout)} />
+      <StatTile
+        label="Datenlage"
+        value={`${mappedYears.length} von ${allYears.length} Wahlen`}
+        sub={complete ? 'vollständig seit 2005' : 'Lücken durch Wahlkreisreformen'}
+      />
+    </StatTileGrid>
+  </ModuleFrame>
+
+  <ModuleFrame title="Alle Wahlen in diesem Wahlkreis" status="Sprungmarken">
+    <ul class="yearlist">
+      {
+        mappedYears.map((y) => (
+          <li>
+            <a href={`/wahl/${y}/wahlkreis/${Astro.params.slug}`}>Bundestagswahl {y} →</a>
+          </li>
+        ))
+      }
+    </ul>
+  </ModuleFrame>
+</BaseLayout>
+
+<style>
+  .hero {
+    padding: 26px 0 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .notice {
+    font-size: 13px;
+    color: var(--text-sec);
+    border-left: 2px solid var(--accent);
+    padding-left: 10px;
+    margin-bottom: 6px;
+    max-width: 70ch;
+  }
+  .yearlist {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+  }
+  .yearlist li {
+    border-bottom: 1px solid var(--hairline);
+  }
+  .yearlist a {
+    display: block;
+    padding: 10px 0;
+    font-size: 14.5px;
+  }
+</style>

@@ -1,0 +1,150 @@
+---
+import '@fontsource/fira-sans/400.css';
+import '@fontsource/fira-sans/600.css';
+import '@fontsource/fira-sans/700.css';
+import '@fontsource/noto-serif/400.css';
+import '@fontsource/noto-serif/700.css';
+import '@/styles/global.css';
+
+interface Props {
+  /** Page title without the site suffix. */
+  title: string;
+  description: string;
+  /** Canonical path, e.g. "/wahl/2025". */
+  path: string;
+}
+
+const { title, description, path } = Astro.props;
+const canonical = new URL(path, Astro.site);
+const fullTitle = `${title} | Wahlentwicklung.de`;
+
+const nav = [
+  { href: '/wahlen', label: 'Wahlen' },
+  { href: '/parteien', label: 'Parteien' },
+  { href: '/bundeslaender', label: 'Bundesländer' },
+  { href: '/wahlkreise', label: 'Wahlkreise' },
+];
+const current = Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content="de_DE" />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+  </head>
+  <body>
+    {/* TODO(nav): placeholder chrome — user wants a different navigation
+        concept; iterate in a dedicated design pass. */}
+    <header class="site-head">
+      <div class="inner">
+        <a class="brand" href="/">
+          Wahlentwicklung<span class="tld">.de</span>
+        </a>
+        <nav aria-label="Hauptnavigation">
+          {
+            nav.map((n) => (
+              <a href={n.href} aria-current={current.startsWith(n.href) ? 'page' : undefined}>
+                {n.label}
+              </a>
+            ))
+          }
+        </nav>
+      </div>
+      <div class="tric" aria-hidden="true"><i></i><i></i><i></i></div>
+    </header>
+
+    <main class="site-main">
+      <slot />
+    </main>
+
+    <footer class="site-foot">
+      <p>
+        Datengrundlage: Bundeswahlleiterin, amtliche Endergebnisse 2005–2025 ·
+        <a
+          href="https://www.bundeswahlleiterin.de/bundestagswahlen.html"
+          rel="noopener">Datensatz ↗</a
+        > · <a href="/wahlen">Alle Wahlen</a>
+      </p>
+    </footer>
+  </body>
+</html>
+
+<style>
+  .site-head .inner {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 16px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .brand {
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+  }
+  .brand:hover {
+    text-decoration: none;
+  }
+  .tld {
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+  nav {
+    display: flex;
+    gap: 20px;
+    font-size: 14.5px;
+  }
+  nav a {
+    color: var(--ink);
+  }
+  nav a[aria-current='page'] {
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .tric {
+    display: flex;
+    height: 3px;
+  }
+  .tric i {
+    flex: 1;
+  }
+  .tric i:nth-child(1) {
+    background: var(--tric-schwarz);
+  }
+  .tric i:nth-child(2) {
+    background: var(--tric-rot);
+  }
+  .tric i:nth-child(3) {
+    background: var(--tric-gold);
+  }
+  .site-main {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 0 28px 40px;
+  }
+  .site-foot {
+    border-top: 1px solid var(--hairline);
+    color: var(--text-muted);
+    font-size: 12.5px;
+  }
+  .site-foot p {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 20px 28px 40px;
+  }
+</style>

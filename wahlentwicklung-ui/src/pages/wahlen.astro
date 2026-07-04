@@ -1,0 +1,92 @@
+---
+/** Elections overview: a timeline, not a grid — six items. */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PartyTag from '@/components/PartyTag.astro';
+import { getElectionYears, federalResults, federalVoteBase } from '@/lib/queries';
+import { fmtPct } from '@/lib/format';
+
+const years = getElectionYears().reverse();
+const rows = years.map((year) => {
+  const results = federalResults(year);
+  const winner = [...results].sort((a, b) => b.votes - a.votes)[0];
+  const base = federalVoteBase(year);
+  return { year, winner, turnout: base.turnout, seats: results.reduce((a, r) => a + r.seats, 0) };
+});
+---
+
+<BaseLayout
+  title="Alle Bundestagswahlen seit 2005"
+  description="Alle Bundestagswahlen von 2005 bis 2025 im Überblick: stärkste Partei, Wahlbeteiligung und Sitze — mit Detailseiten zu jedem Ergebnis."
+  path="/wahlen"
+>
+  <section class="hero">
+    <p class="kicker">Übersicht</p>
+    <h1>Bundestagswahlen</h1>
+    <p class="lede">
+      Sechs Bundestagswahlen von {years.at(-1)} bis {years[0]} — jede mit vollständigem Ergebnis,
+      Sitzverteilung, Karten und allen 299 Wahlkreisen.
+    </p>
+  </section>
+
+  <ol class="timeline">
+    {
+      rows.map((r) => (
+        <li>
+          <a href={`/wahl/${r.year}`}>
+            <span class="year">{r.year}</span>
+            <span class="meta">
+              <PartyTag party={r.winner.key} /> {fmtPct(r.winner.pct)} · Wahlbeteiligung{' '}
+              {fmtPct(r.turnout)} · {r.seats} Sitze
+            </span>
+            <span class="go">→</span>
+          </a>
+        </li>
+      ))
+    }
+  </ol>
+</BaseLayout>
+
+<style>
+  .hero {
+    padding: 26px 0 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .timeline {
+    list-style: none;
+    border-top: 1px solid var(--hairline);
+  }
+  .timeline li {
+    border-bottom: 1px solid var(--hairline);
+  }
+  .timeline a {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    padding: 16px 0;
+    color: var(--ink);
+  }
+  .timeline a:hover {
+    text-decoration: none;
+    background: var(--raised);
+  }
+  .year {
+    font-size: 26px;
+    font-weight: 700;
+    font-family: var(--font-serif);
+    min-width: 86px;
+  }
+  .meta {
+    color: var(--text-sec);
+    font-size: 14px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: baseline;
+  }
+  .go {
+    margin-left: auto;
+    color: var(--text-muted);
+  }
+</style>

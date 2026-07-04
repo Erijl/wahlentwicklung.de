@@ -1,0 +1,126 @@
+---
+/** Party development page — canonical party, own mapping (no Union merge). */
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumb from '@/components/Breadcrumb.astro';
+import ModuleFrame from '@/components/ModuleFrame.astro';
+import TrendLines from '@/components/charts/TrendLines.astro';
+import StatTile from '@/components/StatTile.astro';
+import StatTileGrid from '@/components/StatTileGrid.astro';
+import {
+  getElectionYears,
+  getPartiesWithAbbreviation,
+  partyTrend,
+  partySeats,
+} from '@/lib/queries';
+import { partySlug } from '@/lib/slugs';
+import { fmtPct } from '@/lib/format';
+import type { PartyKey } from '@/lib/parties';
+import type { TrendPoint } from '@/lib/queries';
+
+export function getStaticPaths() {
+  return getPartiesWithAbbreviation().map((p) => ({
+    params: { slug: partySlug(p.abbreviation) },
+    props: { partyId: p.id, name: p.name, abbreviation: p.abbreviation },
+  }));
+}
+
+const { partyId, name, abbreviation } = Astro.props;
+const years = getElectionYears();
+const trend = partyTrend(partyId);
+const seats = partySeats(partyId);
+
+const trends = new Map<PartyKey, TrendPoint[]>([[abbreviation as PartyKey, trend]]);
+const trendYears = trend.map((t) => t.year);
+const latest = trend.at(-1);
+const best = [...trend].sort((a, b) => b.pct - a.pct)[0];
+const latestSeats = seats.at(-1);
+
+const description = `${name} (${abbreviation}) bei den Bundestagswahlen: Zweitstimmen-Entwicklung ${trendYears[0]}–${trendYears.at(-1)}, beste und aktuelle Ergebnisse.`;
+---
+
+<BaseLayout title={`${abbreviation} – Wahlentwicklung`} description={description} path={`/partei/${Astro.params.slug}`}>
+  <Breadcrumb items={[{ label: 'Parteien', href: '/parteien' }, { label: abbreviation }]} />
+
+  <section class="hero">
+    <p class="kicker">Partei · Entwicklung</p>
+    <h1>{abbreviation}</h1>
+    <p class="lede">
+      {name}. {latest && `Bei der Bundestagswahl ${latest.year} erreicht die Partei ${fmtPct(latest.pct)} der Zweitstimmen`}{latestSeats && latestSeats.seats > 0 ? ` und stellt ${latestSeats.seats} Abgeordnete.` : '.'}
+    </p>
+  </section>
+
+  {
+    trendYears.length < years.length && (
+      <p class="notice">
+        Ergebnisse liegen für {trendYears.join(', ')} vor — die Zuordnung weiterer Wahljahre ist in
+        Arbeit (Parteien-Mapping, siehe Quellen).
+      </p>
+    )
+  }
+
+  <ModuleFrame
+    title={`Zweitstimmen ${trendYears[0]}–${trendYears.at(-1)}`}
+    method="Bundesweiter Zweitstimmenanteil je Bundestagswahl für diese Partei (ohne Zusammenfassung mit anderen Parteien)."
+  >
+    <TrendLines trends={trends} years={trendYears} />
+  </ModuleFrame>
+
+  <ModuleFrame title="Auf einen Blick" status="berechnet aus den amtlichen Endergebnissen">
+    <StatTileGrid>
+      {latest && <StatTile label={`Ergebnis ${latest.year}`} value={fmtPct(latest.pct)} />}
+      {best && <StatTile label="Bestes Ergebnis" value={fmtPct(best.pct)} sub={`Bundestagswahl ${best.year}`} />}
+      {
+        latestSeats && (
+          <StatTile
+            label={`Sitze ${latestSeats.year}`}
+            value={latestSeats.seats > 0 ? String(latestSeats.seats) : 'keine'}
+          />
+        )
+      }
+    </StatTileGrid>
+  </ModuleFrame>
+
+  <ModuleFrame title="Ergebnis nach Wahl" status="Sprungmarken">
+    <ul class="yearlist">
+      {
+        trend.map((t) => (
+          <li>
+            <a href={`/wahl/${t.year}`}>
+              Bundestagswahl {t.year}: {fmtPct(t.pct)} →
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </ModuleFrame>
+</BaseLayout>
+
+<style>
+  .hero {
+    padding: 26px 0 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .notice {
+    font-size: 13px;
+    color: var(--text-sec);
+    border-left: 2px solid var(--accent);
+    padding-left: 10px;
+    margin-bottom: 6px;
+    max-width: 70ch;
+  }
+  .yearlist {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+  }
+  .yearlist li {
+    border-bottom: 1px solid var(--hairline);
+  }
+  .yearlist a {
+    display: block;
+    padding: 10px 0;
+    font-size: 14.5px;
+  }
+</style>

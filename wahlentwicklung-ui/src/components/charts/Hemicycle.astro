@@ -1,0 +1,74 @@
+---
+/** Parliament dot matrix, seats grouped in Bundestag seating order. */
+import { colorVar, SEATING_ORDER } from '@/lib/parties';
+import type { PartyResult } from '@/lib/queries';
+
+interface Props {
+  results: PartyResult[];
+  subLabel?: string;
+}
+
+const { results, subLabel } = Astro.props;
+
+const seats = SEATING_ORDER.map((k) => ({
+  key: k,
+  seats: results.find((r) => r.key === k)?.seats ?? 0,
+})).filter((s) => s.seats > 0);
+const total = seats.reduce((a, s) => a + s.seats, 0);
+
+const w = 560;
+const h = 300;
+const cx = w / 2;
+const cy = h - 14;
+const r0 = 92;
+const r1 = Math.min(w / 2 - 10, cy - 10);
+const rows = 11;
+const radii = Array.from({ length: rows }, (_, i) => r0 + ((r1 - r0) * i) / (rows - 1));
+const radiiSum = radii.reduce((a, b) => a + b, 0);
+const counts = radii.map((r) => Math.max(1, Math.round((total * r) / radiiSum)));
+let diff = counts.reduce((a, b) => a + b, 0) - total;
+while (diff > 0) {
+  counts[counts.indexOf(Math.max(...counts))]--;
+  diff--;
+}
+while (diff < 0) {
+  counts[counts.indexOf(Math.min(...counts))]++;
+  diff++;
+}
+
+const dots: { a: number; r: number }[] = [];
+radii.forEach((r, ri) => {
+  const n = counts[ri];
+  for (let j = 0; j < n; j++) {
+    dots.push({ a: Math.PI - Math.PI * (n > 1 ? j / (n - 1) : 0.5), r });
+  }
+});
+dots.sort((p, q) => q.a - p.a || p.r - q.r);
+
+const colored: { x: number; y: number; key: string }[] = [];
+let i = 0;
+for (const s of seats) {
+  for (let k = 0; k < s.seats; k++) {
+    const d = dots[i++];
+    colored.push({ x: cx + d.r * Math.cos(d.a), y: cy - d.r * Math.sin(d.a), key: s.key });
+  }
+}
+---
+
+<svg viewBox={`0 0 ${w} ${h}`} role="img" aria-label={`Sitzverteilung: ${total} Sitze`}>
+  {
+    colored.map((d) => (
+      <circle cx={d.x.toFixed(1)} cy={d.y.toFixed(1)} r="4.4" fill={colorVar(d.key)} />
+    ))
+  }
+  <text x={cx} y={cy - 46} text-anchor="middle" class="t-hero">{total}</text>
+  <text x={cx} y={cy - 26} text-anchor="middle" class="t-dim">Sitze</text>
+  {subLabel && <text x={cx} y={cy - 8} text-anchor="middle" class="t-dim">{subLabel}</text>}
+</svg>
+
+<style>
+  svg {
+    width: 100%;
+    height: auto;
+  }
+</style>

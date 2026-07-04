@@ -1,0 +1,71 @@
+---
+/** Stacked coalition bars with 2px surface gaps and a majority tick. */
+import { colorVar, type PartyKey } from '@/lib/parties';
+import type { PartyResult } from '@/lib/queries';
+
+interface Props {
+  results: PartyResult[];
+  combos: { label: string; parties: PartyKey[] }[];
+}
+
+const { results, combos } = Astro.props;
+const seatOf = (k: PartyKey) => results.find((r) => r.key === k)?.seats ?? 0;
+const total = results.reduce((a, r) => a + r.seats, 0);
+const majority = Math.floor(total / 2) + 1;
+
+const w = 520;
+const rowH = 56;
+const barH = 12;
+const gap = 2;
+const h = rowH * combos.length + 14;
+const mx = (w * majority) / total;
+---
+
+<svg viewBox={`0 0 ${w} ${h}`} role="img" aria-label="Mögliche Mehrheiten">
+  {
+    combos.map((c, i) => {
+      const y = i * rowH;
+      const sum = c.parties.reduce((a, k) => a + seatOf(k), 0);
+      const ok = sum >= majority;
+      let x = 0;
+      const segs = c.parties.map((k) => {
+        const seg = (w * seatOf(k)) / total;
+        const el = { x, wSeg: Math.max(seg - gap, 0), k };
+        x += seg;
+        return el;
+      });
+      return (
+        <>
+          <text x="0" y={y + 14} class="t-lbl">
+            {ok ? '✓' : '✕'} {c.label}
+          </text>
+          <text x={w} y={y + 14} text-anchor="end" class="t-val">
+            {sum}
+          </text>
+          <rect x="0" y={y + 24} width={w} height={barH} rx="2" fill="var(--hairline)" />
+          {segs.map((s) => (
+            <rect
+              x={s.x.toFixed(1)}
+              y={y + 24}
+              width={s.wSeg.toFixed(1)}
+              height={barH}
+              rx="2"
+              fill={colorVar(s.k)}
+            />
+          ))}
+          <line x1={mx.toFixed(1)} y1={y + 20} x2={mx.toFixed(1)} y2={y + 40} stroke="var(--ink)" stroke-width="1.5" />
+        </>
+      );
+    })
+  }
+  <text x={mx.toFixed(1)} y={h - 2} text-anchor="middle" class="t-dim">
+    Mehrheit: {majority} Sitze
+  </text>
+</svg>
+
+<style>
+  svg {
+    width: 100%;
+    height: auto;
+  }
+</style>

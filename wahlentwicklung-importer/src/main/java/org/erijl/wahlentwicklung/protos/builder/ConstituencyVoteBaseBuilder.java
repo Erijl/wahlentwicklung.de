@@ -5,40 +5,40 @@ import org.erijl.wahlentwicklung.protos.objects.ConstituencyVoteBase;
 public class ConstituencyVoteBaseBuilder {
     public static ConstituencyVoteBase buildConstituencyVoteBase(long electionYear, long stateId, long constituencyId,
                                                                  long eligibleVotersPrimaryVoteDefinitive,
-                                                                 long eligibleVotersPrimaryVotePreliminary,
+                                                                 long eligibleVotersPrimaryVotePrevious,
                                                                  long eligibleVotersSecondaryVoteDefinitive,
-                                                                 long eligibleVotersSecondaryVotePreliminary,
+                                                                 long eligibleVotersSecondaryVotePrevious,
                                                                  long actualVotersPrimaryVoteDefinitive,
-                                                                 long actualVotersPrimaryVotePreliminary,
+                                                                 long actualVotersPrimaryVotePrevious,
                                                                  long actualVotersSecondaryVoteDefinitive,
-                                                                 long actualVotersSecondaryVotePreliminary,
+                                                                 long actualVotersSecondaryVotePrevious,
                                                                  long invalidVotersPrimaryVoteDefinitive,
-                                                                 long invalidVotersPrimaryVotePreliminary,
+                                                                 long invalidVotersPrimaryVotePrevious,
                                                                  long invalidVotersSecondaryVoteDefinitive,
-                                                                 long invalidVotersSecondaryVotePreliminary,
+                                                                 long invalidVotersSecondaryVotePrevious,
                                                                  long validVotersPrimaryVoteDefinitive,
-                                                                 long validVotersSecondaryVotePreliminary,
+                                                                 long validVotersSecondaryVotePrevious,
                                                                  long validVotersSecondaryVoteDefinitive,
-                                                                 long validVotersPrimaryVotePreliminary) {
+                                                                 long validVotersPrimaryVotePrevious) {
         return ConstituencyVoteBase.newBuilder()
                 .setElectionYear(electionYear)
                 .setStateId(stateId)
                 .setConstituencyId(constituencyId)
-                .setEligiblevotersPrimaryvotePreliminary(eligibleVotersPrimaryVotePreliminary)
+                .setEligiblevotersPrimaryvotePrevious(eligibleVotersPrimaryVotePrevious)
                 .setEligiblevotersPrimaryvoteDefinitive(eligibleVotersPrimaryVoteDefinitive)
-                .setEligiblevotersSecondaryvotePreliminary(eligibleVotersSecondaryVotePreliminary)
+                .setEligiblevotersSecondaryvotePrevious(eligibleVotersSecondaryVotePrevious)
                 .setEligiblevotersSecondaryvoteDefinitive(eligibleVotersSecondaryVoteDefinitive)
-                .setActualvotersPrimaryvotePreliminary(actualVotersPrimaryVotePreliminary)
+                .setActualvotersPrimaryvotePrevious(actualVotersPrimaryVotePrevious)
                 .setActualvotersPrimaryvoteDefinitive(actualVotersPrimaryVoteDefinitive)
-                .setActualvotersSecondaryvotePreliminary(actualVotersSecondaryVotePreliminary)
+                .setActualvotersSecondaryvotePrevious(actualVotersSecondaryVotePrevious)
                 .setActualvotersSecondaryvoteDefinitive(actualVotersSecondaryVoteDefinitive)
-                .setValidvotersPrimaryvotePreliminary(validVotersPrimaryVotePreliminary)
+                .setValidvotersPrimaryvotePrevious(validVotersPrimaryVotePrevious)
                 .setValidvotersPrimaryvoteDefinitive(validVotersPrimaryVoteDefinitive)
-                .setValidvotersSecondaryvotePreliminary(validVotersSecondaryVotePreliminary)
+                .setValidvotersSecondaryvotePrevious(validVotersSecondaryVotePrevious)
                 .setValidvotersSecondaryvoteDefinitive(validVotersSecondaryVoteDefinitive)
-                .setInvalidvotersPrimaryvotePreliminary(invalidVotersPrimaryVotePreliminary)
+                .setInvalidvotersPrimaryvotePrevious(invalidVotersPrimaryVotePrevious)
                 .setInvalidvotersPrimaryvoteDefinitive(invalidVotersPrimaryVoteDefinitive)
-                .setInvalidvotersSecondaryvotePreliminary(invalidVotersSecondaryVotePreliminary)
+                .setInvalidvotersSecondaryvotePrevious(invalidVotersSecondaryVotePrevious)
                 .setInvalidvotersSecondaryvoteDefinitive(invalidVotersSecondaryVoteDefinitive)
                 .build();
     }

@@ -50,42 +50,42 @@ message ElectionParty {
 
 message ElectionVoteBase {
   int64 election_year = 1;
-  int64 eligiblevoters_primaryvote_preliminary = 2;
+  int64 eligiblevoters_primaryvote_previous = 2;
   int64 eligiblevoters_primaryvote_definitive = 3;
-  int64 eligiblevoters_secondaryvote_preliminary = 4;
+  int64 eligiblevoters_secondaryvote_previous = 4;
   int64 eligiblevoters_secondaryvote_definitive = 5;
-  int64 actualvoters_primaryvote_preliminary = 6;
+  int64 actualvoters_primaryvote_previous = 6;
   int64 actualvoters_primaryvote_definitive = 7;
-  int64 actualvoters_secondaryvote_preliminary = 8;
+  int64 actualvoters_secondaryvote_previous = 8;
   int64 actualvoters_secondaryvote_definitive = 9;
-  int64 validvoters_primaryvote_preliminary = 10;
+  int64 validvoters_primaryvote_previous = 10;
   int64 validvoters_primaryvote_definitive = 11;
-  int64 validvoters_secondaryvote_preliminary = 12;
+  int64 validvoters_secondaryvote_previous = 12;
   int64 validvoters_secondaryvote_definitive = 13;
-  int64 invalidvoters_primaryvote_preliminary = 14;
+  int64 invalidvoters_primaryvote_previous = 14;
   int64 invalidvoters_primaryvote_definitive = 15;
-  int64 invalidvoters_secondaryvote_preliminary = 16;
+  int64 invalidvoters_secondaryvote_previous = 16;
   int64 invalidvoters_secondaryvote_definitive = 17;
 }
 
 message StateVoteBase {
   int64 election_year = 1;
   int64 state_id = 2;
-  int64 eligiblevoters_primaryvote_preliminary = 3;
+  int64 eligiblevoters_primaryvote_previous = 3;
   int64 eligiblevoters_primaryvote_definitive = 4;
-  int64 eligiblevoters_secondaryvote_preliminary = 5;
+  int64 eligiblevoters_secondaryvote_previous = 5;
   int64 eligiblevoters_secondaryvote_definitive = 6;
-  int64 actualvoters_primaryvote_preliminary = 7;
+  int64 actualvoters_primaryvote_previous = 7;
   int64 actualvoters_primaryvote_definitive = 8;
-  int64 actualvoters_secondaryvote_preliminary = 9;
+  int64 actualvoters_secondaryvote_previous = 9;
   int64 actualvoters_secondaryvote_definitive = 10;
-  int64 validvoters_primaryvote_preliminary = 11;
+  int64 validvoters_primaryvote_previous = 11;
   int64 validvoters_primaryvote_definitive = 12;
-  int64 validvoters_secondaryvote_preliminary = 13;
+  int64 validvoters_secondaryvote_previous = 13;
   int64 validvoters_secondaryvote_definitive = 14;
-  int64 invalidvoters_primaryvote_preliminary = 15;
+  int64 invalidvoters_primaryvote_previous = 15;
   int64 invalidvoters_primaryvote_definitive = 16;
-  int64 invalidvoters_secondaryvote_preliminary = 17;
+  int64 invalidvoters_secondaryvote_previous = 17;
   int64 invalidvoters_secondaryvote_definitive = 18;
 }
 
@@ -93,30 +93,30 @@ message ConstituencyVoteBase {
   int64 election_year = 1;
   int64 state_id = 2;
   int64 constituency_id = 3;
-  int64 eligiblevoters_primaryvote_preliminary = 4;
+  int64 eligiblevoters_primaryvote_previous = 4;
   int64 eligiblevoters_primaryvote_definitive = 5;
-  int64 eligiblevoters_secondaryvote_preliminary = 6;
+  int64 eligiblevoters_secondaryvote_previous = 6;
   int64 eligiblevoters_secondaryvote_definitive = 7;
-  int64 actualvoters_primaryvote_preliminary = 8;
+  int64 actualvoters_primaryvote_previous = 8;
   int64 actualvoters_primaryvote_definitive = 9;
-  int64 actualvoters_secondaryvote_preliminary = 10;
+  int64 actualvoters_secondaryvote_previous = 10;
   int64 actualvoters_secondaryvote_definitive = 11;
-  int64 validvoters_primaryvote_preliminary = 12;
+  int64 validvoters_primaryvote_previous = 12;
   int64 validvoters_primaryvote_definitive = 13;
-  int64 validvoters_secondaryvote_preliminary = 14;
+  int64 validvoters_secondaryvote_previous = 14;
   int64 validvoters_secondaryvote_definitive = 15;
-  int64 invalidvoters_primaryvote_preliminary = 16;
+  int64 invalidvoters_primaryvote_previous = 16;
   int64 invalidvoters_primaryvote_definitive = 17;
-  int64 invalidvoters_secondaryvote_preliminary = 18;
+  int64 invalidvoters_secondaryvote_previous = 18;
   int64 invalidvoters_secondaryvote_definitive = 19;
 }
 
 message ElectionVoteParty {
   int64 election_year = 1;
   int64 party_id = 2;
-  int64 primaryvote_preliminary = 3;
+  int64 primaryvote_previous = 3;
   int64 primaryvote_definitive = 4;
-  int64 secondaryvote_preliminary = 5;
+  int64 secondaryvote_previous = 5;
   int64 secondaryvote_definitive = 6;
 }
 
@@ -124,9 +124,9 @@ message StateVoteParty {
   int64 election_year = 1;
   int64 party_id = 2;
   int64 state_id = 3;
-  int64 primaryvote_preliminary = 4;
+  int64 primaryvote_previous = 4;
   int64 primaryvote_definitive = 5;
-  int64 secondaryvote_preliminary = 6;
+  int64 secondaryvote_previous = 6;
   int64 secondaryvote_definitive = 7;
 }
 
@@ -135,8 +135,8 @@ message ConstituencyVoteParty {
   int64 state_id = 2;
   int64 party_id = 3;
   int64 constituency_id = 4;
-  int64 primaryvote_preliminary = 5;
+  int64 primaryvote_previous = 5;
   int64 primaryvote_definitive = 6;
-  int64 secondaryvote_preliminary = 7;
+  int64 secondaryvote_previous = 7;
   int64 secondaryvote_definitive = 8;
 }

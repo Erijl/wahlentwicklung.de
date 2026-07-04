@@ -4,17 +4,17 @@ import org.erijl.wahlentwicklung.protos.objects.ConstituencyVoteParty;
 
 public class ConstituencyVotePartyBuilder {
     public static ConstituencyVoteParty buildConstituencyVoteParty(long electionYear, long stateId, long partyId,
-                                                                   long constituencyId, long primaryVotePreliminary,
-                                                                   long primaryVoteDefinitive, long secondaryVotePreliminary,
+                                                                   long constituencyId, long primaryVotePrevious,
+                                                                   long primaryVoteDefinitive, long secondaryVotePrevious,
                                                                    long secondaryVoteDefinitive) {
         return ConstituencyVoteParty.newBuilder()
                 .setElectionYear(electionYear)
                 .setStateId(stateId)
                 .setPartyId(partyId)
                 .setConstituencyId(constituencyId)
-                .setPrimaryvotePreliminary(primaryVotePreliminary)
+                .setPrimaryvotePrevious(primaryVotePrevious)
                 .setPrimaryvoteDefinitive(primaryVoteDefinitive)
-                .setSecondaryvotePreliminary(secondaryVotePreliminary)
+                .setSecondaryvotePrevious(secondaryVotePrevious)
                 .setSecondaryvoteDefinitive(secondaryVoteDefinitive)
                 .build();
     }

@@ -34,8 +34,11 @@ const mx = (w * majority) / total;
         x += seg;
         return el;
       });
+      const rowTip = ok
+        ? `${c.label}: ${sum} von ${total} Sitzen · ${sum === majority ? 'exakt die Mehrheit' : `${sum - majority} Sitze über der Mehrheitsgrenze`}`
+        : `${c.label}: ${sum} von ${total} Sitzen · ${majority - sum} Sitze fehlen zur Mehrheit`;
       return (
-        <>
+        <g class="crow" data-tip={rowTip}>
           <text x="0" y={y + 14} class="t-lbl">
             {ok ? '✓' : '✕'} {c.label}
           </text>
@@ -44,22 +47,38 @@ const mx = (w * majority) / total;
           </text>
           <rect x="0" y={y + 24} width={w} height={barH} rx="2" fill="var(--hairline)" />
           {segs.map((s) => (
-            <rect
-              x={s.x.toFixed(1)}
-              y={y + 24}
-              width={s.wSeg.toFixed(1)}
-              height={barH}
-              rx="2"
-              fill={colorVar(s.k)}
-            />
+            <g
+              class="seg"
+              role="img"
+              aria-label={`${s.k}: ${seatOf(s.k)} ${seatOf(s.k) === 1 ? 'Sitz' : 'Sitze'}`}
+              data-tip={`${s.k} · ${seatOf(s.k)} ${seatOf(s.k) === 1 ? 'Sitz' : 'Sitze'}`}
+            >
+              <rect
+                class="seg-v"
+                x={s.x.toFixed(1)}
+                y={y + 24}
+                width={s.wSeg.toFixed(1)}
+                height={barH}
+                rx="2"
+                fill={colorVar(s.k)}
+              />
+              <rect
+                class="seg-hit"
+                x={s.x.toFixed(1)}
+                y={y + 16}
+                width={s.wSeg.toFixed(1)}
+                height={barH + 16}
+                fill="transparent"
+              />
+            </g>
           ))}
           <line x1={mx.toFixed(1)} y1={y + 20} x2={mx.toFixed(1)} y2={y + 40} stroke="var(--ink)" stroke-width="1.5" />
-        </>
+        </g>
       );
     })
   }
   <text x={mx.toFixed(1)} y={h - 2} text-anchor="middle" class="t-dim">
-    Mehrheit: {majority} Sitze
+    Mehrheit ab {majority} Sitze
   </text>
 </svg>
 
@@ -67,5 +86,13 @@ const mx = (w * majority) / total;
   svg {
     width: 100%;
     height: auto;
+  }
+  /* hover: the hovered party segment stays, siblings in the same row recede;
+     the invisible .seg-hit rect widens the 12px bar to a usable hit target */
+  .seg-v {
+    transition: opacity 0.15s ease;
+  }
+  .crow:has(.seg:hover) .seg:not(:hover) .seg-v {
+    opacity: 0.35;
   }
 </style>

@@ -1,14 +1,17 @@
 ---
-/** Stat-tile contract: label · value · sub/delta (docs/03-design-system.md §5). */
+/** Stat-tile contract: label · value · sub/delta (docs/03-design-system.md §5).
+ *  Optional `card` (lib/hovercard.ts statCard JSON) adds a rich hover card
+ *  with the stat's context — hover-capable devices only, nothing is gated. */
 interface Props {
   label: string;
   value: string;
   sub?: string;
+  card?: string;
 }
-const { label, value, sub } = Astro.props;
+const { label, value, sub, card } = Astro.props;
 ---
 
-<div class="tile">
+<div class="tile" data-card={card}>
   <span class="tl">{label}</span>
   <span class="tv">{value}</span>
   {sub && <span class="td">{sub}</span>}
@@ -21,6 +24,14 @@ const { label, value, sub } = Astro.props;
     display: flex;
     flex-direction: column;
     gap: 2px;
+  }
+  .tile[data-card] {
+    cursor: help;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .tile[data-card]:hover {
+      box-shadow: inset 0 0 0 1px var(--hairline);
+    }
   }
   .tl {
     font-size: 12.5px;

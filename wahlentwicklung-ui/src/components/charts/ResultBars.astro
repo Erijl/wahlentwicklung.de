@@ -27,7 +27,7 @@ const pMax = Math.max(32, ...shown.map((r) => Math.max(r.pct, r.prevPct ?? 0))) 
 const band = w / shown.length;
 const curW = 30;
 const ghoW = 18;
-const overlap = 10; // how far the main bar covers the ghost
+const overlap = 5; // how far the main bar covers the ghost (its surface stroke eats ~1.5px more)
 
 function bar(x: number, base: number, height: number, width: number): string {
   const hh = Math.max(height, 2);
@@ -47,8 +47,8 @@ const base = top + plotH;
     shown.map((r, i) => {
       const cx = band * i + band / 2;
       // ghost sits behind the main bar, overlapping (Zeit-style):
-      // main bar is centered; ghost peeks out to the left
-      const bx = cx + ghoW / 4;
+      // shift the ensemble so ghost + main together stay centered in the band
+      const bx = cx + (ghoW - overlap) / 2;
       const gx = bx - curW / 2 - ghoW / 2 + overlap;
       const ch = (plotH * r.pct) / pMax;
       const gh = r.prevPct !== null ? (plotH * r.prevPct) / pMax : 0;

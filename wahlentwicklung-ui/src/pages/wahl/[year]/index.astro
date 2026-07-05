@@ -24,7 +24,7 @@ import {
   constituencyTable,
   stateTurnouts,
 } from '@/lib/queries';
-import { hoverCard } from '@/lib/hovercard';
+import { hoverCard, statCard } from '@/lib/hovercard';
 import { electionLede } from '@/lib/prose';
 import { fmtPct, fmtDelta, fmtMillions, fmtNum } from '@/lib/format';
 import type { PartyKey } from '@/lib/parties';
@@ -80,10 +80,60 @@ const stateCards = new Map(
 const trends = federalTrends(['Union', 'SPD', 'AfD', 'Grüne', 'Linke', 'FDP']);
 const tableRows = constituencyTable(year, 'secondary');
 const tableRowsErst = constituencyTable(year, 'primary');
-const topTurnoutState = stateTurnouts(year)[0];
-const biggestGain = [...results]
-  .filter((r) => r.prevPct !== null && r.key !== 'Übrige')
-  .sort((a, b) => b.pct - b.prevPct! - (a.pct - a.prevPct!))[0];
+const turnoutRanking = stateTurnouts(year);
+const topTurnoutState = turnoutRanking[0];
+const gains = [...results]
+  .filter((r) => r.prevPct !== null && r.key !== 'Übrige' && r.pct >= 0.5)
+  .sort((a, b) => b.pct - b.prevPct! - (a.pct - a.prevPct!))
+  .slice(0, 3);
+const biggestGain = gains[0];
+
+// "Auf einen Blick" hover cards: each tile's context as label·bar·value rows
+const cardYears = years.slice(Math.max(0, years.indexOf(year) - 2), years.indexOf(year) + 1).reverse();
+const cardBases = cardYears.map((y) => ({ y, b: federalVoteBase(y) }));
+const turnoutCard = statCard({
+  title: 'Wahlbeteiligung im Vergleich',
+  rows: cardBases.map(({ y, b }) => ({
+    label: String(y),
+    value: fmtPct(b.turnout),
+    frac: b.turnout / 100,
+    strong: y === year,
+  })),
+});
+const maxEligible = Math.max(...cardBases.map(({ b }) => b.eligible));
+const eligibleCard = statCard({
+  title: 'Wahlberechtigte im Vergleich',
+  rows: cardBases.map(({ y, b }) => ({
+    label: String(y),
+    value: fmtMillions(b.eligible),
+    frac: b.eligible / maxEligible,
+    strong: y === year,
+  })),
+});
+const maxGain = Math.max(0.1, ...gains.map((r) => r.pct - r.prevPct!));
+const gainsCard =
+  gains.length > 1
+    ? statCard({
+        title: prevYear ? `Größte Zugewinne ggü. ${prevYear}` : 'Größte Zugewinne ggü. Vorwahl',
+        note: 'Parteien ab 0,5 % der Zweitstimmen',
+        rows: gains.map((r) => ({
+          label: r.key,
+          value: `${fmtDelta(r.pct - r.prevPct!)} Pp.`,
+          frac: (r.pct - r.prevPct!) / maxGain,
+          party: r.key,
+          strong: r === gains[0],
+        })),
+      })
+    : undefined;
+const turnoutRankCard = statCard({
+  title: 'Wahlbeteiligung nach Bundesland',
+  rows: turnoutRanking.slice(0, 5).map((s, i) => ({
+    label: s.name,
+    value: fmtPct(s.turnout),
+    frac: s.turnout / 100,
+    strong: i === 0,
+  })),
+});
 
 const title = `Bundestagswahl ${year} – Ergebnisse, Sitze, Wahlkreise`;
 const status = `Amtliches Endergebnis · Quelle: Bundeswahlleiterin`;
@@ -171,11 +221,13 @@ const status = `Amtliches Endergebnis · Quelle: Bundeswahlleiterin`;
           label="Wahlbeteiligung"
           value={fmtPct(base.turnout)}
           sub={base.prevTurnout > 0 ? `${fmtDelta(base.turnout - base.prevTurnout)} Pp. ggü. Vorwahl` : undefined}
+          card={turnoutCard}
         />
         <StatTile
           label="Wahlberechtigte"
           value={fmtMillions(base.eligible)}
           sub={`${fmtNum(base.eligible)} Personen`}
+          card={eligibleCard}
         />
         {
           biggestGain && biggestGain.prevPct !== null && (
@@ -183,6 +235,7 @@ const status = `Amtliches Endergebnis · Quelle: Bundeswahlleiterin`;
               label="Größter Zugewinn"
               value={`${biggestGain.key} ${fmtDelta(biggestGain.pct - biggestGain.prevPct)} Pp.`}
               sub={prevYear ? `im Vergleich zur Bundestagswahl ${prevYear}` : undefined}
+              card={gainsCard}
             />
           )
         }
@@ -190,6 +243,7 @@ const status = `Amtliches Endergebnis · Quelle: Bundeswahlleiterin`;
           label="Höchste Beteiligung"
           value={topTurnoutState.name}
           sub={`${fmtPct(topTurnoutState.turnout)} der Wahlberechtigten`}
+          card={turnoutRankCard}
         />
       </StatTileGrid>
     </ModuleFrame>

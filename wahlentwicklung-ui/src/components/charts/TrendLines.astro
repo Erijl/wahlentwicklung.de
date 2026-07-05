@@ -1,7 +1,11 @@
 ---
 /**
- * Development line chart across election years. 2px lines, end markers with
- * surface ring, collision-avoided direct end-labels with leader lines.
+ * Development line chart across election years — deliberately "amtlich":
+ * straight segments between elections (a curve would invent data between
+ * discrete events), a dot at every election year (2px surface ring), the
+ * 5-%-Hürde as labeled threshold, unit on the top y-tick, x-axis title.
+ * Hover layer: per-year crosshair columns carry a rich hover card (all
+ * series at that year vs. the previous one); hovering a line dims the rest.
  */
 import { colorVar, type PartyKey } from '@/lib/parties';
 import { fmtPct } from '@/lib/format';
@@ -10,16 +14,19 @@ import type { TrendPoint } from '@/lib/queries';
 interface Props {
   trends: Map<PartyKey, TrendPoint[]>;
   years: number[];
+  /** Hover-card chart label (default Zweitstimmen). */
+  label?: string;
 }
 
-const { trends, years } = Astro.props;
+const { trends, years, label = 'Zweitstimmen' } = Astro.props;
 
 const w = 760;
-const h = 300;
-const ml = 34;
+const h = 320;
+const ml = 40;
 const mr = 98;
-const mt = 10;
-const mb = 26;
+const mt = 14;
+const mb = 46;
+const base = h - mb;
 const allPts = [...trends.values()].flat();
 const yMax = Math.max(20, Math.ceil(Math.max(...allPts.map((p) => p.pct)) / 10) * 10 + 5);
 
@@ -27,17 +34,20 @@ const X = (year: number) =>
   years.length === 1
     ? ml + (w - ml - mr) / 2
     : ml + ((w - ml - mr) * years.indexOf(year)) / (years.length - 1);
-const Y = (v: number) => mt + (h - mt - mb) * (1 - v / yMax);
+const Y = (v: number) => mt + (base - mt) * (1 - v / yMax);
 
 const gridSteps = Array.from({ length: Math.floor(yMax / 10) + 1 }, (_, i) => i * 10);
+const topStep = gridSteps.at(-1)!;
 
 const series = [...trends.entries()].map(([key, pts]) => ({
   key,
+  pts,
   path: 'M' + pts.map((p) => `${X(p.year).toFixed(1)} ${Y(p.pct).toFixed(1)}`).join(' L'),
   end: pts[pts.length - 1],
 }));
 
-// collision-avoided end labels
+// collision-avoided end labels (leader lines), rendered inside their series
+// group so the line-hover dimming carries them along
 const MIN_GAP = 15;
 const labels = series
   .map((s) => ({ key: s.key, x: X(s.end.year), yLine: Y(s.end.pct), y: Y(s.end.pct), pct: s.end.pct }))
@@ -45,43 +55,124 @@ const labels = series
 for (let i = 1; i < labels.length; i++) {
   if (labels[i].y - labels[i - 1].y < MIN_GAP) labels[i].y = labels[i - 1].y + MIN_GAP;
 }
+const labelByKey = new Map(labels.map((l) => [l.key, l]));
+
+// per-year crosshair cards: every series at that year, ghost = previous election
+const r1 = (v: number) => Math.round(v * 10) / 10;
+const yearCards = years.map((y, yi) => {
+  const bars = series
+    .map((s) => {
+      const p = s.pts.find((pt) => pt.year === y);
+      if (!p) return null;
+      const pv = yi > 0 ? (s.pts.find((pt) => pt.year === years[yi - 1])?.pct ?? null) : null;
+      return { p: s.key, v: r1(p.pct), w: pv === null ? null : r1(pv) };
+    })
+    .filter((b) => b !== null)
+    .sort((a, b) => b!.v - a!.v);
+  return JSON.stringify({
+    k: '',
+    t: `Bundestagswahl ${y}`,
+    y,
+    py: yi > 0 ? years[yi - 1] : undefined,
+    l: label,
+    b: bars,
+  });
+});
+const band = years.length > 1 ? (w - ml - mr) / (years.length - 1) : w - ml - mr;
 ---
 
-<svg viewBox={`0 0 ${w} ${h}`} role="img" aria-label="Entwicklung der Zweitstimmenanteile">
+<svg viewBox={`0 0 ${w} ${h}`} role="img" aria-label={`Entwicklung der ${label}anteile`}>
   {
     gridSteps.map((g) => (
       <>
         <line x1={ml} y1={Y(g).toFixed(1)} x2={w - mr} y2={Y(g).toFixed(1)} stroke="var(--hairline)" stroke-width="1" />
         <text x={ml - 6} y={(Y(g) + 4).toFixed(1)} text-anchor="end" class="t-dim">
-          {g}
+          {g === topStep ? `${g} %` : g}
         </text>
       </>
     ))
   }
   {
     years.map((y) => (
-      <text x={X(y).toFixed(1)} y={h - 6} text-anchor="middle" class="t-dim">
-        {y}
-      </text>
-    ))
-  }
-  {
-    series.map((s) => (
       <>
-        <path d={s.path} fill="none" stroke={colorVar(s.key)} stroke-width="2" stroke-linejoin="round" stroke-linecap="round" />
-        <circle cx={X(s.end.year).toFixed(1)} cy={Y(s.end.pct).toFixed(1)} r="4" fill={colorVar(s.key)} stroke="var(--surface)" stroke-width="2" />
-      </>
-    ))
-  }
-  {
-    labels.map((l) => (
-      <>
-        <line x1={(l.x + 5).toFixed(1)} y1={l.yLine.toFixed(1)} x2={(l.x + 14).toFixed(1)} y2={l.y.toFixed(1)} stroke="var(--text-muted)" stroke-width="1" />
-        <text x={(l.x + 17).toFixed(1)} y={(l.y + 4).toFixed(1)} class="t-lbl">
-          {l.key} {fmtPct(l.pct).replace(' %', '')}
+        <line x1={X(y).toFixed(1)} y1={mt} x2={X(y).toFixed(1)} y2={base} stroke="var(--hairline)" stroke-width="1" opacity="0.6" />
+        <text x={X(y).toFixed(1)} y={base + 18} text-anchor="middle" class="t-dim">
+          {y}
         </text>
       </>
     ))
+  }
+  <text x={ml + (w - ml - mr) / 2} y={h - 8} text-anchor="middle" class="t-dim t-axis">
+    Wahljahr
+  </text>
+
+  {/* 5-%-Hürde threshold (dashed = threshold, never grid) */}
+  <line
+    x1={ml}
+    y1={Y(5).toFixed(1)}
+    x2={w - mr}
+    y2={Y(5).toFixed(1)}
+    stroke="var(--text-muted)"
+    stroke-width="1"
+    stroke-dasharray="4 3"
+  />
+  <text x={ml + 4} y={(Y(5) - 5).toFixed(1)} class="t-dim">5-%-Hürde</text>
+
+  {/* crosshair columns (below the lines): hover = year card + hairline */}
+  {
+    years.map((y, i) => (
+      <g class="tl-x" role="img" aria-label={`Bundestagswahl ${y}: alle Werte`} data-card={yearCards[i]}>
+        <line class="xline" x1={X(y).toFixed(1)} y1={mt} x2={X(y).toFixed(1)} y2={base} />
+        <rect
+          x={(X(y) - band / 2).toFixed(1)}
+          y={mt}
+          width={band.toFixed(1)}
+          height={base - mt + 22}
+          fill="transparent"
+        />
+      </g>
+    ))
+  }
+
+  {
+    series.map((s) => {
+      const l = labelByKey.get(s.key)!;
+      return (
+        <g class="tl-s" role="img" aria-label={`${s.key}: zuletzt ${fmtPct(s.end.pct)}`}>
+          <path class="tl-hit" d={s.path} fill="none" stroke="transparent" stroke-width="11" />
+          <path
+            class="tl-line"
+            d={s.path}
+            fill="none"
+            stroke={colorVar(s.key)}
+            stroke-width="2"
+            stroke-linejoin="round"
+            stroke-linecap="round"
+          />
+          {s.pts.map((p) => (
+            <circle
+              cx={X(p.year).toFixed(1)}
+              cy={Y(p.pct).toFixed(1)}
+              r={p.year === s.end.year ? 4 : 3.2}
+              fill={colorVar(s.key)}
+              stroke="var(--surface)"
+              stroke-width="2"
+            />
+          ))}
+          <line
+            x1={(l.x + 5).toFixed(1)}
+            y1={l.yLine.toFixed(1)}
+            x2={(l.x + 14).toFixed(1)}
+            y2={l.y.toFixed(1)}
+            stroke="var(--text-muted)"
+            stroke-width="1"
+          />
+          <text x={(l.x + 17).toFixed(1)} y={(l.y + 4).toFixed(1)} class="t-lbl">
+            {s.key} {fmtPct(l.pct).replace(' %', '')}
+          </text>
+        </g>
+      );
+    })
   }
 </svg>
 
@@ -89,5 +180,28 @@ for (let i = 1; i < labels.length; i++) {
   svg {
     width: 100%;
     height: auto;
+  }
+  .t-axis {
+    letter-spacing: 0.04em;
+  }
+  /* line hover: hovered series stays, the rest recedes */
+  .tl-s {
+    transition: opacity 0.15s ease;
+  }
+  svg:has(.tl-s:hover) .tl-s:not(:hover) {
+    opacity: 0.18;
+  }
+  .tl-s:hover .tl-line {
+    stroke-width: 3;
+  }
+  /* crosshair hairline appears with the year card */
+  .xline {
+    stroke: var(--text-muted);
+    stroke-width: 1;
+    opacity: 0;
+    transition: opacity 0.12s ease;
+  }
+  .tl-x:hover .xline {
+    opacity: 0.9;
   }
 </style>

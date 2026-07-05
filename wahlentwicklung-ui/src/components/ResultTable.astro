@@ -57,9 +57,21 @@ const collapsible = collapsedRows > 0 && rows.length > collapsedRows + 4;
     <table>
       <thead>
         <tr>
-          <th class="wk">Wahlkreis</th>
-          <th>Beteiligung</th>
-          {columns.map((k) => <th><PartyTag party={k} /></th>)}
+          <th class="wk" aria-sort="none">
+            <button type="button" class="ths" data-sk="name" title="Nach Wahlkreis sortieren">Wahlkreis</button>
+          </th>
+          <th aria-sort="descending">
+            <button type="button" class="ths" data-sk="num" title="Nach Beteiligung sortieren">Beteiligung</button>
+          </th>
+          {
+            columns.map((k) => (
+              <th aria-sort="none">
+                <button type="button" class="ths" data-sk="num" title={`Nach ${k} sortieren`}>
+                  <PartyTag party={k} />
+                </button>
+              </th>
+            ))
+          }
         </tr>
       </thead>
       <tbody id={listId}>
@@ -103,6 +115,43 @@ const collapsible = collapsedRows > 0 && rows.length > collapsedRows + 4;
 </div>
 
 <script>
+  // sortable headers: name column alphabetically (asc first), numeric
+  // columns by value (desc first); repeat click inverts. Re-applies the
+  // collapse window to the new order; an active search is unaffected
+  // (collapse is suspended while searching).
+  document.querySelectorAll<HTMLTableElement>('.rt table').forEach((table) => {
+    const body = table.tBodies[0];
+    const rt = table.closest<HTMLElement>('.rt')!;
+    const ths = [...table.tHead!.rows[0].cells];
+    ths.forEach((th, ci) => {
+      const btn = th.querySelector<HTMLButtonElement>('.ths');
+      if (!btn) return;
+      btn.addEventListener('click', () => {
+        const kind = btn.dataset.sk;
+        const cur = th.getAttribute('aria-sort');
+        const asc = cur === 'ascending' ? false : cur === 'descending' ? true : kind === 'name';
+        const rows = [...body.rows];
+        const dir = asc ? 1 : -1;
+        if (kind === 'name') {
+          const val = (tr: HTMLTableRowElement) =>
+            tr.cells[ci].querySelector('a')?.textContent?.trim() ?? '';
+          rows.sort((a, b) => dir * val(a).localeCompare(val(b), 'de'));
+        } else {
+          const val = (tr: HTMLTableRowElement) =>
+            parseFloat((tr.cells[ci].textContent ?? '').trim().replace(',', '.')) || 0;
+          rows.sort((a, b) => dir * (val(a) - val(b)));
+        }
+        rows.forEach((r) => body.appendChild(r));
+        ths.forEach((t) => t.setAttribute('aria-sort', 'none'));
+        th.setAttribute('aria-sort', asc ? 'ascending' : 'descending');
+        const n = Number(rt.dataset.collapsedRows);
+        if (n && rt.classList.contains('rt-collapsed')) {
+          rows.forEach((r, i) => r.classList.toggle('rt-hidden', i >= n));
+        }
+      });
+    });
+  });
+
   // collapse enhancement: hide rows past the threshold, fade + toggle
   document.querySelectorAll<HTMLElement>('.rt[data-collapsed-rows]').forEach((rt) => {
     const n = Number(rt.dataset.collapsedRows);
@@ -175,6 +224,42 @@ const collapsible = collapsedRows > 0 && rows.length > collapsedRows + 4;
   td.wk {
     text-align: left;
     padding-left: 0;
+  }
+  /* sortable headers: the button inherits the th look; the sorted column
+     shows its direction, unsorted columns hint ↕ on hover */
+  .ths {
+    border: none;
+    background: none;
+    padding: 0;
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .ths::after {
+    font-size: 8px;
+    line-height: 1;
+    color: var(--text-muted);
+    content: '';
+    width: 8px;
+  }
+  th:hover .ths::after {
+    content: '↕';
+    font-size: 10px;
+  }
+  th[aria-sort='descending'] .ths::after,
+  th:hover[aria-sort='descending'] .ths::after {
+    content: '▼';
+    font-size: 8px;
+    color: var(--ink);
+  }
+  th[aria-sort='ascending'] .ths::after,
+  th:hover[aria-sort='ascending'] .ths::after {
+    content: '▲';
+    font-size: 8px;
+    color: var(--ink);
   }
   td {
     padding: 9px 10px;

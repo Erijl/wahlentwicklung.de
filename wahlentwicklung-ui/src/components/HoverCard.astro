@@ -29,6 +29,13 @@
     v: number;
     w: number | null;
   }
+  interface CardRow {
+    l: string;
+    v: string;
+    f: number;
+    p?: string;
+    s?: number;
+  }
   interface CardData {
     k: string;
     t: string;
@@ -36,7 +43,11 @@
     y?: number;
     py?: number;
     l?: string;
-    b: CardBar[];
+    /** vertical result-bar variant */
+    b?: CardBar[];
+    /** horizontal ranking-row variant (stat tiles) */
+    r?: CardRow[];
+    n?: string;
   }
 
   const card = document.getElementById('hover-card')!;
@@ -64,10 +75,27 @@
     );
   }
 
+  function statRow(r: CardRow): string {
+    const cv = r.p ? `var(${COLOR[r.p] ?? '--party-uebrige'})` : 'var(--accent)';
+    return (
+      `<span class="hc-rl${r.s ? ' on' : ''}">${esc(r.l)}</span>` +
+      `<span class="hc-rt"><i style="width:${(r.f * 100).toFixed(1)}%;background:${cv}"></i></span>` +
+      `<span class="hc-rv${r.s ? ' on' : ''}">${esc(r.v)}</span>`
+    );
+  }
+
   function render(d: CardData): void {
-    const max = Math.max(1, ...d.b.map((x) => Math.max(x.v, x.w ?? 0)));
+    if (d.r) {
+      // horizontal ranking-row variant (stat tiles)
+      card.innerHTML =
+        `<p class="hc-title">${esc(d.t)}</p>` +
+        `<div class="hc-rows">${d.r.map(statRow).join('')}</div>` +
+        (d.n ? `<p class="hc-note">${esc(d.n)}</p>` : '');
+      return;
+    }
+    const bars = d.b ?? [];
+    const max = Math.max(1, ...bars.map((x) => Math.max(x.v, x.w ?? 0)));
     card.innerHTML =
-      `<p class="hc-kicker">${esc(d.k)}</p>` +
       `<p class="hc-title">${esc(d.t)}</p>` +
       `<p class="hc-status">` +
       (d.u !== undefined ? `Wahlbeteiligung ${fmt1.format(d.u)}&nbsp;%` : '') +
@@ -76,7 +104,7 @@
       (d.py !== undefined ? `<span><i class="gh"></i>’${String(d.py).slice(2)}</span>` : '') +
       (d.y !== undefined ? `<span><i></i>${d.y}</span>` : '') +
       `</p>` +
-      `<div class="hc-chart">${d.b.map((x) => group(x, max)).join('')}</div>`;
+      `<div class="hc-chart">${bars.map((x) => group(x, max)).join('')}</div>`;
   }
 
   if (matchMedia('(hover: hover) and (pointer: fine)').matches) {
@@ -193,7 +221,7 @@
   .hcard .hc-ghost {
     width: 8px;
     opacity: 0.35;
-    margin-right: -3px;
+    margin-right: -2px;
   }
   .hcard .hc-bar {
     width: 13px;
@@ -213,5 +241,52 @@
     font-size: 10.5px;
     color: var(--text-muted);
     font-variant-numeric: tabular-nums;
+  }
+  /* horizontal ranking-row variant (stat tiles) */
+  .hcard .hc-rows {
+    display: grid;
+    grid-template-columns: auto minmax(96px, 1fr) auto;
+    align-items: center;
+    column-gap: 10px;
+    row-gap: 6px;
+    min-width: 230px;
+    margin-top: 6px;
+  }
+  .hcard .hc-rl {
+    font-size: 11.5px;
+    color: var(--text-sec);
+  }
+  .hcard .hc-rl.on {
+    color: var(--ink);
+    font-weight: 700;
+  }
+  .hcard .hc-rt {
+    display: block;
+    height: 8px;
+    border-radius: 2px;
+    background: var(--hairline);
+    overflow: hidden;
+  }
+  .hcard .hc-rt i {
+    display: block;
+    height: 100%;
+    border-radius: 2px;
+  }
+  .hcard .hc-rv {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-sec);
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+  .hcard .hc-rv.on {
+    color: var(--ink);
+    font-weight: 700;
+  }
+  .hcard .hc-note {
+    font-size: 10.5px;
+    color: var(--text-muted);
+    margin-top: 8px;
+    max-width: 240px;
   }
 </style>

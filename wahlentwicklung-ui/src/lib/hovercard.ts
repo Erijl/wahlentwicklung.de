@@ -5,6 +5,7 @@
  * row of the big lists (299×).
  */
 import type { PartyResult } from './queries';
+import type { PartyKey } from './parties';
 
 export interface HoverCardOptions {
   /** Context line, e.g. "Thüringen · Wahlkreis 189" or "Bundestagswahl 2025". */
@@ -24,6 +25,40 @@ export interface HoverCardOptions {
 }
 
 const r1 = (v: number) => Math.round(v * 10) / 10;
+
+export interface StatCardRow {
+  label: string;
+  /** Preformatted display value ("82,5 %", "+9,2 Pp.", "60,5 Mio."). */
+  value: string;
+  /** Bar length 0..1 — scale is the caller's choice (absolute for %, rel. max for counts). */
+  frac: number;
+  /** Bar color: party token when set, otherwise the neutral accent. */
+  party?: PartyKey;
+  /** Highlighted row (e.g. the page's election year). */
+  strong?: boolean;
+}
+
+export interface StatCardOptions {
+  title: string;
+  rows: StatCardRow[];
+  /** Method footnote, e.g. the ≥0,5-%-Schwelle of the gains ranking. */
+  note?: string;
+}
+
+/** Horizontal-bar ranking card for stat tiles (label · bar · value rows). */
+export function statCard(opts: StatCardOptions): string {
+  return JSON.stringify({
+    t: opts.title,
+    n: opts.note,
+    r: opts.rows.map((r) => ({
+      l: r.label,
+      v: r.value,
+      f: Math.max(0, Math.min(1, Math.round(r.frac * 1000) / 1000)),
+      p: r.party,
+      s: r.strong ? 1 : undefined,
+    })),
+  });
+}
 
 export function hoverCard(opts: HoverCardOptions): string {
   const bars = [...opts.results]

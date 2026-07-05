@@ -663,3 +663,106 @@ UPDATE election SET date = '2013-09-22' WHERE year = 2013;
 UPDATE election SET date = '2017-09-24' WHERE year = 2017;
 UPDATE election SET date = '2021-09-26' WHERE year = 2021;
 UPDATE election SET date = '2025-02-23' WHERE year = 2025;
+
+-- ---------------------------------------------------------------------------
+-- Historical elections 1949-2002 (docs/09): name variants + succession calls
+-- ---------------------------------------------------------------------------
+
+-- F.D.P. spelling era (1969-2000)
+UPDATE party_mapping
+SET party_id = (SELECT id FROM party WHERE name = 'Freie Demokratische Partei')
+WHERE party_id IS NULL
+  AND (election_year, column_index) IN
+      (SELECT election_year, column_index FROM election_party WHERE name = 'F.D.P.');
+
+-- PDS -> Die Linke (legal predecessor; the Bundeswahlleiterin's own RWS
+-- time series treats "PDS/Die Linke" as one series)
+UPDATE party_mapping
+SET party_id = (SELECT id FROM party WHERE name = 'Die Linke')
+WHERE party_id IS NULL
+  AND (election_year, column_index) IN
+      (SELECT election_year, column_index FROM election_party WHERE name IN ('PDS', 'PDS/LL'));
+
+-- Bündnis 90/Grüne 1990 (separate list in the East; merged with the Grünen
+-- 1993 -> both 1990 columns map to the canonical Grüne)
+UPDATE party_mapping
+SET party_id = (SELECT id FROM party WHERE name = 'Bündnis 90/Die Grünen')
+WHERE party_id IS NULL
+  AND (election_year, column_index) IN
+      (SELECT election_year, column_index FROM election_party WHERE name IN ('B90/Gr', 'DIE GRÜNEN', 'B90/GRÜNE', 'GRÜNE/B 90'));
+
+-- DKP/DRP 1949 = Deutsche Konservative Partei - Deutsche Rechtspartei,
+-- predecessor of the DRP (NOT the communist DKP)
+UPDATE party_mapping
+SET party_id = (SELECT id FROM party WHERE name = 'Deutsche Reichspartei')
+WHERE party_id IS NULL
+  AND (election_year, column_index) IN
+      (SELECT election_year, column_index FROM election_party WHERE name = 'DKP/DRP' AND election_year = 1949);
+
+-- Tierschutzpartei short label 2002
+UPDATE party_mapping
+SET party_id = (SELECT id FROM party WHERE name = 'PARTEI MENSCH UMWELT TIERSCHUTZ')
+WHERE party_id IS NULL
+  AND (election_year, column_index) IN
+      (SELECT election_year, column_index FROM election_party WHERE name = 'Tierschutz');
+
+-- Election dates 1949-2002
+UPDATE election SET date = '1949-08-14' WHERE year = 1949;
+UPDATE election SET date = '1953-09-06' WHERE year = 1953;
+UPDATE election SET date = '1957-09-15' WHERE year = 1957;
+UPDATE election SET date = '1961-09-17' WHERE year = 1961;
+UPDATE election SET date = '1965-09-19' WHERE year = 1965;
+UPDATE election SET date = '1969-09-28' WHERE year = 1969;
+UPDATE election SET date = '1972-11-19' WHERE year = 1972;
+UPDATE election SET date = '1976-10-03' WHERE year = 1976;
+UPDATE election SET date = '1980-10-05' WHERE year = 1980;
+UPDATE election SET date = '1983-03-06' WHERE year = 1983;
+UPDATE election SET date = '1987-01-25' WHERE year = 1987;
+UPDATE election SET date = '1990-12-02' WHERE year = 1990;
+UPDATE election SET date = '1994-10-16' WHERE year = 1994;
+UPDATE election SET date = '1998-09-27' WHERE year = 1998;
+UPDATE election SET date = '2002-09-22' WHERE year = 2002;
+
+-- 1976 file spells major parties with spaced letters ("S P D")
+UPDATE party_mapping
+SET party_id = (SELECT id FROM party WHERE abbreviation = 'SPD')
+WHERE party_id IS NULL
+  AND (election_year, column_index) IN
+      (SELECT election_year, column_index FROM election_party WHERE name = 'S P D');
+
+UPDATE party_mapping
+SET party_id = (SELECT id FROM party WHERE abbreviation = 'CDU')
+WHERE party_id IS NULL
+  AND (election_year, column_index) IN
+      (SELECT election_year, column_index FROM election_party WHERE name = 'C D U');
+
+UPDATE party_mapping
+SET party_id = (SELECT id FROM party WHERE abbreviation = 'CSU')
+WHERE party_id IS NULL
+  AND (election_year, column_index) IN
+      (SELECT election_year, column_index FROM election_party WHERE name = 'C S U');
+
+-- 1980-1987 files use umlaut-free/spaced spellings
+UPDATE party_mapping
+SET party_id = (SELECT id FROM party WHERE name = 'Bündnis 90/Die Grünen')
+WHERE party_id IS NULL
+  AND (election_year, column_index) IN
+      (SELECT election_year, column_index FROM election_party WHERE name = 'GRUENE');
+
+UPDATE party_mapping
+SET party_id = (SELECT id FROM party WHERE abbreviation = 'NPD')
+WHERE party_id IS NULL
+  AND (election_year, column_index) IN
+      (SELECT election_year, column_index FROM election_party WHERE name = 'N P D');
+
+UPDATE party_mapping
+SET party_id = (SELECT id FROM party WHERE abbreviation = 'DKP')
+WHERE party_id IS NULL
+  AND (election_year, column_index) IN
+      (SELECT election_year, column_index FROM election_party WHERE name = 'D K P');
+
+UPDATE party_mapping
+SET party_id = (SELECT id FROM party WHERE name = 'Ökologisch-Demokratische Partei')
+WHERE party_id IS NULL
+  AND (election_year, column_index) IN
+      (SELECT election_year, column_index FROM election_party WHERE name = 'OE D P');

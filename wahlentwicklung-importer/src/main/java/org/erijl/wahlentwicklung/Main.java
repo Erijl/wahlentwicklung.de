@@ -18,17 +18,26 @@ public class Main {
         Config config = Config.getInstance();
         DatabaseManager dbManager = new DatabaseManager();
 
-        for (ElectionEnum election : ElectionEnum.getElectionsInArray(config.getArrayProperty(ConfigKeyEnum.YEARS_TO_IMPORT))) {
-            System.out.println(election.getYear());
+        for (String yearString : config.getArrayProperty(ConfigKeyEnum.YEARS_TO_IMPORT)) {
+            int year = Integer.parseInt(yearString.trim());
+            System.out.println(year);
             StopWatch stopWatch = new StopWatch();
             stopWatch.start();
-            ElectionParser parser = new ElectionParser(election);
 
-            parser.parse();
+            ElectionEnum[] modern = ElectionEnum.getElectionsInArray(new String[]{yearString.trim()});
+            if (modern.length == 1) {
+                ElectionParser parser = new ElectionParser(modern[0]);
+                parser.parse();
+                ValidationUtil.validateElectionParser(parser);
+                dbManager.insertElectionData(parser, modern[0]);
+            } else {
+                // pre-2005: old kerg format, own parser (docs/09)
+                HistoricalElectionParser parser = new HistoricalElectionParser(year);
+                parser.parse();
+                ValidationUtil.validateElectionParser(parser);
+                dbManager.insertElectionData(parser, year);
+            }
 
-            ValidationUtil.validateElectionParser(parser);
-
-            dbManager.insertElectionData(parser, election);
             stopWatch.stop();
             System.out.println(stopWatch.formatTime());
         }

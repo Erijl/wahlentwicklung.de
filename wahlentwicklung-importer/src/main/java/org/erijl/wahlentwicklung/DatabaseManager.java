@@ -45,6 +45,29 @@ public class DatabaseManager {
         return this.sqliteConnection;
     }
 
+    /**
+     * Insert path for the pre-2005 elections (HistoricalElectionParser) —
+     * same table layout, the parser fills the format gaps (docs/09).
+     */
+    public void insertElectionData(HistoricalElectionParser parser, int year) throws SQLException {
+        insertElection(year);
+        insertStates(parser.getStates());
+        insertConstituencies(parser.getConstituencies());
+        insertParties(parser.getParties());
+
+        insertElectionBaseVotes(parser.getElectionBaseVotes());
+        insertStateBaseVotes(parser.getStateBaseVotes());
+        insertConstituencyVotesBase(parser.getConstituencyVotesBase());
+
+        insertElectionPartyVotes(parser.getElectionPartyVotes());
+        insertStatePartyVotes(parser.getStatePartyVotes());
+        insertConstituencyPartyVotes(parser.getConstituencyPartyVotes());
+
+        insertPartyMappings(parser.getParties());
+        insertStateMappings(parser.getStates());
+        insertConstituencyMappings(parser.getConstituencies());
+    }
+
     public void insertElectionData(ElectionParser parser, ElectionEnum election) throws SQLException {
         insertElection(election);
         insertStates(parser.getStates());
@@ -65,9 +88,13 @@ public class DatabaseManager {
     }
 
     public void insertElection(ElectionEnum electionEnum) throws SQLException {
+        insertElection(electionEnum.getYear());
+    }
+
+    public void insertElection(int year) throws SQLException {
         String sql = "INSERT INTO election (year) VALUES (?)";
         try (PreparedStatement stmt = sqliteConnection.prepareStatement(sql)) {
-            stmt.setInt(1, electionEnum.getYear());
+            stmt.setInt(1, year);
             stmt.executeUpdate();
         }
     }

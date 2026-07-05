@@ -1,6 +1,7 @@
 package org.erijl.wahlentwicklung.utils;
 
 import org.erijl.wahlentwicklung.ElectionParser;
+import org.erijl.wahlentwicklung.HistoricalElectionParser;
 import org.erijl.wahlentwicklung.protos.objects.*;
 
 import java.lang.reflect.Method;
@@ -14,19 +15,33 @@ public class ValidationUtil {
     final static String[] blacklistedMethods = {"getElectionYear", "getPartyId"};
 
     public static void validateElectionParser(ElectionParser electionParser) {
+        validateParsedElection(electionParser.getStateBaseVotes(), electionParser.getConstituencyVotesBase(),
+                electionParser.getElectionBaseVotes(), electionParser.getStatePartyVotes(),
+                electionParser.getConstituencyPartyVotes(), electionParser.getElectionPartyVotes());
+    }
+
+    public static void validateElectionParser(HistoricalElectionParser electionParser) {
+        validateParsedElection(electionParser.getStateBaseVotes(), electionParser.getConstituencyVotesBase(),
+                electionParser.getElectionBaseVotes(), electionParser.getStatePartyVotes(),
+                electionParser.getConstituencyPartyVotes(), electionParser.getElectionPartyVotes());
+    }
+
+    private static void validateParsedElection(List<StateVoteBase> stateBaseVotes, List<ConstituencyVoteBase> constituencyVotesBase,
+                                               ElectionVoteBase electionBaseVotes, List<StateVoteParty> statePartyVotes,
+                                               List<ConstituencyVoteParty> constituencyPartyVotes, List<ElectionVoteParty> electionPartyVotes) {
 
         // Checks that the sum of all state base votes matches with the election total
-        assertPropertiesOfClassMatchSummedList(StateVoteBase.class, electionParser.getStateBaseVotes(), ElectionVoteBase.class, electionParser.getElectionBaseVotes());
+        assertPropertiesOfClassMatchSummedList(StateVoteBase.class, stateBaseVotes, ElectionVoteBase.class, electionBaseVotes);
 
         // Checks that the sum of all constituency base votes matches with the election total
-        assertPropertiesOfClassMatchSummedList(ConstituencyVoteBase.class, electionParser.getConstituencyVotesBase(), ElectionVoteBase.class, electionParser.getElectionBaseVotes());
+        assertPropertiesOfClassMatchSummedList(ConstituencyVoteBase.class, constituencyVotesBase, ElectionVoteBase.class, electionBaseVotes);
 
 
         // Checks that the sum of all state party votes matches with the election total
-        assertPropertiesOfClassMatchSummedList(StateVoteParty.class, electionParser.getStatePartyVotes(), ElectionVoteParty.class, electionParser.getElectionPartyVotes());
+        assertPropertiesOfClassMatchSummedList(StateVoteParty.class, statePartyVotes, ElectionVoteParty.class, electionPartyVotes);
 
         // Checks that the sum of all constituency party votes matches with the election total
-        assertPropertiesOfClassMatchSummedList(ConstituencyVoteParty.class, electionParser.getConstituencyPartyVotes(), ElectionVoteParty.class, electionParser.getElectionPartyVotes());
+        assertPropertiesOfClassMatchSummedList(ConstituencyVoteParty.class, constituencyPartyVotes, ElectionVoteParty.class, electionPartyVotes);
     }
 
     private static <T, U> void assertPropertiesOfClassMatchSummedList(Class<T> listClass, List<T> list, Class<U> objectClass, List<U> objectList) {

@@ -48,7 +48,16 @@ VALUES ('Sozialdemokratische Partei Deutschlands', 'SPD', 'E3000F'),
        ('DIE REPUBLIKANER', 'REP', '0075BE'),
        ('Bündnis Sahra Wagenknecht - Vernunft und Gerechtigkeit', 'BSW', '7D254F'),
        ('Übrige', 'Übrige', 'C0C0C0'),
-       ('Alternative für Deutschland', 'AfD', '009EE0');
+       ('Alternative für Deutschland', 'AfD', '009EE0'),
+       -- historical parties (1949-2002 import; abbreviations = kerg labels so PartyMapper auto-maps)
+       ('Kommunistische Partei Deutschlands', 'KPD', ''),
+       ('Deutsche Partei', 'DP', ''),
+       ('Gesamtdeutscher Block/Bund der Heimatvertriebenen und Entrechteten', 'GB/BHE', ''),
+       ('Gesamtdeutsche Partei', 'GDP', ''),
+       ('Deutsche Zentrumspartei', 'Zentrum', ''),
+       ('Deutsche Reichspartei', 'DRP', ''),
+       ('Wirtschaftliche Aufbau-Vereinigung', 'WAV', ''),
+       ('Deutsche Soziale Union', 'DSU', '');
 
 INSERT INTO state (name, abbreviation)
 VALUES ('Schleswig-Holstein', 'SH'),

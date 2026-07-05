@@ -21,6 +21,9 @@ export function getStaticPaths() {
   const paths = [];
   for (const year of getElectionYears()) {
     for (const s of getStates()) {
+      // not every state took part in every election (Saarland from 1957,
+      // the East from 1990) — only emit pages backed by data
+      if (!stateVoteBase(year, s.id)) continue;
       paths.push({
         params: { year: String(year), slug: slugify(s.name) },
         props: { stateId: s.id, stateName: s.name },

@@ -1,0 +1,302 @@
+﻿# (c) Die Bundeswahlleiterin, Statistisches Bundesamt (Destatis), 2025;;;;;
+# Datenlizenz Deutschland – Namensnennung – Version 2.0 (https://www.govdata.de/dl-de/by-2-0);;;;;
+# ;;;;;
+# Wahl zum 21. Deutschen Bundestag (23. Februar 2025);;;;;
+# Ergebnisse der repräsentativen Wahlstatistik;;;;;
+# Art der ungültigen Stimmen nach Geschlecht in den Ländern;;;;;
+# ;;;;;
+# Die Ergebnisse der Männer beinhalten auch die Ergebnisse der Personen mit dem Geschlechtsmerkmal 'divers' als auch derjenigen ohne Geschlechtseintrag im Geburtenregister.;;;;;
+# Erläuterungen zur Methodik siehe Dokument 'Allgemeine und methodische Hinweise zur repräsentativen Wahlstatistik der Bundestagswahl 2025'.;;;;;
+# Für die Ergebnisse der ungültigen Stimmabgabe wurde eine separate Hochrechnung durchgeführt. Die Summen der einzelnen Merkmalsgruppen weichen daher geringfügig von den anderen Ergebnissen der repräsentativen Wahlstatistik ab.;;;;;
+# Durch Auf- bzw. Abrundungen können sich geringfügige Differenzen ergeben.;;;;;
+# ;;;;;
+Land;Ungültige Erst-/Zweitstimme;Ungültigkeitsgrund;Summe;m|d|o;w
+Bund;Summe;Ungültige Erststimmen;423264;190555;232709
+Bund;Summe;Ungültige Zweitstimmen;279141;119669;159472
+Bund;Beide;Summe;190636;81639;108997
+Bund;Beide;Erst- und Zweitstimmenseite leer oder durchgestrichen;77473;33398;44075
+Bund;Beide;Erststimmenseite leer oder durchgestrichen, Zweitstimmenseite mehrere Kreuze;28691;10888;17803
+Bund;Beide;Erststimmenseite mehrere Kreuze, Zweitstimmenseite leer oder durchgestrichen;20754;8168;12587
+Bund;Beide;Beide Seiten mehrere Kreuze;40385;17827;22558
+Bund;Beide;Eine Seite leer oder durchgestrichen, andere Seite sonstige Ursachen;2675;1457;1218
+Bund;Beide;Beide Seiten sonstige Ursachen;20657;9901;10756
+Bund;1;Summe;232628;108916;123712
+Bund;1;Erststimmenseite leer oder durchgestrichen;215587;102003;113585
+Bund;1;Erststimmenseite mehrere Kreuze;10677;4464;6213
+Bund;1;Sonstige Ursachen;6363;2450;3913
+Bund;2;Summe;88505;38030;50475
+Bund;2;Zweitstimmenseite leer oder durchgestrichen;71267;30504;40763
+Bund;2;Zweitstimmenseite mehrere Kreuze;14935;6414;8522
+Bund;2;Sonstige Ursachen;18791;8409;10381
+SH;Summe;Ungültige Erststimmen;13739;6061;7678
+SH;Summe;Ungültige Zweitstimmen;9963;4343;5620
+SH;Beide;Summe;6229;2613;3616
+SH;Beide;Erst- und Zweitstimmenseite leer oder durchgestrichen;2767;1019;1748
+SH;Beide;Erststimmenseite leer oder durchgestrichen, Zweitstimmenseite mehrere Kreuze;503;178;326
+SH;Beide;Erststimmenseite mehrere Kreuze, Zweitstimmenseite leer oder durchgestrichen;1074;583;490
+SH;Beide;Beide Seiten mehrere Kreuze;1180;511;669
+SH;Beide;Eine Seite leer oder durchgestrichen, andere Seite sonstige Ursachen;145;57;88
+SH;Beide;Beide Seiten sonstige Ursachen;560;265;295
+SH;1;Summe;7510;3448;4062
+SH;1;Erststimmenseite leer oder durchgestrichen;6929;3116;3813
+SH;1;Erststimmenseite mehrere Kreuze;522;325;197
+SH;1;Sonstige Ursachen;59;7;52
+SH;2;Summe;3734;1731;2003
+SH;2;Zweitstimmenseite leer oder durchgestrichen;3362;1579;1782
+SH;2;Zweitstimmenseite mehrere Kreuze;372;151;221
+SH;2;Sonstige Ursachen;0;0;0
+HH;Summe;Ungültige Erststimmen;8507;3967;4540
+HH;Summe;Ungültige Zweitstimmen;5185;2016;3169
+HH;Beide;Summe;3749;1495;2254
+HH;Beide;Erst- und Zweitstimmenseite leer oder durchgestrichen;1473;652;820
+HH;Beide;Erststimmenseite leer oder durchgestrichen, Zweitstimmenseite mehrere Kreuze;416;66;350
+HH;Beide;Erststimmenseite mehrere Kreuze, Zweitstimmenseite leer oder durchgestrichen;450;230;220
+HH;Beide;Beide Seiten mehrere Kreuze;878;390;488
+HH;Beide;Eine Seite leer oder durchgestrichen, andere Seite sonstige Ursachen;0;0;0
+HH;Beide;Beide Seiten sonstige Ursachen;532;156;375
+HH;1;Summe;4758;2473;2285
+HH;1;Erststimmenseite leer oder durchgestrichen;4536;2432;2105
+HH;1;Erststimmenseite mehrere Kreuze;142;25;117
+HH;1;Sonstige Ursachen;79;16;64
+HH;2;Summe;1436;522;914
+HH;2;Zweitstimmenseite leer oder durchgestrichen;1062;357;705
+HH;2;Zweitstimmenseite mehrere Kreuze;374;165;210
+HH;2;Sonstige Ursachen;0;0;0
+NI;Summe;Ungültige Erststimmen;36097;15923;20174
+NI;Summe;Ungültige Zweitstimmen;25976;10836;15140
+NI;Beide;Summe;15746;6638;9108
+NI;Beide;Erst- und Zweitstimmenseite leer oder durchgestrichen;6015;2591;3423
+NI;Beide;Erststimmenseite leer oder durchgestrichen, Zweitstimmenseite mehrere Kreuze;2327;860;1466
+NI;Beide;Erststimmenseite mehrere Kreuze, Zweitstimmenseite leer oder durchgestrichen;2208;885;1323
+NI;Beide;Beide Seiten mehrere Kreuze;3090;1191;1899
+NI;Beide;Eine Seite leer oder durchgestrichen, andere Seite sonstige Ursachen;122;82;40
+NI;Beide;Beide Seiten sonstige Ursachen;1985;1028;957
+NI;1;Summe;20351;9285;11066
+NI;1;Erststimmenseite leer oder durchgestrichen;18148;8429;9720
+NI;1;Erststimmenseite mehrere Kreuze;862;341;521
+NI;1;Sonstige Ursachen;1341;516;825
+NI;2;Summe;10230;4198;6032
+NI;2;Zweitstimmenseite leer oder durchgestrichen;8463;3556;4907
+NI;2;Zweitstimmenseite mehrere Kreuze;978;361;616
+NI;2;Sonstige Ursachen;790;281;509
+HB;Summe;Ungültige Erststimmen;3286;1631;1655
+HB;Summe;Ungültige Zweitstimmen;2110;688;1422
+HB;Beide;Summe;1332;482;851
+HB;Beide;Erst- und Zweitstimmenseite leer oder durchgestrichen;422;174;248
+HB;Beide;Erststimmenseite leer oder durchgestrichen, Zweitstimmenseite mehrere Kreuze;124;13;111
+HB;Beide;Erststimmenseite mehrere Kreuze, Zweitstimmenseite leer oder durchgestrichen;132;52;80
+HB;Beide;Beide Seiten mehrere Kreuze;280;97;183
+HB;Beide;Eine Seite leer oder durchgestrichen, andere Seite sonstige Ursachen;53;0;53
+HB;Beide;Beide Seiten sonstige Ursachen;321;146;175
+HB;1;Summe;1954;1150;804
+HB;1;Erststimmenseite leer oder durchgestrichen;1727;1020;706
+HB;1;Erststimmenseite mehrere Kreuze;86;53;34
+HB;1;Sonstige Ursachen;141;77;64
+HB;2;Summe;778;207;571
+HB;2;Zweitstimmenseite leer oder durchgestrichen;646;158;488
+HB;2;Zweitstimmenseite mehrere Kreuze;78;23;55
+HB;2;Sonstige Ursachen;54;26;28
+NW;Summe;Ungültige Erststimmen;97311;44063;53248
+NW;Summe;Ungültige Zweitstimmen;61606;24764;36842
+NW;Beide;Summe;41030;16506;24524
+NW;Beide;Erst- und Zweitstimmenseite leer oder durchgestrichen;13600;5223;8377
+NW;Beide;Erststimmenseite leer oder durchgestrichen, Zweitstimmenseite mehrere Kreuze;9831;3487;6344
+NW;Beide;Erststimmenseite mehrere Kreuze, Zweitstimmenseite leer oder durchgestrichen;3656;1412;2244
+NW;Beide;Beide Seiten mehrere Kreuze;9182;4249;4934
+NW;Beide;Eine Seite leer oder durchgestrichen, andere Seite sonstige Ursachen;547;170;377
+NW;Beide;Beide Seiten sonstige Ursachen;4215;1967;2248
+NW;1;Summe;56281;27557;28724
+NW;1;Erststimmenseite leer oder durchgestrichen;51455;25730;25725
+NW;1;Erststimmenseite mehrere Kreuze;2768;921;1848
+NW;1;Sonstige Ursachen;2057;906;1151
+NW;2;Summe;20576;8258;12318
+NW;2;Zweitstimmenseite leer oder durchgestrichen;16251;6376;9875
+NW;2;Zweitstimmenseite mehrere Kreuze;4026;1760;2266
+NW;2;Sonstige Ursachen;298;122;176
+HE;Summe;Ungültige Erststimmen;35802;16152;19650
+HE;Summe;Ungültige Zweitstimmen;27800;12576;15224
+HE;Beide;Summe;18225;8079;10146
+HE;Beide;Erst- und Zweitstimmenseite leer oder durchgestrichen;8753;3906;4847
+HE;Beide;Erststimmenseite leer oder durchgestrichen, Zweitstimmenseite mehrere Kreuze;1391;615;776
+HE;Beide;Erststimmenseite mehrere Kreuze, Zweitstimmenseite leer oder durchgestrichen;2587;1186;1401
+HE;Beide;Beide Seiten mehrere Kreuze;3707;1482;2225
+HE;Beide;Eine Seite leer oder durchgestrichen, andere Seite sonstige Ursachen;276;130;146
+HE;Beide;Beide Seiten sonstige Ursachen;1512;761;751
+HE;1;Summe;17577;8073;9504
+HE;1;Erststimmenseite leer oder durchgestrichen;16407;7531;8876
+HE;1;Erststimmenseite mehrere Kreuze;778;455;324
+HE;1;Sonstige Ursachen;392;87;305
+HE;2;Summe;9575;4496;5079
+HE;2;Zweitstimmenseite leer oder durchgestrichen;8167;3881;4287
+HE;2;Zweitstimmenseite mehrere Kreuze;1284;523;761
+HE;2;Sonstige Ursachen;124;93;31
+RP;Summe;Ungültige Erststimmen;27497;12376;15121
+RP;Summe;Ungültige Zweitstimmen;18190;7385;10805
+RP;Beide;Summe;11441;4580;6861
+RP;Beide;Erst- und Zweitstimmenseite leer oder durchgestrichen;4971;2067;2905
+RP;Beide;Erststimmenseite leer oder durchgestrichen, Zweitstimmenseite mehrere Kreuze;1915;629;1286
+RP;Beide;Erststimmenseite mehrere Kreuze, Zweitstimmenseite leer oder durchgestrichen;1250;325;925
+RP;Beide;Beide Seiten mehrere Kreuze;2579;1082;1496
+RP;Beide;Eine Seite leer oder durchgestrichen, andere Seite sonstige Ursachen;150;125;25
+RP;Beide;Beide Seiten sonstige Ursachen;576;352;225
+RP;1;Summe;16056;7796;8260
+RP;1;Erststimmenseite leer oder durchgestrichen;15236;7405;7831
+RP;1;Erststimmenseite mehrere Kreuze;714;335;379
+RP;1;Sonstige Ursachen;106;56;50
+RP;2;Summe;6749;2805;3944
+RP;2;Zweitstimmenseite leer oder durchgestrichen;5132;2100;3032
+RP;2;Zweitstimmenseite mehrere Kreuze;1554;677;877
+RP;2;Sonstige Ursachen;63;28;35
+BW;Summe;Ungültige Erststimmen;49732;22619;27113
+BW;Summe;Ungültige Zweitstimmen;32448;13918;18530
+BW;Beide;Summe;22027;9571;12456
+BW;Beide;Erst- und Zweitstimmenseite leer oder durchgestrichen;8455;3750;4705
+BW;Beide;Erststimmenseite leer oder durchgestrichen, Zweitstimmenseite mehrere Kreuze;3843;1298;2545
+BW;Beide;Erststimmenseite mehrere Kreuze, Zweitstimmenseite leer oder durchgestrichen;2391;723;1668
+BW;Beide;Beide Seiten mehrere Kreuze;4359;1913;2446
+BW;Beide;Eine Seite leer oder durchgestrichen, andere Seite sonstige Ursachen;365;240;124
+BW;Beide;Beide Seiten sonstige Ursachen;2615;1647;967
+BW;1;Summe;27705;13048;14657
+BW;1;Erststimmenseite leer oder durchgestrichen;26589;12676;13913
+BW;1;Erststimmenseite mehrere Kreuze;719;285;434
+BW;1;Sonstige Ursachen;397;87;310
+BW;2;Summe;10421;4347;6075
+BW;2;Zweitstimmenseite leer oder durchgestrichen;8686;3529;5157
+BW;2;Zweitstimmenseite mehrere Kreuze;1395;624;771
+BW;2;Sonstige Ursachen;340;194;147
+BY;Summe;Ungültige Erststimmen;47357;23601;23756
+BY;Summe;Ungültige Zweitstimmen;24503;12189;12314
+BY;Beide;Summe;15358;7535;7823
+BY;Beide;Erst- und Zweitstimmenseite leer oder durchgestrichen;9342;4423;4919
+BY;Beide;Erststimmenseite leer oder durchgestrichen, Zweitstimmenseite mehrere Kreuze;1556;780;776
+BY;Beide;Erststimmenseite mehrere Kreuze, Zweitstimmenseite leer oder durchgestrichen;1480;694;786
+BY;Beide;Beide Seiten mehrere Kreuze;1984;1087;896
+BY;Beide;Eine Seite leer oder durchgestrichen, andere Seite sonstige Ursachen;69;69;0
+BY;Beide;Beide Seiten sonstige Ursachen;927;481;446
+BY;1;Summe;31999;16066;15933
+BY;1;Erststimmenseite leer oder durchgestrichen;30949;15462;15487
+BY;1;Erststimmenseite mehrere Kreuze;733;478;255
+BY;1;Sonstige Ursachen;317;126;191
+BY;2;Summe;9145;4653;4492
+BY;2;Zweitstimmenseite leer oder durchgestrichen;8215;4253;3962
+BY;2;Zweitstimmenseite mehrere Kreuze;821;328;492
+BY;2;Sonstige Ursachen;109;72;37
+SL;Summe;Ungültige Erststimmen;8051;3687;4364
+SL;Summe;Ungültige Zweitstimmen;5570;2251;3319
+SL;Beide;Summe;3871;1502;2369
+SL;Beide;Erst- und Zweitstimmenseite leer oder durchgestrichen;1830;775;1056
+SL;Beide;Erststimmenseite leer oder durchgestrichen, Zweitstimmenseite mehrere Kreuze;360;136;224
+SL;Beide;Erststimmenseite mehrere Kreuze, Zweitstimmenseite leer oder durchgestrichen;190;93;97
+SL;Beide;Beide Seiten mehrere Kreuze;959;385;574
+SL;Beide;Eine Seite leer oder durchgestrichen, andere Seite sonstige Ursachen;106;32;74
+SL;Beide;Beide Seiten sonstige Ursachen;426;82;344
+SL;1;Summe;4180;2185;1994
+SL;1;Erststimmenseite leer oder durchgestrichen;3863;1943;1919
+SL;1;Erststimmenseite mehrere Kreuze;279;224;56
+SL;1;Sonstige Ursachen;38;18;20
+SL;2;Summe;1699;749;950
+SL;2;Zweitstimmenseite leer oder durchgestrichen;1214;515;700
+SL;2;Zweitstimmenseite mehrere Kreuze;358;137;221
+SL;2;Sonstige Ursachen;126;97;28
+BE;Summe;Ungültige Erststimmen;18539;8000;10539
+BE;Summe;Ungültige Zweitstimmen;11644;5138;6506
+BE;Beide;Summe;9271;4147;5124
+BE;Beide;Erst- und Zweitstimmenseite leer oder durchgestrichen;3605;1430;2175
+BE;Beide;Erststimmenseite leer oder durchgestrichen, Zweitstimmenseite mehrere Kreuze;1519;583;936
+BE;Beide;Erststimmenseite mehrere Kreuze, Zweitstimmenseite leer oder durchgestrichen;871;451;420
+BE;Beide;Beide Seiten mehrere Kreuze;2143;998;1145
+BE;Beide;Eine Seite leer oder durchgestrichen, andere Seite sonstige Ursachen;291;150;141
+BE;Beide;Beide Seiten sonstige Ursachen;842;536;307
+BE;1;Summe;9268;3853;5415
+BE;1;Erststimmenseite leer oder durchgestrichen;8527;3646;4881
+BE;1;Erststimmenseite mehrere Kreuze;324;44;280
+BE;1;Sonstige Ursachen;417;163;254
+BE;2;Summe;2373;992;1381
+BE;2;Zweitstimmenseite leer oder durchgestrichen;1473;556;917
+BE;2;Zweitstimmenseite mehrere Kreuze;900;436;464
+BE;2;Sonstige Ursachen;0;0;0
+BB;Summe;Ungültige Erststimmen;16488;7298;9190
+BB;Summe;Ungültige Zweitstimmen;11343;4750;6593
+BB;Beide;Summe;8931;3881;5050
+BB;Beide;Erst- und Zweitstimmenseite leer oder durchgestrichen;4518;1737;2781
+BB;Beide;Erststimmenseite leer oder durchgestrichen, Zweitstimmenseite mehrere Kreuze;854;426;429
+BB;Beide;Erststimmenseite mehrere Kreuze, Zweitstimmenseite leer oder durchgestrichen;974;396;578
+BB;Beide;Beide Seiten mehrere Kreuze;2082;894;1189
+BB;Beide;Eine Seite leer oder durchgestrichen, andere Seite sonstige Ursachen;149;149;0
+BB;Beide;Beide Seiten sonstige Ursachen;353;279;73
+BB;1;Summe;7557;3417;4140
+BB;1;Erststimmenseite leer oder durchgestrichen;6655;2930;3725
+BB;1;Erststimmenseite mehrere Kreuze;716;301;416
+BB;1;Sonstige Ursachen;186;186;0
+BB;2;Summe;2412;869;1544
+BB;2;Zweitstimmenseite leer oder durchgestrichen;1491;565;926
+BB;2;Zweitstimmenseite mehrere Kreuze;842;303;539
+BB;2;Sonstige Ursachen;79;0;79
+MV;Summe;Ungültige Erststimmen;11315;4737;6578
+MV;Summe;Ungültige Zweitstimmen;7796;3339;4457
+MV;Beide;Summe;6417;2767;3650
+MV;Beide;Erst- und Zweitstimmenseite leer oder durchgestrichen;2124;901;1223
+MV;Beide;Erststimmenseite leer oder durchgestrichen, Zweitstimmenseite mehrere Kreuze;1075;546;529
+MV;Beide;Erststimmenseite mehrere Kreuze, Zweitstimmenseite leer oder durchgestrichen;500;114;386
+MV;Beide;Beide Seiten mehrere Kreuze;2097;953;1144
+MV;Beide;Eine Seite leer oder durchgestrichen, andere Seite sonstige Ursachen;13;0;13
+MV;Beide;Beide Seiten sonstige Ursachen;608;253;355
+MV;1;Summe;4898;1971;2928
+MV;1;Erststimmenseite leer oder durchgestrichen;4526;1811;2716
+MV;1;Erststimmenseite mehrere Kreuze;332;147;185
+MV;1;Sonstige Ursachen;40;13;27
+MV;2;Summe;1379;573;806
+MV;2;Zweitstimmenseite leer oder durchgestrichen;1143;487;656
+MV;2;Zweitstimmenseite mehrere Kreuze;218;86;133
+MV;2;Sonstige Ursachen;18;0;18
+SN;Summe;Ungültige Erststimmen;22002;9390;12612
+SN;Summe;Ungültige Zweitstimmen;15205;7132;8073
+SN;Beide;Summe;12175;5570;6605
+SN;Beide;Erst- und Zweitstimmenseite leer oder durchgestrichen;5564;2675;2890
+SN;Beide;Erststimmenseite leer oder durchgestrichen, Zweitstimmenseite mehrere Kreuze;884;471;413
+SN;Beide;Erststimmenseite mehrere Kreuze, Zweitstimmenseite leer oder durchgestrichen;1567;592;975
+SN;Beide;Beide Seiten mehrere Kreuze;2658;1060;1598
+SN;Beide;Eine Seite leer oder durchgestrichen, andere Seite sonstige Ursachen;139;122;17
+SN;Beide;Beide Seiten sonstige Ursachen;1362;650;712
+SN;1;Summe;9827;3820;6007
+SN;1;Erststimmenseite leer oder durchgestrichen;8570;3408;5162
+SN;1;Erststimmenseite mehrere Kreuze;902;309;593
+SN;1;Sonstige Ursachen;355;103;252
+SN;2;Summe;3030;1562;1468
+SN;2;Zweitstimmenseite leer oder durchgestrichen;2216;1075;1141
+SN;2;Zweitstimmenseite mehrere Kreuze;711;394;318
+SN;2;Sonstige Ursachen;103;94;9
+ST;Summe;Ungültige Erststimmen;17293;7207;10086
+ST;Summe;Ungültige Zweitstimmen;10488;4755;5733
+ST;Beide;Summe;7887;3509;4378
+ST;Beide;Erst- und Zweitstimmenseite leer oder durchgestrichen;3253;1647;1606
+ST;Beide;Erststimmenseite leer oder durchgestrichen, Zweitstimmenseite mehrere Kreuze;1189;365;824
+ST;Beide;Erststimmenseite mehrere Kreuze, Zweitstimmenseite leer oder durchgestrichen;711;156;555
+ST;Beide;Beide Seiten mehrere Kreuze;1639;855;784
+ST;Beide;Eine Seite leer oder durchgestrichen, andere Seite sonstige Ursachen;174;114;61
+ST;Beide;Beide Seiten sonstige Ursachen;920;372;549
+ST;1;Summe;9406;3698;5708
+ST;1;Erststimmenseite leer oder durchgestrichen;8993;3580;5413
+ST;1;Erststimmenseite mehrere Kreuze;260;92;169
+ST;1;Sonstige Ursachen;153;26;127
+ST;2;Summe;2601;1246;1355
+ST;2;Zweitstimmenseite leer oder durchgestrichen;1941;1038;904
+ST;2;Zweitstimmenseite mehrere Kreuze;489;107;382
+ST;2;Sonstige Ursachen;171;102;69
+TH;Summe;Ungültige Erststimmen;10248;3842;6406
+TH;Summe;Ungültige Zweitstimmen;9314;3587;5727
+TH;Beide;Summe;6947;2764;4183
+TH;Beide;Erst- und Zweitstimmenseite leer oder durchgestrichen;780;428;351
+TH;Beide;Erststimmenseite leer oder durchgestrichen, Zweitstimmenseite mehrere Kreuze;903;435;467
+TH;Beide;Erststimmenseite mehrere Kreuze, Zweitstimmenseite leer oder durchgestrichen;715;276;440
+TH;Beide;Beide Seiten mehrere Kreuze;1569;681;888
+TH;Beide;Eine Seite leer oder durchgestrichen, andere Seite sonstige Ursachen;77;16;60
+TH;Beide;Beide Seiten sonstige Ursachen;2904;928;1976
+TH;1;Summe;3301;1077;2224
+TH;1;Erststimmenseite leer oder durchgestrichen;2477;883;1595
+TH;1;Erststimmenseite mehrere Kreuze;538;130;407
+TH;1;Sonstige Ursachen;286;64;222
+TH;2;Summe;2367;822;1545
+TH;2;Zweitstimmenseite leer oder durchgestrichen;1805;480;1325
+TH;2;Zweitstimmenseite mehrere Kreuze;534;339;195
+TH;2;Sonstige Ursachen;28;3;25

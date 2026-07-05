@@ -4,6 +4,7 @@ import org.apache.commons.lang3.time.StopWatch;
 import org.erijl.wahlentwicklung.enums.ConfigKeyEnum;
 import org.erijl.wahlentwicklung.enums.ElectionEnum;
 import org.erijl.wahlentwicklung.errors.AssertionsNotEnabledError;
+import org.erijl.wahlentwicklung.statistics.StatisticsImporter;
 import org.erijl.wahlentwicklung.utils.ValidationUtil;
 
 import java.io.IOException;
@@ -33,6 +34,12 @@ public class Main {
         }
 
         assert dbManager.executePostImportFixes();
+
+        StopWatch statisticsStopWatch = new StopWatch();
+        statisticsStopWatch.start();
+        new StatisticsImporter(dbManager.getConnection()).run();
+        statisticsStopWatch.stop();
+        System.out.println("statistics: " + statisticsStopWatch.formatTime());
     }
 
     /**

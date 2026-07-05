@@ -33,6 +33,16 @@ public class DatabaseManager {
         assert sqliteConnection != null;
         this.executeSQLFile("create_tables.sql");
         this.executeSQLFile("insert_default-data.sql");
+        this.executeSQLFile("insert_statistics-dimensions.sql");
+        this.executeSQLFile("insert_indicator-catalog.sql");
+    }
+
+    /**
+     * Used by the statistics importer (org.erijl.wahlentwicklung.statistics),
+     * which manages its own batch inserts and QA queries.
+     */
+    public Connection getConnection() {
+        return this.sqliteConnection;
     }
 
     public void insertElectionData(ElectionParser parser, ElectionEnum election) throws SQLException {

@@ -632,3 +632,34 @@ SET constituency_id = 188 -- Zollernalb – Sigmaringen
 WHERE constituency_id IS NULL
   AND (election_year, election_state_id, row_id) IN
       (SELECT election_year, state_id, row_id FROM election_constituency WHERE name = 'Zollernalb - Sigmaringen');
+
+-- seat corrections (audit §4): the kerg source rows carry no/wrong seat
+-- counts for these cases; official results per Bundeswahlleiterin:
+-- SSW holds 1 seat in 2021 and 2025, FDP holds 92 seats in 2021 (not 91).
+UPDATE election_party
+SET seat_count = 1
+WHERE seat_count = 0
+  AND (election_year, column_index) IN
+      (SELECT pm.election_year, pm.column_index
+       FROM party_mapping pm
+       JOIN party p ON p.id = pm.party_id
+       WHERE p.abbreviation = 'SSW' AND pm.election_year IN (2021, 2025));
+
+UPDATE election_party
+SET seat_count = 92
+WHERE (election_year, column_index) IN
+      (SELECT pm.election_year, pm.column_index
+       FROM party_mapping pm
+       JOIN party p ON p.id = pm.party_id
+       WHERE p.abbreviation = 'FDP' AND pm.election_year = 2021);
+
+-- ---------------------------------------------------------------------------
+-- Election dates (v0.4 leftover; verified against Bundeswahlleiterin)
+-- ---------------------------------------------------------------------------
+
+UPDATE election SET date = '2005-09-18' WHERE year = 2005;
+UPDATE election SET date = '2009-09-27' WHERE year = 2009;
+UPDATE election SET date = '2013-09-22' WHERE year = 2013;
+UPDATE election SET date = '2017-09-24' WHERE year = 2017;
+UPDATE election SET date = '2021-09-26' WHERE year = 2021;
+UPDATE election SET date = '2025-02-23' WHERE year = 2025;

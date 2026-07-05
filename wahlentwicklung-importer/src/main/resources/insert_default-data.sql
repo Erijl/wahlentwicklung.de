@@ -50,23 +50,23 @@ VALUES ('Sozialdemokratische Partei Deutschlands', 'SPD', 'E3000F'),
        ('Übrige', 'Übrige', 'C0C0C0'),
        ('Alternative für Deutschland', 'AfD', '009EE0');
 
-INSERT INTO state (name)
-VALUES ('Schleswig-Holstein'),
-       ('Hamburg'),
-       ('Niedersachsen'),
-       ('Bremen'),
-       ('Nordrhein-Westfalen'),
-       ('Hessen'),
-       ('Rheinland-Pfalz'),
-       ('Baden-Württemberg'),
-       ('Bayern'),
-       ('Saarland'),
-       ('Berlin'),
-       ('Brandenburg'),
-       ('Mecklenburg-Vorpommern'),
-       ('Sachsen'),
-       ('Sachsen-Anhalt'),
-       ('Thüringen');
+INSERT INTO state (name, abbreviation)
+VALUES ('Schleswig-Holstein', 'SH'),
+       ('Hamburg', 'HH'),
+       ('Niedersachsen', 'NI'),
+       ('Bremen', 'HB'),
+       ('Nordrhein-Westfalen', 'NW'),
+       ('Hessen', 'HE'),
+       ('Rheinland-Pfalz', 'RP'),
+       ('Baden-Württemberg', 'BW'),
+       ('Bayern', 'BY'),
+       ('Saarland', 'SL'),
+       ('Berlin', 'BE'),
+       ('Brandenburg', 'BB'),
+       ('Mecklenburg-Vorpommern', 'MV'),
+       ('Sachsen', 'SN'),
+       ('Sachsen-Anhalt', 'ST'),
+       ('Thüringen', 'TH');
 
 INSERT INTO constituency (state_id, name)
 VALUES (901, 'Flensburg – Schleswig'),

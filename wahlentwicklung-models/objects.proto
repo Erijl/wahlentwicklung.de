@@ -140,3 +140,170 @@ message ConstituencyVoteParty {
   int64 secondaryvote_previous = 7;
   int64 secondaryvote_definitive = 8;
 }
+
+// --- statistics domains (docs/08) --------------------------------------
+// optional scalar fields model SQL NULL (absent in the source file)
+
+message BirthCohort {
+  int64 election_year = 1;
+  int64 id = 2;
+  string label = 3;
+  optional int64 year_from = 4;
+  optional int64 year_to = 5;
+}
+
+message TsAgeTurnout {
+  int64 year = 1;
+  string gender = 2;
+  int64 age_group_id = 3;
+  optional int64 eligible = 4;
+  optional int64 eligible_plain = 5;
+  optional int64 eligible_wahlschein = 6;
+  optional int64 voters = 7;
+  optional double turnout_pct = 8;
+}
+
+message TsAgeVoteShare {
+  int64 year = 1;
+  string gender = 2;
+  int64 age_group_id = 3;
+  int64 stat_party_id = 4;
+  double share_pct = 5;
+}
+
+message TsAbsentee {
+  int64 year = 1;
+  string land_code = 2;
+  optional int64 state_id = 3;
+  optional int64 eligible = 4;
+  optional int64 eligible_plain = 5;
+  optional int64 eligible_sperrvermerk = 6;
+  optional int64 voters = 7;
+  optional int64 voters_plain = 8;
+  optional int64 voters_simple_ws = 9;
+  optional int64 voters_brief = 10;
+}
+
+message TsBallotBase {
+  int64 year = 1;
+  string land_code = 2;
+  optional int64 state_id = 3;
+  string ballot_type = 4;
+  optional int64 voters = 5;
+  optional int64 invalid = 6;
+  optional int64 valid = 7;
+}
+
+message TsBallotParty {
+  int64 year = 1;
+  string land_code = 2;
+  optional int64 state_id = 3;
+  string ballot_type = 4;
+  int64 stat_party_id = 5;
+  int64 votes = 6;
+}
+
+message RwsTurnout {
+  int64 election_year = 1;
+  string land_code = 2;
+  optional int64 state_id = 3;
+  string gender = 4;
+  int64 cohort_id = 5;
+  optional int64 eligible = 6;
+  optional int64 eligible_plain = 7;
+  optional int64 eligible_wahlschein = 8;
+  optional int64 voters = 9;
+  optional int64 voters_plain = 10;
+  optional int64 voters_wahlschein = 11;
+  optional double turnout_pct = 12;
+}
+
+message RwsVote {
+  int64 election_year = 1;
+  string land_code = 2;
+  optional int64 state_id = 3;
+  int32 vote_type = 4;
+  string gender = 5;
+  int64 cohort_id = 6;
+  int64 stat_party_id = 7;
+  int32 is_memo = 8;
+  int64 votes = 9;
+}
+
+message RwsVoteCombo {
+  int64 election_year = 1;
+  string land_code = 2;
+  optional int64 state_id = 3;
+  string gender = 4;
+  int64 cohort_id = 5;
+  int64 secondary_stat_party_id = 6;
+  int32 secondary_is_memo = 7;
+  int64 primary_stat_party_id = 8;
+  int32 primary_is_memo = 9;
+  int64 votes = 10;
+}
+
+message RwsBallotVote {
+  int64 election_year = 1;
+  int32 vote_type = 2;
+  string ballot_type = 3;
+  string gender = 4;
+  int64 cohort_id = 5;
+  int64 stat_party_id = 6;
+  int32 is_memo = 7;
+  int64 votes = 8;
+}
+
+message ConstituencyBallotVoteBase {
+  int64 election_year = 1;
+  int64 wkr_nr = 2;
+  string ballot_type = 3;
+  optional int64 eligible = 4;
+  optional int64 voters = 5;
+  optional int64 invalid_primary = 6;
+  optional int64 valid_primary = 7;
+  optional int64 invalid_secondary = 8;
+  optional int64 valid_secondary = 9;
+}
+
+message ConstituencyBallotVoteParty {
+  int64 election_year = 1;
+  int64 wkr_nr = 2;
+  string ballot_type = 3;
+  int64 stat_party_id = 4;
+  optional int64 primary_votes = 5;
+  optional int64 secondary_votes = 6;
+}
+
+message Kreis {
+  int64 election_year = 1;
+  string ags = 2;
+  string name = 3;
+  int64 state_id = 4;
+}
+
+message KreisVoteBase {
+  int64 election_year = 1;
+  string ags = 2;
+  optional int64 eligible = 3;
+  optional int64 voters = 4;
+  optional int64 invalid_primary = 5;
+  optional int64 valid_primary = 6;
+  optional int64 invalid_secondary = 7;
+  optional int64 valid_secondary = 8;
+}
+
+message KreisVoteParty {
+  int64 election_year = 1;
+  string ags = 2;
+  int64 stat_party_id = 3;
+  optional int64 primary_votes = 4;
+  optional int64 secondary_votes = 5;
+}
+
+message StructureValue {
+  int64 election_year = 1;
+  int64 area_nr = 2;
+  int64 indicator_id = 3;
+  optional double value = 4;
+}

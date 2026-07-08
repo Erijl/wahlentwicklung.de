@@ -17,15 +17,15 @@ const prevYear = years[years.indexOf(year) - 1];
 const entries = [
   { href: `/wahl/${year}`, title: `Bundestagswahl ${year}`, sub: 'Ergebnis, Sitze, Karten, alle Wahlkreise' },
   { href: '/wahlen', title: 'Alle Wahlen', sub: `${years[0]}–${year} im Überblick` },
-  { href: '/parteien', title: 'Parteien', sub: 'Entwicklung der Zweitstimmen seit 2005' },
+  { href: '/parteien', title: 'Parteien', sub: 'Entwicklung der Zweitstimmen seit 1949' },
   { href: '/bundeslaender', title: 'Bundesländer', sub: '16 Länder im Vergleich' },
   { href: '/wahlkreise', title: 'Wahlkreise', sub: 'Alle 299 mit Suche' },
 ];
 ---
 
 <BaseLayout
-  title="Bundestagswahlen seit 2005 – Ergebnisse & Entwicklung"
-  description={`Wahlentwicklung.de zeigt alle Bundestagswahlen von 2005 bis ${year}: Ergebnisse, Sitzverteilungen, Karten und die Entwicklung jeder Partei, jedes Bundeslands und aller 299 Wahlkreise.`}
+  title={`Bundestagswahlen seit ${years[0]} – Ergebnisse & Entwicklung`}
+  description={`Wahlentwicklung.de zeigt alle Bundestagswahlen von ${years[0]} bis ${year}: Ergebnisse, Sitzverteilungen, Karten und die Entwicklung jeder Partei, jedes Bundeslands und aller 299 Wahlkreise.`}
   path="/"
 >
   <section class="hero">

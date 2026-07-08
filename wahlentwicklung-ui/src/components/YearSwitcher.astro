@@ -1,9 +1,12 @@
 ---
 /**
  * The year picker (concept: docs/02-concept.md §2 addendum).
- * On a static site the "currently selected year" IS the URL — this renders
- * segmented pills linking to the same page in every other election year.
- * Years without data for this entity render disabled.
+ * On a static site the "currently selected year" IS the URL — every year is
+ * a real link to the same page in that election year (SEO-relevant internal
+ * linking along the time axis). With 21 elections (1949–2025) the strip is
+ * windowed: first year · … · current ±1 · … · latest, plus an "Alle ▾"
+ * popover (<details>, works without JS) carrying the full grid. Years
+ * without data for this entity render disabled in both places.
  */
 interface Props {
   years: number[];
@@ -15,58 +18,189 @@ interface Props {
 }
 
 const { years, current, hrefFor, available = years } = Astro.props;
+
+// window: anchors (first, latest) + neighborhood of the current year;
+// without a current year (index hero) the recent elections instead
+const idx = current !== undefined ? years.indexOf(current) : -1;
+const windowSet = new Set<number>([years[0], years.at(-1)!]);
+if (idx >= 0) {
+  for (const o of [-1, 0, 1]) if (years[idx + o] !== undefined) windowSet.add(years[idx + o]);
+} else {
+  for (const y of years.slice(-4)) windowSet.add(y);
+}
+const win = years.filter((y) => windowSet.has(y));
+const showAll = years.length > win.length;
+
+// covers both reasons pills go dark: Wahlkreis-Gebietsreformen and Länder,
+// die noch nicht teilnahmen (Saarland vor 1957, Berlin/Ost vor 1990)
+const OFF_TIP = 'keine vergleichbaren Ergebnisse für dieses Wahljahr';
 ---
 
 <nav class="yswitch" aria-label="Wahljahr wählen">
   {
-    years.map((y) =>
-      !available.includes(y) ? (
-        <span class="y off" data-tip="keine vergleichbaren Daten (Gebietsreform)">
-          {y}
-        </span>
-      ) : y === current ? (
-        <span class="y on" aria-current="page">
-          {y}
-        </span>
-      ) : (
-        <a class="y" href={hrefFor(y)}>
-          {y}
-        </a>
-      ),
+    win.map((y, i) => (
+      <>
+        {i > 0 && years.indexOf(y) - years.indexOf(win[i - 1]) > 1 && (
+          <span class="ygap" aria-hidden="true">
+            ⋯
+          </span>
+        )}
+        {!available.includes(y) ? (
+          <span class="yp off" data-tip={OFF_TIP}>
+            {y}
+          </span>
+        ) : y === current ? (
+          <span class="yp on" aria-current="page">
+            {y}
+          </span>
+        ) : (
+          <a class="yp" href={hrefFor(y)}>
+            {y}
+          </a>
+        )}
+      </>
+    ))
+  }
+  {
+    showAll && (
+      <details class="ymore">
+        <summary class="yp" aria-label="Alle Wahljahre anzeigen">
+          Alle <span aria-hidden="true">▾</span>
+        </summary>
+        <div class="ypanel">
+          <p class="ypanel-title">Bundestagswahlen {years[0]}–{years.at(-1)}</p>
+          <div class="ygrid">
+            {years.map((y) =>
+              !available.includes(y) ? (
+                <span class="yp off" data-tip={OFF_TIP}>
+                  {y}
+                </span>
+              ) : y === current ? (
+                <span class="yp on" aria-current="page">
+                  {y}
+                </span>
+              ) : (
+                <a class="yp" href={hrefFor(y)}>
+                  {y}
+                </a>
+              ),
+            )}
+          </div>
+        </div>
+      </details>
     )
   }
 </nav>
 
+<script>
+  // close an open year popover when clicking/tapping anywhere outside it
+  document.addEventListener('pointerdown', (e) => {
+    document.querySelectorAll<HTMLDetailsElement>('.ymore[open]').forEach((d) => {
+      if (!d.contains(e.target as Node)) d.open = false;
+    });
+  });
+</script>
+
 <style>
   .yswitch {
     display: inline-flex;
-    border: 1px solid var(--hairline);
-    border-radius: 5px;
-    overflow: hidden;
-    background: var(--raised);
+    align-items: center;
+    gap: 5px;
+    flex-wrap: nowrap;
   }
-  .y {
-    padding: 5px 12px;
-    font-size: 13.5px;
-    font-variant-numeric: tabular-nums;
+  .yp {
+    font-size: 12.5px;
     color: var(--text-sec);
-    border-right: 1px solid var(--hairline);
-  }
-  .y:last-child {
-    border-right: none;
-  }
-  a.y:hover {
+    border: 1px solid var(--hairline);
+    border-radius: 999px;
     background: var(--surface);
-    text-decoration: none;
-    color: var(--ink);
+    padding: 3px 11px;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.5;
   }
-  .y.on {
+  a.yp:hover {
+    color: var(--ink);
+    border-color: var(--text-muted);
+    text-decoration: none;
+  }
+  .yp.on {
     background: var(--ink);
     color: var(--surface);
+    border-color: var(--ink);
     font-weight: 700;
   }
-  .y.off {
+  .yp.off {
     color: var(--hairline);
     cursor: not-allowed;
+  }
+  .ygap {
+    color: var(--text-muted);
+    font-size: 12px;
+    padding: 0 1px;
+    user-select: none;
+  }
+
+  /* "Alle ▾" popover */
+  .ymore {
+    position: relative;
+  }
+  .ymore summary {
+    display: inline-block;
+    cursor: pointer;
+    list-style: none;
+  }
+  .ymore summary::-webkit-details-marker {
+    display: none;
+  }
+  .ymore summary:hover {
+    color: var(--ink);
+    border-color: var(--text-muted);
+  }
+  .ymore[open] summary {
+    background: var(--raised);
+    color: var(--ink);
+    border-color: var(--text-muted);
+  }
+  .ypanel {
+    position: absolute;
+    top: calc(100% + 7px);
+    left: 0;
+    z-index: 120;
+    background: var(--raised);
+    border: 1px solid var(--hairline);
+    border-radius: 8px;
+    box-shadow: 0 12px 40px rgb(0 0 0 / 0.18);
+    padding: 12px 14px 14px;
+    width: max-content;
+    max-width: min(340px, calc(100vw - 32px));
+  }
+  .ypanel-title {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    white-space: nowrap;
+  }
+  .ygrid {
+    display: grid;
+    grid-template-columns: repeat(5, auto);
+    gap: 6px;
+  }
+  .ygrid .yp {
+    text-align: center;
+  }
+  @media (max-width: 480px) {
+    /* near the right edge on phones the anchored panel would overflow */
+    .ypanel {
+      position: fixed;
+      left: 16px;
+      right: 16px;
+      top: auto;
+      width: auto;
+      max-width: none;
+    }
+    .ygrid {
+      grid-template-columns: repeat(4, 1fr);
+    }
   }
 </style>

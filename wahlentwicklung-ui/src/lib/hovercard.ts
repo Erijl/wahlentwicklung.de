@@ -66,12 +66,14 @@ export function hoverCard(opts: HoverCardOptions): string {
     .sort((a, b) => b.pct - a.pct)
     .slice(0, opts.max ?? 7)
     .map((r) => ({ p: r.key, v: r1(r.pct), w: r.prevPct === null ? null : r1(r.prevPct) }));
+  // no bar has a comparison value (1949, Berlin/Ost vor 1990) → no ghost legend
+  const anyPrev = bars.some((b) => b.w !== null);
   return JSON.stringify({
     k: opts.kicker,
     t: opts.title,
     u: opts.turnout === undefined ? undefined : r1(opts.turnout),
     y: opts.year,
-    py: opts.prevYear,
+    py: anyPrev ? opts.prevYear : undefined,
     l: opts.label,
     b: bars,
   });

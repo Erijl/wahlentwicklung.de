@@ -19,6 +19,9 @@ interface Props {
 const { results, max = 8, prevLabel = 'Vorwahl', currentLabel = 'Diese Wahl' } = Astro.props;
 
 const shown = results.filter((r) => r.key !== 'Übrige' && (r.pct >= 1 || r.seats > 0)).slice(0, max);
+// no comparison basis at all (1949, Berlin/Ost vor 1990): a party without a
+// prevPct is then NOT "neu" — suppress ghosts, deltas and the prev legend
+const hasPrev = shown.some((r) => r.prevPct !== null);
 const w = 760;
 const h = 275;
 const plotH = 170;
@@ -38,10 +41,16 @@ const base = top + plotH;
 
 <svg viewBox={`0 0 ${w} ${h}`} role="img" aria-label="Zweitstimmenanteile im Vergleich zur Vorwahl">
   <g class="t-dim">
-    <rect x="0" y="0" width="10" height="10" rx="2" fill={colorVar('Union')} opacity="0.25"></rect>
-    <text x="16" y="9">{prevLabel}</text>
-    <rect x="110" y="0" width="10" height="10" rx="2" fill={colorVar('Union')}></rect>
-    <text x="126" y="9">{currentLabel}</text>
+    {
+      hasPrev && (
+        <>
+          <rect x="0" y="0" width="10" height="10" rx="2" fill={colorVar('Union')} opacity="0.25" />
+          <text x="16" y="9">{prevLabel}</text>
+        </>
+      )
+    }
+    <rect x={hasPrev ? 110 : 0} y="0" width="10" height="10" rx="2" fill={colorVar('Union')}></rect>
+    <text x={hasPrev ? 126 : 16} y="9">{currentLabel}</text>
   </g>
   {
     shown.map((r, i) => {
@@ -56,7 +65,9 @@ const base = top + plotH;
         `${r.key}: ${fmtPct(r.pct)}` +
         (r.prevPct !== null
           ? `\n${prevLabel}: ${fmtPct(r.prevPct)} (${fmtDelta(r.pct - r.prevPct)} Pp.)`
-          : '\nnicht angetreten bei der Vorwahl');
+          : hasPrev
+            ? '\nnicht angetreten bei der Vorwahl'
+            : '');
       return (
         <g data-tip={tipText}>
           {r.prevPct !== null && (
@@ -69,9 +80,13 @@ const base = top + plotH;
           <text x={cx} y={base + 40} text-anchor="middle" class="t-val">
             {fmtPct(r.pct)}
           </text>
-          <text x={cx} y={base + 58} text-anchor="middle" class="t-dim">
-            {r.prevPct !== null ? fmtDelta(r.pct - r.prevPct) : 'neu'}
-          </text>
+          {
+            hasPrev && (
+              <text x={cx} y={base + 58} text-anchor="middle" class="t-dim">
+                {r.prevPct !== null ? fmtDelta(r.pct - r.prevPct) : 'neu'}
+              </text>
+            )
+          }
           <rect
             x={band * i}
             y="0"

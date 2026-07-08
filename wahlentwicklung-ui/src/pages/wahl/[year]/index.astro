@@ -11,6 +11,7 @@ import TrendLines from '@/components/charts/TrendLines.astro';
 import StateMap from '@/components/charts/StateMap.astro';
 import ResultTable from '@/components/ResultTable.astro';
 import PartyTag from '@/components/PartyTag.astro';
+import Notice from '@/components/Notice.astro';
 import SearchFilter from '@/components/islands/SearchFilter.svelte';
 import {
   getElectionYears,
@@ -23,7 +24,9 @@ import {
   stateVoteBase,
   constituencyTable,
   stateTurnouts,
+  hasVorperiode,
 } from '@/lib/queries';
+import { electionNotes, prevMethodText } from '@/lib/electionNotes';
 import { hoverCard, statCard } from '@/lib/hovercard';
 import { electionLede } from '@/lib/prose';
 import { fmtPct, fmtDelta, fmtMillions, fmtNum } from '@/lib/format';
@@ -137,6 +140,8 @@ const turnoutRankCard = statCard({
 
 const title = `Bundestagswahl ${year} – Ergebnisse, Sitze, Wahlkreise`;
 const status = `Amtliches Endergebnis · Quelle: Bundeswahlleiterin`;
+const notes = electionNotes(year, 'wahl');
+const vorperiode = hasVorperiode(year);
 ---
 
 <BaseLayout
@@ -159,11 +164,13 @@ const status = `Amtliches Endergebnis · Quelle: Bundeswahlleiterin`;
     <p class="lede">{lede}</p>
   </section>
 
+  <Notice notes={notes} />
+
   <ModuleFrame
     anchor="zweitstimmen"
     title="Zweitstimmen: Anteil und Veränderung"
     status={status}
-    method={`Anteil der Zweitstimmen an allen gültigen Stimmen (${fmtNum(base.valid)}). Der blasse Balken zeigt das Ergebnis der Vorwahl${prevYear ? ` ${prevYear}` : ''}, umgerechnet auf den aktuellen Gebietsstand (Vorperiode-Werte der Bundeswahlleiterin).`}
+    method={`Anteil der Zweitstimmen an allen gültigen Stimmen (${fmtNum(base.valid)}). ${prevMethodText(vorperiode, prevYear)}`}
     hasTable
   >
     <ResultBars
@@ -191,18 +198,24 @@ const status = `Amtliches Endergebnis · Quelle: Bundeswahlleiterin`;
     </div>
   </ModuleFrame>
 
-  <div class="two">
-    <ModuleFrame anchor="sitze" title={`Sitzverteilung im Bundestag`} status={status}>
-      <Hemicycle results={results} />
-    </ModuleFrame>
-    <ModuleFrame
-      title="Mögliche Mehrheiten"
-      status={status}
-      method="Rein rechnerische Mehrheiten auf Basis der Sitzverteilung; keine Aussage über politische Koalitionsoptionen."
-    >
-      <CoalitionBars results={results} combos={combos} />
-    </ModuleFrame>
-  </div>
+  {
+    /* seat data is not yet captured for the pre-2005 imports (docs/09) —
+       skip the seat-based modules instead of rendering empty charts */
+    totalSeats > 0 && (
+      <div class="two">
+        <ModuleFrame anchor="sitze" title={`Sitzverteilung im Bundestag`} status={status}>
+          <Hemicycle results={results} />
+        </ModuleFrame>
+        <ModuleFrame
+          title="Mögliche Mehrheiten"
+          status={status}
+          method="Rein rechnerische Mehrheiten auf Basis der Sitzverteilung; keine Aussage über politische Koalitionsoptionen."
+        >
+          <CoalitionBars results={results} combos={combos} />
+        </ModuleFrame>
+      </div>
+    )
+  }
 
   <div class="two">
     <ModuleFrame anchor="karte" title="Stärkste Partei nach Bundesland" status={status}>

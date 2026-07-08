@@ -5,7 +5,15 @@ import ModuleFrame from '@/components/ModuleFrame.astro';
 import TrendLines from '@/components/charts/TrendLines.astro';
 import StatTile from '@/components/StatTile.astro';
 import StatTileGrid from '@/components/StatTileGrid.astro';
-import { getElectionYears, getStates, stateTrends, stateVoteBase, stateResults } from '@/lib/queries';
+import Notice from '@/components/Notice.astro';
+import {
+  getElectionYears,
+  getStates,
+  stateTrends,
+  stateVoteBase,
+  stateResults,
+  stateElectionYears,
+} from '@/lib/queries';
 import { slugify } from '@/lib/slugs';
 import { fmtPct } from '@/lib/format';
 
@@ -17,7 +25,10 @@ export function getStaticPaths() {
 }
 
 const { stateId, stateName } = Astro.props;
-const years = getElectionYears();
+const allYears = getElectionYears();
+// not every state took part in every election (Saarland 1957+, Berlin und
+// der Osten 1990+) — charts, lists and copy only cover the years with data
+const years = stateElectionYears(stateId);
 const latest = years.at(-1)!;
 const trends = stateTrends(stateId, ['Union', 'SPD', 'AfD', 'Grüne', 'Linke', 'FDP']);
 const latestResults = stateResults(latest, stateId);
@@ -46,6 +57,16 @@ const description = `${stateName} bei den Bundestagswahlen ${years[0]}–${lates
       {fmtPct(latestBase.turnout)}.
     </p>
   </section>
+
+  {
+    years.length < allYears.length && (
+      <Notice
+        notes={[
+          `${stateName} nimmt seit ${years[0]} an Bundestagswahlen teil — frühere Wahljahre entfallen daher.`,
+        ]}
+      />
+    )
+  }
 
   <ModuleFrame
     title={`Entwicklung der Zweitstimmen ${years[0]}–${latest}`}

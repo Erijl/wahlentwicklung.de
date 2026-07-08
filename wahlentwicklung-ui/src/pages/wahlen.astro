@@ -32,16 +32,16 @@ const rows = years.map((year) => {
 ---
 
 <BaseLayout
-  title="Alle Bundestagswahlen seit 2005"
-  description="Alle Bundestagswahlen von 2005 bis 2025 im Überblick: stärkste Partei, Wahlbeteiligung und Sitze — mit Detailseiten zu jedem Ergebnis."
+  title={`Alle Bundestagswahlen seit ${years.at(-1)}`}
+  description={`Alle ${years.length} Bundestagswahlen von ${years.at(-1)} bis ${years[0]} im Überblick: stärkste Partei, Wahlbeteiligung und Sitze — mit Detailseiten zu jedem Ergebnis.`}
   path="/wahlen"
 >
   <section class="hero">
     <p class="kicker">Übersicht</p>
     <h1>Bundestagswahlen</h1>
     <p class="lede">
-      Sechs Bundestagswahlen von {years.at(-1)} bis {years[0]} — jede mit vollständigem Ergebnis,
-      Sitzverteilung, Karten und allen 299 Wahlkreisen.
+      {years.length} Bundestagswahlen von {years.at(-1)} bis {years[0]} — jede mit vollständigem
+      Ergebnis, Karten und Wahlkreisen.
     </p>
   </section>
 
@@ -54,7 +54,7 @@ const rows = years.map((year) => {
             <MiniBars results={r.results} scaleMax={40} card={r.card} />
             <span class="meta">
               <PartyTag party={r.winner.key} /> {fmtPct(r.winner.pct)} · Wahlbeteiligung{' '}
-              {fmtPct(r.turnout)} · {r.seats} Sitze
+              {fmtPct(r.turnout)}{r.seats > 0 ? ` · ${r.seats} Sitze` : ''}
             </span>
             <span class="go">→</span>
           </a>

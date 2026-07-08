@@ -58,6 +58,34 @@ export function latestElectionYear(): number {
   return getElectionYears().at(-1)!;
 }
 
+/** The election before this one, or undefined (1949). */
+export function previousElectionYear(year: number): number | undefined {
+  const years = getElectionYears();
+  return years[years.indexOf(year) - 1];
+}
+
+/**
+ * Whether this election's kerg carried restated "Vorperiode" values.
+ * The 1949–2002 imports have none (all *_previous = 0, docs/09) — for those
+ * years the result/vote-base functions below derive comparison values from
+ * the previous election's own final result instead.
+ */
+export function hasVorperiode(year: number): boolean {
+  const row = prepare(
+    `SELECT validvoters_secondaryvote_previous AS v FROM election_vote_base WHERE election_year = ?`,
+  ).get(year) as any;
+  return (row?.v ?? 0) > 0;
+}
+
+/** Election years a state has results for (Saarland 1957+, the East 1990+). */
+export function stateElectionYears(stateId: number): number[] {
+  return prepare(
+      `SELECT election_year AS y FROM state_mapping WHERE state_id = ? ORDER BY y`,
+    )
+    .all(stateId)
+    .map((r: any) => r.y);
+}
+
 export function getStates(): StateRow[] {
   return prepare('SELECT id, name FROM state ORDER BY id').all() as StateRow[];
 }
@@ -104,7 +132,7 @@ function toVoteBase(row: any): VoteBase {
   };
 }
 
-export function federalVoteBase(year: number): VoteBase {
+function federalVoteBaseRaw(year: number): VoteBase | null {
   const row = prepare(
       `SELECT eligiblevoters_secondaryvote_definitive AS elig,
               actualvoters_secondaryvote_definitive AS act,
@@ -114,10 +142,14 @@ export function federalVoteBase(year: number): VoteBase {
        FROM election_vote_base WHERE election_year = ?`,
     )
     .get(year);
-  return toVoteBase(row);
+  return row ? toVoteBase(row) : null;
 }
 
-export function stateVoteBase(year: number, stateId: number): VoteBase | null {
+export function federalVoteBase(year: number): VoteBase {
+  return derivePrevTurnout(year, federalVoteBaseRaw(year)!, federalVoteBaseRaw);
+}
+
+function stateVoteBaseRaw(year: number, stateId: number): VoteBase | null {
   const row = prepare(
       `SELECT b.eligiblevoters_secondaryvote_definitive AS elig,
               b.actualvoters_secondaryvote_definitive AS act,
@@ -132,9 +164,14 @@ export function stateVoteBase(year: number, stateId: number): VoteBase | null {
   return row ? toVoteBase(row) : null;
 }
 
+export function stateVoteBase(year: number, stateId: number): VoteBase | null {
+  const base = stateVoteBaseRaw(year, stateId);
+  return base && derivePrevTurnout(year, base, (py) => stateVoteBaseRaw(py, stateId));
+}
+
 export type VoteType = 'secondary' | 'primary';
 
-export function constituencyVoteBase(
+function constituencyVoteBaseRaw(
   year: number,
   num: number,
   vote: VoteType = 'secondary',
@@ -153,6 +190,28 @@ export function constituencyVoteBase(
     )
     .get(year, num);
   return row ? toVoteBase(row) : null;
+}
+
+export function constituencyVoteBase(
+  year: number,
+  num: number,
+  vote: VoteType = 'secondary',
+): VoteBase | null {
+  const base = constituencyVoteBaseRaw(year, num, vote);
+  return base && derivePrevTurnout(year, base, (py) => constituencyVoteBaseRaw(py, num, vote));
+}
+
+/** Years without Vorperiode data (pre-2005 imports, docs/09): take the
+ *  comparison turnout from the previous election's own final result. */
+function derivePrevTurnout(
+  year: number,
+  base: VoteBase,
+  prevBase: (prevYear: number) => VoteBase | null,
+): VoteBase {
+  if (base.prevTurnout > 0 || hasVorperiode(year)) return base;
+  const py = previousElectionYear(year);
+  if (py === undefined) return base;
+  return { ...base, prevTurnout: prevBase(py)?.turnout ?? 0 };
 }
 
 // ---------------------------------------------------------------- results
@@ -183,7 +242,29 @@ function aggregate(
   );
 }
 
-export function federalResults(year: number): PartyResult[] {
+/**
+ * Years without Vorperiode data: fill prevPct from the previous election's
+ * own final result, matched by display party. A key absent from the previous
+ * result then genuinely means "nicht angetreten"; if the previous election
+ * has no data for the area at all (1949, Berlin/Ost vor 1990), everything
+ * stays null and the components suppress their delta displays.
+ */
+function withDerivedPrev(
+  year: number,
+  results: PartyResult[],
+  prevResults: (prevYear: number) => PartyResult[],
+): PartyResult[] {
+  if (results.length === 0 || hasVorperiode(year)) return results;
+  const py = previousElectionYear(year);
+  if (py === undefined) return results;
+  const prev = new Map(prevResults(py).map((r) => [r.key, r.pct]));
+  return results.map((r) => {
+    const p = prev.get(r.key);
+    return p === undefined ? r : { ...r, prevPct: p };
+  });
+}
+
+function federalResultsRaw(year: number): PartyResult[] {
   const base = federalVoteBase(year);
   const prevValid = prepare(
       `SELECT validvoters_secondaryvote_previous AS v FROM election_vote_base WHERE election_year = ?`,
@@ -205,7 +286,11 @@ export function federalResults(year: number): PartyResult[] {
   return aggregate(rows, base.valid, prevValid?.v ?? 0);
 }
 
-export function stateResults(year: number, stateId: number): PartyResult[] {
+export function federalResults(year: number): PartyResult[] {
+  return withDerivedPrev(year, federalResultsRaw(year), federalResultsRaw);
+}
+
+function stateResultsRaw(year: number, stateId: number): PartyResult[] {
   const base = stateVoteBase(year, stateId);
   if (!base) return [];
   const prev = prepare(
@@ -231,7 +316,13 @@ export function stateResults(year: number, stateId: number): PartyResult[] {
   return aggregate(rows, base.valid, prev?.v ?? 0);
 }
 
-export function constituencyResults(
+export function stateResults(year: number, stateId: number): PartyResult[] {
+  return withDerivedPrev(year, stateResultsRaw(year, stateId), (py) =>
+    stateResultsRaw(py, stateId),
+  );
+}
+
+function constituencyResultsRaw(
   year: number,
   num: number,
   vote: VoteType = 'secondary',
@@ -262,6 +353,16 @@ export function constituencyResults(
     )
     .all(year, num) as any[];
   return aggregate(rows, base.valid, prev?.v ?? 0);
+}
+
+export function constituencyResults(
+  year: number,
+  num: number,
+  vote: VoteType = 'secondary',
+): PartyResult[] {
+  return withDerivedPrev(year, constituencyResultsRaw(year, num, vote), (py) =>
+    constituencyResultsRaw(py, num, vote),
+  );
 }
 
 // ---------------------------------------------------------------- development
@@ -375,30 +476,34 @@ export function constituencyTable(
 }
 
 /** Share of one canonical party per election year (party pages — uses the
- *  party's own mapping, no Union merge). Years without a mapping are absent. */
+ *  party's own mapping, no Union merge). Years without a mapping are absent.
+ *  SUM per year: a canonical party can map to several kerg columns in one
+ *  election (1990: GRÜNE + B90/Gr, docs/09). */
 export function partyTrend(partyId: number): TrendPoint[] {
   return prepare(
       `SELECT evp.election_year AS year,
-              100.0 * evp.secondaryvote_definitive
+              100.0 * SUM(evp.secondaryvote_definitive)
                     / evb.validvoters_secondaryvote_definitive AS pct
        FROM election_vote_party evp
        JOIN party_mapping pm ON pm.election_year = evp.election_year
             AND pm.column_index = evp.party_id
        JOIN election_vote_base evb ON evb.election_year = evp.election_year
        WHERE pm.party_id = ?
+       GROUP BY evp.election_year
        ORDER BY evp.election_year`,
     )
     .all(partyId) as TrendPoint[];
 }
 
-/** Seats of one canonical party per election year. */
+/** Seats of one canonical party per election year (SUM, see partyTrend). */
 export function partySeats(partyId: number): { year: number; seats: number }[] {
   return prepare(
-      `SELECT ep.election_year AS year, ep.seat_count AS seats
+      `SELECT ep.election_year AS year, SUM(ep.seat_count) AS seats
        FROM election_party ep
        JOIN party_mapping pm ON pm.election_year = ep.election_year
             AND pm.column_index = ep.column_index
        WHERE pm.party_id = ?
+       GROUP BY ep.election_year
        ORDER BY ep.election_year`,
     )
     .all(partyId) as any[];

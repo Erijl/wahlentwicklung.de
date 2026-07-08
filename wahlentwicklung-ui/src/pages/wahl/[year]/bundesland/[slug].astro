@@ -6,13 +6,17 @@ import StatTile from '@/components/StatTile.astro';
 import StatTileGrid from '@/components/StatTileGrid.astro';
 import ResultBars from '@/components/charts/ResultBars.astro';
 import PartyTag from '@/components/PartyTag.astro';
+import Notice from '@/components/Notice.astro';
 import {
   getElectionYears,
   getStates,
   stateResults,
   stateVoteBase,
   federalResults,
+  stateElectionYears,
+  hasVorperiode,
 } from '@/lib/queries';
+import { electionNotes, prevMethodText } from '@/lib/electionNotes';
 import { areaLede } from '@/lib/prose';
 import { slugify } from '@/lib/slugs';
 import { fmtPct, fmtDelta, fmtNum, fmtMillions } from '@/lib/format';
@@ -42,6 +46,8 @@ const results = stateResults(year, stateId);
 const base = stateVoteBase(year, stateId)!;
 const federal = federalResults(year);
 const lede = areaLede(stateName, year, results, base);
+const availableYears = stateElectionYears(stateId);
+const notes = electionNotes(year, 'bundesland');
 
 // state vs federal: the party over-/under-performing here the most
 const cmp = results
@@ -64,7 +70,12 @@ const title = `Bundestagswahl ${year} in ${stateName} – Ergebnis`;
     { label: `Bundestagswahl ${year}`, href: `/wahl/${year}` },
     { label: stateName },
   ]}
-  yearNav={{ years, current: year, hrefFor: (y) => `/wahl/${y}/bundesland/${Astro.params.slug}` }}
+  yearNav={{
+    years,
+    current: year,
+    available: availableYears,
+    hrefFor: (y) => `/wahl/${y}/bundesland/${Astro.params.slug}`,
+  }}
 >
   <section class="hero">
     <p class="kicker">Bundestagswahl {year} · Bundesland</p>
@@ -72,7 +83,13 @@ const title = `Bundestagswahl ${year} in ${stateName} – Ergebnis`;
     <p class="lede">{lede}</p>
   </section>
 
-  <ModuleFrame title="Zweitstimmen: Anteil und Veränderung" hasTable>
+  <Notice notes={notes} />
+
+  <ModuleFrame
+    title="Zweitstimmen: Anteil und Veränderung"
+    method={prevMethodText(hasVorperiode(year), prevYear)}
+    hasTable
+  >
     <ResultBars
       results={results}
       prevLabel={prevYear ? `Vorwahl ${prevYear}` : 'Vorwahl'}

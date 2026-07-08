@@ -1,0 +1,36 @@
+---
+/**
+ * Accent-bordered methodology/coverage note(s) — the shared rendering for
+ * lib/electionNotes.ts and page-specific caveats (mapping gaps etc.).
+ * Pass `notes` and/or use the slot for markup-bearing content.
+ */
+interface Props {
+  notes?: string[];
+}
+const { notes = [] } = Astro.props;
+---
+
+{
+  (notes.length > 0 || Astro.slots.has('default')) && (
+    <aside class="notice">
+      {notes.map((n) => (
+        <p>{n}</p>
+      ))}
+      <slot />
+    </aside>
+  )
+}
+
+<style>
+  .notice {
+    font-size: 13px;
+    color: var(--text-sec);
+    border-left: 2px solid var(--accent);
+    padding-left: 10px;
+    margin-bottom: 6px;
+    max-width: 70ch;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+</style>

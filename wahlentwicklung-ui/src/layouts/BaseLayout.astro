@@ -9,6 +9,7 @@ import '@/styles/global.css';
 import Breadcrumb from '@/components/Breadcrumb.astro';
 import SearchPalette from '@/components/SearchPalette.astro';
 import HoverCard from '@/components/HoverCard.astro';
+import YearSwitcher from '@/components/YearSwitcher.astro';
 
 interface Props {
   /** Page title without the site suffix. */
@@ -127,22 +128,13 @@ const hasContextRow = Boolean(crumbs || yearNav || tabs);
             <div class="r2-inner">
               {crumbs && <Breadcrumb items={crumbs} />}
               {yearNav && (
-                <div class="years" role="group" aria-label="Wahljahr wählen">
-                  {yearNav.years.map((y) =>
-                    !(yearNav.available ?? yearNav.years).includes(y) ? (
-                      <span class="yp off" data-tip="keine vergleichbaren Daten (Gebietsreform)">
-                        {y}
-                      </span>
-                    ) : y === yearNav.current ? (
-                      <span class="yp on" aria-current="page">
-                        {y}
-                      </span>
-                    ) : (
-                      <a class="yp" href={yearNav.hrefFor(y)}>
-                        {y}
-                      </a>
-                    ),
-                  )}
+                <div class="years">
+                  <YearSwitcher
+                    years={yearNav.years}
+                    current={yearNav.current}
+                    available={yearNav.available}
+                    hrefFor={yearNav.hrefFor}
+                  />
                 </div>
               )}
               {tabs && (
@@ -201,7 +193,7 @@ const hasContextRow = Boolean(crumbs || yearNav || tabs);
 
     <footer class="site-foot">
       <p>
-        Datengrundlage: Bundeswahlleiterin, amtliche Endergebnisse 2005–2025 ·
+        Datengrundlage: Bundeswahlleiterin, amtliche Endergebnisse 1949–2025 ·
         <a
           href="https://www.bundeswahlleiterin.de/bundestagswahlen.html"
           rel="noopener">Datensatz ↗</a
@@ -388,38 +380,7 @@ const hasContextRow = Boolean(crumbs || yearNav || tabs);
   }
   .years {
     display: flex;
-    gap: 5px;
     padding-bottom: 8px;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .years::-webkit-scrollbar {
-    display: none;
-  }
-  .yp {
-    font-size: 12.5px;
-    color: var(--text-sec);
-    border: 1px solid var(--hairline);
-    border-radius: 999px;
-    background: var(--surface);
-    padding: 3px 11px;
-    white-space: nowrap;
-    font-variant-numeric: tabular-nums;
-  }
-  a.yp:hover {
-    color: var(--ink);
-    border-color: var(--text-muted);
-    text-decoration: none;
-  }
-  .yp.on {
-    background: var(--ink);
-    color: var(--surface);
-    border-color: var(--ink);
-    font-weight: 700;
-  }
-  .yp.off {
-    color: var(--hairline);
-    cursor: not-allowed;
   }
   .ctx-tabs {
     display: flex;

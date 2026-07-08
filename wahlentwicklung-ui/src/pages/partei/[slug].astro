@@ -5,6 +5,7 @@ import ModuleFrame from '@/components/ModuleFrame.astro';
 import TrendLines from '@/components/charts/TrendLines.astro';
 import StatTile from '@/components/StatTile.astro';
 import StatTileGrid from '@/components/StatTileGrid.astro';
+import Notice from '@/components/Notice.astro';
 import {
   getElectionYears,
   getPartiesWithAbbreviation,
@@ -53,10 +54,11 @@ const description = `${name} (${abbreviation}) bei den Bundestagswahlen: Zweitst
 
   {
     trendYears.length < years.length && (
-      <p class="notice">
-        Ergebnisse liegen für {trendYears.join(', ')} vor — die Zuordnung weiterer Wahljahre ist in
-        Arbeit (Parteien-Mapping, siehe Quellen).
-      </p>
+      <Notice
+        notes={[
+          `Ergebnisse liegen für die Wahljahre ${trendYears[0]}–${trendYears.at(-1)} vor (${trendYears.length} von ${years.length} Bundestagswahlen) — bei den übrigen Wahlen trat die Partei nicht an oder ist keinem Ergebnis zugeordnet.`,
+        ]}
+      />
     )
   }
 
@@ -103,14 +105,6 @@ const description = `${name} (${abbreviation}) bei den Bundestagswahlen: Zweitst
     display: flex;
     flex-direction: column;
     gap: 10px;
-  }
-  .notice {
-    font-size: 13px;
-    color: var(--text-sec);
-    border-left: 2px solid var(--accent);
-    padding-left: 10px;
-    margin-bottom: 6px;
-    max-width: 70ch;
   }
   .yearlist {
     list-style: none;
